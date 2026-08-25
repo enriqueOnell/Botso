@@ -1,5 +1,7 @@
 package com.onell.UniApp.ui.screens
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -7,10 +9,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
@@ -117,7 +122,7 @@ fun SemestersScreen(
             course = course,
             onDismiss = { courseToEdit = null },
             onConfirm = { name, dayOfWeek, start, end, professor, location, isRemote ->
-                viewModel.onEvent(SemestersUiEvent.OnUpdateCourse(course, name, dayOfWeek, start, end, professor, course.colorHex, location, isRemote))
+                viewModel.onEvent(SemestersUiEvent.OnEditCourse(course, name, dayOfWeek, start, end, professor, course.colorHex, location, isRemote))
                 courseToEdit = null
             }
         )
@@ -128,7 +133,7 @@ fun SemestersScreen(
             title = "Eliminar Curso",
             message = "¿Estás seguro de que deseas eliminar el curso '${course.name}'? Esta acción no se puede deshacer.",
             onConfirm = {
-                viewModel.onEvent(SemestersUiEvent.OnDeleteCourse(course))
+                viewModel.onEvent(SemestersUiEvent.OnDeleteCourseConfirm(course))
                 courseToDelete = null
             },
             onDismiss = { courseToDelete = null }
@@ -193,18 +198,24 @@ fun SemesterCard(
                     onDismissRequest = { showSemesterMenu = false }
                 ) {
                     DropdownMenuItem(
-                        text = { Text("Editar") },
+                        text = { Text("Editar Semestre") },
                         onClick = {
                             onEditSemester(stats.semester)
                             showSemesterMenu = false
-                        }
+                        },
+                        leadingIcon = { Icon(Icons.Rounded.Edit, contentDescription = null) }
                     )
                     DropdownMenuItem(
-                        text = { Text("Eliminar") },
+                        text = { Text("Eliminar Semestre") },
                         onClick = {
                             onDeleteSemester(stats.semester)
                             showSemesterMenu = false
-                        }
+                        },
+                        leadingIcon = { Icon(Icons.Rounded.Delete, contentDescription = null) },
+                        colors = MenuDefaults.itemColors(
+                            textColor = MaterialTheme.colorScheme.error,
+                            leadingIconColor = MaterialTheme.colorScheme.error
+                        )
                     )
                 }
             }
@@ -250,6 +261,7 @@ fun SemesterCard(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CourseRow(
     course: Course,
@@ -260,21 +272,35 @@ fun CourseRow(
     var showMenu by remember { mutableStateOf(false) }
 
     Box {
-        TextButton(
-            onClick = onClick,
+        Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .pointerInput(Unit) {
-                    detectTapGestures(
-                        onLongPress = { showMenu = true }
-                    )
-                },
-            contentPadding = PaddingValues(vertical = 8.dp),
+                .clip(RoundedCornerShape(24.dp))
+                .combinedClickable(
+                    onClick = onClick,
+                    onLongClick = { showMenu = true }
+                ),
+            color = Color.Transparent,
             shape = RoundedCornerShape(24.dp)
         ) {
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text(text = course.name, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                Text(text = "Ver notas >", style = MaterialTheme.typography.labelMedium)
+            Row(
+                modifier = Modifier
+                    .padding(vertical = 12.dp, horizontal = 12.dp)
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = course.name,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Text(
+                    text = "Ver notas >",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.SemiBold
+                )
             }
         }
 
@@ -283,18 +309,24 @@ fun CourseRow(
             onDismissRequest = { showMenu = false }
         ) {
             DropdownMenuItem(
-                text = { Text("Editar") },
+                text = { Text("Editar Curso") },
                 onClick = {
                     onEdit()
                     showMenu = false
-                }
+                },
+                leadingIcon = { Icon(Icons.Rounded.Edit, contentDescription = null) }
             )
             DropdownMenuItem(
-                text = { Text("Eliminar") },
+                text = { Text("Eliminar Curso") },
                 onClick = {
                     onDelete()
                     showMenu = false
-                }
+                },
+                leadingIcon = { Icon(Icons.Rounded.Delete, contentDescription = null) },
+                colors = MenuDefaults.itemColors(
+                    textColor = MaterialTheme.colorScheme.error,
+                    leadingIconColor = MaterialTheme.colorScheme.error
+                )
             )
         }
     }

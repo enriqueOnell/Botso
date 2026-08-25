@@ -18,8 +18,8 @@ sealed class SemestersUiEvent {
     data class OnUpdateSemester(val semester: Semester, val name: String, val startDate: Long, val endDate: Long, val isActive: Boolean) : SemestersUiEvent()
     data class OnDeleteSemester(val semester: Semester) : SemestersUiEvent()
     data class OnAddCourse(val semesterId: Long, val name: String, val dayOfWeek: Int, val startTime: String, val endTime: String, val professor: String, val colorHex: String, val location: String, val isRemote: Boolean) : SemestersUiEvent()
-    data class OnUpdateCourse(val course: Course, val name: String, val dayOfWeek: Int, val startTime: String, val endTime: String, val professor: String, val colorHex: String, val location: String, val isRemote: Boolean) : SemestersUiEvent()
-    data class OnDeleteCourse(val course: Course) : SemestersUiEvent()
+    data class OnEditCourse(val course: Course, val name: String, val dayOfWeek: Int, val startTime: String, val endTime: String, val professor: String, val colorHex: String, val location: String, val isRemote: Boolean) : SemestersUiEvent()
+    data class OnDeleteCourseConfirm(val course: Course) : SemestersUiEvent()
 }
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -60,8 +60,8 @@ class SemestersViewModel @Inject constructor(
             is SemestersUiEvent.OnUpdateSemester -> updateSemester(event.semester, event.name, event.startDate, event.endDate, event.isActive)
             is SemestersUiEvent.OnDeleteSemester -> deleteSemester(event.semester)
             is SemestersUiEvent.OnAddCourse -> addCourse(event.semesterId, event.name, event.dayOfWeek, event.startTime, event.endTime, event.professor, event.colorHex, event.location, event.isRemote)
-            is SemestersUiEvent.OnUpdateCourse -> updateCourse(event.course, event.name, event.dayOfWeek, event.startTime, event.endTime, event.professor, event.colorHex, event.location, event.isRemote)
-            is SemestersUiEvent.OnDeleteCourse -> deleteCourse(event.course)
+            is SemestersUiEvent.OnEditCourse -> updateCourse(event.course, event.name, event.dayOfWeek, event.startTime, event.endTime, event.professor, event.colorHex, event.location, event.isRemote)
+            is SemestersUiEvent.OnDeleteCourseConfirm -> deleteCourse(event.course)
         }
     }
 

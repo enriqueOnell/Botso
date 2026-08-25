@@ -68,7 +68,7 @@ fun ScheduleScreen(
                 onDismiss = { entryToEdit = null },
                 onConfirm = { name, dayOfWeek, start, end, professor, location, isRemote ->
                     semestersViewModel.onEvent(
-                        SemestersUiEvent.OnUpdateCourse(
+                        SemestersUiEvent.OnEditCourse(
                             entry.course, name, dayOfWeek, start, end, professor, entry.course.colorHex, location, isRemote
                         )
                     )
@@ -81,7 +81,7 @@ fun ScheduleScreen(
                 onDismiss = { entryToEdit = null },
                 onConfirm = { name, dayOfWeek, start, end, professor, location, isRemote ->
                     semestersViewModel.onEvent(
-                        SemestersUiEvent.OnUpdateCourse(
+                        SemestersUiEvent.OnEditCourse(
                             entry.course, name, dayOfWeek, start, end, professor, entry.course.colorHex, location, isRemote
                         )
                     )
