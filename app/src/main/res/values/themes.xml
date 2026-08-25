@@ -1,0 +1,4 @@
+<resources>
+
+    <style name="Theme.UniApp" parent="Theme.MaterialComponents.Light" />
+</resources>
