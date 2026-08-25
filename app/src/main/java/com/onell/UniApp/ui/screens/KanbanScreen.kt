@@ -4,7 +4,6 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,7 +18,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.onell.UniApp.data.local.entity.Task
 import com.onell.UniApp.domain.model.TaskWithCourse
@@ -94,68 +92,94 @@ fun KanbanContent(
     onEditTask: (Task) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    LazyRow(
-        modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        items(columns) { column ->
-            KanbanColumn(
-                title = column.title,
-                tasks = tasks.filter { it.task.status == column.status },
-                onTaskClick = onTaskClick,
-                onDeleteTask = onDeleteTask,
-                onEditTask = onEditTask
-            )
+    // Pre-calculamos las tareas por columna para evitar filtrados innecesarios durante la recomposición
+    val tasksByStatus = remember(tasks, columns) {
+        columns.map { column ->
+            column to tasks.filter { it.task.status == column.status }
         }
     }
-}
 
-@Composable
-fun KanbanColumn(
-    title: String,
-    tasks: List<TaskWithCourse>,
-    onTaskClick: (Task) -> Unit,
-    onDeleteTask: (Task) -> Unit,
-    onEditTask: (Task) -> Unit
-) {
-    Column(modifier = Modifier.width(280.dp)) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
-            )
-            Surface(
-                color = MaterialTheme.colorScheme.surfaceVariant,
-                shape = CircleShape
-            ) {
-                Text(
-                    text = tasks.size.toString(),
-                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
-                    style = MaterialTheme.typography.labelSmall,
-                    fontWeight = FontWeight.Bold
-                )
+    LazyColumn(
+        modifier = modifier.fillMaxSize(),
+        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 24.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        tasksByStatus.forEach { (column, columnTasks) ->
+            // Encabezado de sección (Por Hacer, En Progreso, Terminado)
+            item(key = "header_${column.status}") {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp, bottom = 4.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        // Mapeo dinámico para asegurar que se muestre "Terminado" si el ViewModel dice "Hecho"
+                        val displayTitle = when(column.title) {
+                            "Hecho" -> "Terminado"
+                            else -> column.title
+                        }
+
+                        Text(
+                            text = displayTitle,
+                            style = MaterialTheme.typography.headlineSmall,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        
+                        Surface(
+                            color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f),
+                            shape = CircleShape
+                        ) {
+                            Text(
+                                text = columnTasks.size.toString(),
+                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 2.dp),
+                                style = MaterialTheme.typography.labelLarge,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(4.dp))
+                }
             }
-        }
-        
-        Spacer(modifier = Modifier.height(16.dp))
-        
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier.fillMaxSize()
-        ) {
-            items(tasks) { taskWithCourse ->
-                TaskCard(
-                    taskWithCourse = taskWithCourse,
-                    onClick = { onTaskClick(taskWithCourse.task) },
-                    onDelete = { onDeleteTask(taskWithCourse.task) },
-                    onEdit = { onEditTask(taskWithCourse.task) }
-                )
+
+            // Lista de tarjetas para este estado
+            if (columnTasks.isEmpty()) {
+                item(key = "empty_${column.status}") {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 12.dp),
+                        contentAlignment = Alignment.CenterStart
+                    ) {
+                        Text(
+                            text = "No hay tareas en esta sección",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                        )
+                    }
+                }
+            } else {
+                items(
+                    items = columnTasks,
+                    key = { "${it.task.id}_${column.status}" }
+                ) { taskWithCourse ->
+                    TaskCard(
+                        taskWithCourse = taskWithCourse,
+                        onClick = { onTaskClick(taskWithCourse.task) },
+                        onDelete = { onDeleteTask(taskWithCourse.task) },
+                        onEdit = { onEditTask(taskWithCourse.task) }
+                    )
+                }
+            }
+            
+            // Espaciador entre secciones
+            item {
+                Spacer(modifier = Modifier.height(12.dp))
             }
         }
     }
@@ -182,7 +206,7 @@ fun TaskCard(
                 onLongClick = { showMenu = true }
             ),
         shape = RoundedCornerShape(24.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Box {
@@ -207,7 +231,7 @@ fun TaskCard(
                             color = MaterialTheme.colorScheme.primary,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier.widthIn(max = 150.dp)
+                            modifier = Modifier.widthIn(max = 200.dp)
                         )
                     }
                     
@@ -217,19 +241,21 @@ fun TaskCard(
                     ) {
                         Text(
                             text = "S${task.week}",
-                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
                             style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSecondaryContainer
                         )
                     }
                 }
                 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(10.dp))
                 
                 Text(
                     text = task.title,
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.Medium
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
 
                 if (task.description.isNotBlank()) {
@@ -243,7 +269,7 @@ fun TaskCard(
                     )
                 }
                 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(14.dp))
                 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -258,21 +284,30 @@ fun TaskCard(
                             modifier = Modifier.size(16.dp),
                             tint = if (isDueToday) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant
                         )
-                        Spacer(modifier = Modifier.width(4.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
                         Text(
-                            text = SimpleDateFormat("dd MMM", Locale.getDefault()).format(Date(task.dueDate)),
+                            text = SimpleDateFormat("dd MMM, yyyy", Locale.getDefault()).format(Date(task.dueDate)),
                             style = MaterialTheme.typography.bodySmall,
+                            fontWeight = if (isDueToday) FontWeight.Bold else FontWeight.Normal,
                             color = if (isDueToday) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                     
                     if (task.isPriority) {
-                        Icon(
-                            Icons.Rounded.Star,
-                            contentDescription = "Prioridad",
-                            modifier = Modifier.size(16.dp),
-                            tint = MaterialTheme.colorScheme.secondary
-                        )
+                        Surface(
+                            color = MaterialTheme.colorScheme.tertiaryContainer,
+                            shape = CircleShape,
+                            modifier = Modifier.size(24.dp)
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                Icon(
+                                    Icons.Rounded.Star,
+                                    contentDescription = "Prioridad",
+                                    modifier = Modifier.size(14.dp),
+                                    tint = MaterialTheme.colorScheme.onTertiaryContainer
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -282,7 +317,7 @@ fun TaskCard(
                 onDismissRequest = { showMenu = false }
             ) {
                 DropdownMenuItem(
-                    text = { Text("Editar") },
+                    text = { Text("Editar Tarea") },
                     onClick = {
                         showMenu = false
                         onEdit()
@@ -290,7 +325,7 @@ fun TaskCard(
                     leadingIcon = { Icon(Icons.Rounded.Edit, contentDescription = null) }
                 )
                 DropdownMenuItem(
-                    text = { Text("Eliminar") },
+                    text = { Text("Eliminar Tarea") },
                     onClick = {
                         showMenu = false
                         onDelete()

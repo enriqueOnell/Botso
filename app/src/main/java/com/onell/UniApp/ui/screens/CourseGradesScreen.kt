@@ -19,6 +19,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.onell.UniApp.ui.theme.UniAppTheme
 import com.onell.UniApp.ui.viewmodel.CourseGradesViewModel
 import java.util.*
@@ -34,12 +35,12 @@ fun CourseGradesScreen(
         viewModel.setCourseId(courseId)
     }
 
-    val grades by viewModel.grades.collectAsState()
-    val averageScore by viewModel.averageScore.collectAsState()
-    val currentTermAverage by viewModel.currentTermAverage.collectAsState()
-    val currentTermId by viewModel.currentTermId.collectAsState()
-    val stagedFormativa by viewModel.stagedFormativa.collectAsState()
-    val stagedCognitiva by viewModel.stagedCognitiva.collectAsState()
+    val grades by viewModel.grades.collectAsStateWithLifecycle()
+    val averageScore by viewModel.averageScore.collectAsStateWithLifecycle()
+    val currentTermAverage by viewModel.currentTermAverage.collectAsStateWithLifecycle()
+    val currentTermId by viewModel.currentTermId.collectAsStateWithLifecycle()
+    val stagedFormativa by viewModel.stagedFormativa.collectAsStateWithLifecycle()
+    val stagedCognitiva by viewModel.stagedCognitiva.collectAsStateWithLifecycle()
 
     val tabs = listOf("Corte 1", "Corte 2", "Corte 3")
 
