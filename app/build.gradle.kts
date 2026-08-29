@@ -7,13 +7,13 @@ plugins {
 }
 
 android {
-    namespace = "com.onell.UniApp"
+    namespace = "com.onell.botso"
     compileSdk {
         version = release(37)
     }
 
     defaultConfig {
-        applicationId = "com.onell.UniApp"
+        applicationId = "com.onell.botso"
         minSdk = 29
         targetSdk = 37
         versionCode = 1
