@@ -2,40 +2,51 @@ package com.onell.botso.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.onell.botso.data.local.entity.Course
-import com.onell.botso.data.local.entity.Task
+import com.onell.botso.domain.model.Task
 import com.onell.botso.domain.model.TaskWithCourse
-import com.onell.botso.domain.repository.UniRepository
+import com.onell.botso.domain.usecase.course.GetAllCoursesUseCase
+import com.onell.botso.domain.usecase.task.DeleteTaskUseCase
+import com.onell.botso.domain.usecase.task.GetAllTasksUseCase
+import com.onell.botso.domain.usecase.task.InsertTaskUseCase
+import com.onell.botso.domain.usecase.task.UpdateTaskUseCase
+import com.onell.botso.ui.uistate.KanbanUiEvent
+import com.onell.botso.ui.uistate.KanbanUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-sealed class KanbanUiEvent {
-    data class OnAddTask(val courseId: Long, val title: String, val dueDate: Long, val isPriority: Boolean, val week: Int, val description: String) : KanbanUiEvent()
-    data class OnUpdateTaskStatus(val task: Task) : KanbanUiEvent()
-    data class OnDeleteTask(val task: Task) : KanbanUiEvent()
-    data class OnUpdateTask(val task: Task, val courseId: Long, val title: String, val dueDate: Long, val isPriority: Boolean, val week: Int, val description: String) : KanbanUiEvent()
-}
-
 @HiltViewModel
 class KanbanViewModel @Inject constructor(
-    private val repository: UniRepository
+    private val getAllTasksUseCase: GetAllTasksUseCase,
+    private val getAllCoursesUseCase: GetAllCoursesUseCase,
+    private val insertTaskUseCase: InsertTaskUseCase,
+    private val updateTaskUseCase: UpdateTaskUseCase,
+    private val deleteTaskUseCase: DeleteTaskUseCase
 ) : ViewModel() {
 
-    val tasks: StateFlow<List<TaskWithCourse>> = repository.getTasksWithCourse()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    // Centralizamos todo en un único flujo de estado
+    val uiState: StateFlow<KanbanUiState> = combine(
+        getAllTasksUseCase(),
+        getAllCoursesUseCase()
+    ) { allTasks, courses ->
 
-    val courses: StateFlow<List<Course>> = repository.getAllCourses()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+        // Cruzamos las listas manualmente para emparejar la tarea con su materia
+        val tasksWithCourse = allTasks.mapNotNull { task ->
+            val courseForTask = courses.firstOrNull { it.id == task.courseId }
+            if (courseForTask != null) {
+                TaskWithCourse(task = task, course = courseForTask)
+            } else null
+        }
 
-    val columns: List<KanbanColumnInfo> = listOf(
-        KanbanColumnInfo("TODO", "Por Hacer"),
-        KanbanColumnInfo("IN_PROGRESS", "En Progreso"),
-        KanbanColumnInfo("DONE", "Hecho")
-    )
+        KanbanUiState(
+            tasks = tasksWithCourse,
+            courses = courses
+        )
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), KanbanUiState())
 
     fun onEvent(event: KanbanUiEvent) {
         when (event) {
@@ -48,8 +59,10 @@ class KanbanViewModel @Inject constructor(
 
     private fun addTask(courseId: Long, title: String, dueDate: Long, isPriority: Boolean, week: Int, description: String) {
         viewModelScope.launch {
-            repository.insertTask(
+            insertTaskUseCase(
+                // Forjamos el modelo de Dominio (Task) en lugar de TaskEntity
                 Task(
+                    id = 0,
                     courseId = courseId,
                     title = title,
                     dueDate = dueDate,
@@ -64,7 +77,7 @@ class KanbanViewModel @Inject constructor(
 
     private fun updateTask(task: Task, courseId: Long, title: String, dueDate: Long, isPriority: Boolean, week: Int, description: String) {
         viewModelScope.launch {
-            repository.updateTask(
+            updateTaskUseCase(
                 task.copy(
                     courseId = courseId,
                     title = title,
@@ -85,18 +98,13 @@ class KanbanViewModel @Inject constructor(
             else -> "TODO"
         }
         viewModelScope.launch {
-            repository.updateTask(task.copy(status = nextStatus))
+            updateTaskUseCase(task.copy(status = nextStatus))
         }
     }
 
     private fun deleteTask(task: Task) {
         viewModelScope.launch {
-            repository.deleteTask(task)
+            deleteTaskUseCase(task)
         }
     }
 }
-
-data class KanbanColumnInfo(
-    val status: String,
-    val title: String
-)

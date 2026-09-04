@@ -2,72 +2,81 @@ package com.onell.botso.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.onell.botso.data.local.entity.ClassSession
-import com.onell.botso.data.local.entity.Course
-import com.onell.botso.domain.repository.UniRepository
+import com.onell.botso.domain.model.ClassSession
+import com.onell.botso.domain.model.Course
+import com.onell.botso.domain.usecase.course.DeleteCourseUseCase
+import com.onell.botso.domain.usecase.course.GetAllCoursesUseCase
+import com.onell.botso.domain.usecase.course.UpdateCourseUseCase
+import com.onell.botso.domain.usecase.session.DeleteClassSessionUseCase
+import com.onell.botso.domain.usecase.session.GetAllClassSessionsUseCase
+import com.onell.botso.domain.usecase.session.InsertClassSessionUseCase
+import com.onell.botso.domain.usecase.session.UpdateClassSessionUseCase
+import com.onell.botso.ui.uistate.ScheduleEntry
+import com.onell.botso.ui.uistate.ScheduleUiEvent
+import com.onell.botso.ui.uistate.ScheduleUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-sealed class ScheduleUiEvent {
-    data class OnAddSession(val courseId: Long, val dayOfWeek: Int, val startTime: String, val endTime: String, val room: String) : ScheduleUiEvent()
-    data class OnDeleteSession(val session: ClassSession) : ScheduleUiEvent()
-    data class OnUpdateSession(val session: ClassSession) : ScheduleUiEvent()
-    data class OnUpdateCourse(val course: Course) : ScheduleUiEvent()
-    data class OnDeleteCourse(val course: Course) : ScheduleUiEvent()
-}
-
-data class ScheduleEntry(
-    val name: String,
-    val dayOfWeek: Int,
-    val startTime: String,
-    val endTime: String,
-    val location: String,
-    val colorHex: String,
-    val course: Course? = null,
-    val session: ClassSession? = null
-)
-
 @HiltViewModel
 class ScheduleViewModel @Inject constructor(
-    private val repository: UniRepository
+    private val getAllCoursesUseCase: GetAllCoursesUseCase,
+    private val getAllClassSessionsUseCase: GetAllClassSessionsUseCase,
+    private val insertClassSessionUseCase: InsertClassSessionUseCase,
+    private val updateClassSessionUseCase: UpdateClassSessionUseCase,
+    private val deleteClassSessionUseCase: DeleteClassSessionUseCase,
+    private val updateCourseUseCase: UpdateCourseUseCase,
+    private val deleteCourseUseCase: DeleteCourseUseCase
 ) : ViewModel() {
 
-    private val courses = repository.getAllCourses()
-    private val allSessions = repository.getAllClassSessions()
+    // Un único flujo maestro para gobernar el horario
+    val uiState: StateFlow<ScheduleUiState> = combine(
+        getAllClassSessionsUseCase(),
+        getAllCoursesUseCase()
+    ) { allSessions, courses ->
 
-    val scheduleEntries: StateFlow<List<ScheduleEntry>> = combine(allSessions, courses) { sessions, courses ->
-        val sessionEntries = sessions.map {
-            ScheduleEntry(
-                name = it.course.name,
-                dayOfWeek = it.session.dayOfWeek,
-                startTime = it.session.startTime,
-                endTime = it.session.endTime,
-                location = it.session.room,
-                colorHex = it.course.colorHex,
-                course = it.course,
-                session = it.session
-            )
+        // 1. Emparejamos las sesiones reales con sus respectivas materias
+        val sessionEntries = allSessions.mapNotNull { session ->
+            val courseForSession = courses.firstOrNull { it.id == session.courseId }
+            if (courseForSession != null) {
+                ScheduleEntry(
+                    name = courseForSession.name,
+                    dayOfWeek = session.dayOfWeek,
+                    startTime = session.startTime,
+                    endTime = session.endTime,
+                    location = session.room,
+                    colorHex = courseForSession.colorHex,
+                    course = courseForSession,
+                    session = session
+                )
+            } else null
         }
 
-        val coursesWithSessions = sessions.map { it.course.id }.toSet()
+        // 2. Mantenemos tu lógica defensiva para mostrar "sesiones fantasma" de materias sin horario oficial
+        val coursesWithSessions = allSessions.map { it.courseId }.toSet()
         val courseEntries = courses.filter { it.id !in coursesWithSessions && it.startTime.isNotBlank() }
-            .map {
+            .map { course ->
                 ScheduleEntry(
-                    name = it.name,
-                    dayOfWeek = it.dayOfWeek,
-                    startTime = it.startTime,
-                    endTime = it.endTime,
-                    location = it.location,
-                    colorHex = it.colorHex,
-                    course = it,
+                    name = course.name,
+                    dayOfWeek = course.dayOfWeek,
+                    startTime = course.startTime,
+                    endTime = course.endTime,
+                    location = course.location,
+                    colorHex = course.colorHex,
+                    course = course,
                     session = null
                 )
             }
 
-        sessionEntries + courseEntries
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+        // 3. Empaquetamos todo en el nuevo estado puro
+        ScheduleUiState(
+            scheduleEntries = sessionEntries + courseEntries
+        )
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), ScheduleUiState())
 
     fun onEvent(event: ScheduleUiEvent) {
         when (event) {
@@ -81,8 +90,10 @@ class ScheduleViewModel @Inject constructor(
 
     private fun addSession(courseId: Long, dayOfWeek: Int, startTime: String, endTime: String, room: String) {
         viewModelScope.launch {
-            repository.insertClassSession(
+            insertClassSessionUseCase(
+                // Construimos el modelo puro
                 ClassSession(
+                    id = 0,
                     courseId = courseId,
                     dayOfWeek = dayOfWeek,
                     startTime = startTime,
@@ -95,25 +106,25 @@ class ScheduleViewModel @Inject constructor(
 
     private fun updateSession(session: ClassSession) {
         viewModelScope.launch {
-            repository.updateClassSession(session)
+            updateClassSessionUseCase(session)
         }
     }
 
     private fun deleteSession(session: ClassSession) {
         viewModelScope.launch {
-            repository.deleteClassSession(session)
+            deleteClassSessionUseCase(session)
         }
     }
 
     private fun updateCourse(course: Course) {
         viewModelScope.launch {
-            repository.updateCourse(course)
+            updateCourseUseCase(course)
         }
     }
 
     private fun deleteCourse(course: Course) {
         viewModelScope.launch {
-            repository.deleteCourse(course)
+            deleteCourseUseCase(course)
         }
     }
 }

@@ -21,6 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.onell.botso.ui.theme.UniAppTheme
+import com.onell.botso.ui.uistate.CourseGradesUiEvent
 import com.onell.botso.ui.viewmodel.CourseGradesViewModel
 import java.util.*
 
@@ -31,16 +32,13 @@ fun CourseGradesScreen(
     viewModel: CourseGradesViewModel = hiltViewModel(),
     onBack: () -> Unit = {}
 ) {
+    // 1. Disparamos el evento para establecer la materia inicial
     LaunchedEffect(courseId) {
-        viewModel.setCourseId(courseId)
+        viewModel.onEvent(CourseGradesUiEvent.OnSetCourseId(courseId))
     }
 
-    val grades by viewModel.grades.collectAsStateWithLifecycle()
-    val averageScore by viewModel.averageScore.collectAsStateWithLifecycle()
-    val currentTermAverage by viewModel.currentTermAverage.collectAsStateWithLifecycle()
-    val currentTermId by viewModel.currentTermId.collectAsStateWithLifecycle()
-    val stagedFormativa by viewModel.stagedFormativa.collectAsStateWithLifecycle()
-    val stagedCognitiva by viewModel.stagedCognitiva.collectAsStateWithLifecycle()
+    // 2. Observamos un ÚNICO estado para dominar toda la pantalla
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     val tabs = listOf("Corte 1", "Corte 2", "Corte 3")
 
@@ -64,20 +62,24 @@ fun CourseGradesScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(modifier = Modifier.height(24.dp))
-            
-            CircularGradeProgress(score = averageScore, termAverage = currentTermAverage)
-            
+
+            CircularGradeProgress(
+                score = uiState.averageScore,
+                termAverage = uiState.currentTermAverage
+            )
+
             Spacer(modifier = Modifier.height(32.dp))
 
             PrimaryTabRow(
-                selectedTabIndex = currentTermId - 1,
+                selectedTabIndex = uiState.currentTermId - 1,
                 containerColor = Color.Transparent,
                 divider = {}
             ) {
                 tabs.forEachIndexed { index, title ->
                     Tab(
-                        selected = currentTermId == index + 1,
-                        onClick = { viewModel.setTermId(index + 1) },
+                        selected = uiState.currentTermId == index + 1,
+                        // 3. Enviamos eventos al ViewModel en lugar de invocar funciones
+                        onClick = { viewModel.onEvent(CourseGradesUiEvent.OnSetTermId(index + 1)) },
                         text = { Text(title) }
                     )
                 }
@@ -86,14 +88,14 @@ fun CourseGradesScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             GradeInputSection(
-                termId = currentTermId,
-                formativa = stagedFormativa,
-                cognitiva = stagedCognitiva,
-                onFormativaChange = { viewModel.updateStagedFormativa(it) },
-                onCognitivaChange = { viewModel.updateStagedCognitiva(it) },
-                onSave = { viewModel.saveGrades() }
+                termId = uiState.currentTermId,
+                formativa = uiState.stagedFormativa,
+                cognitiva = uiState.stagedCognitiva,
+                onFormativaChange = { viewModel.onEvent(CourseGradesUiEvent.OnUpdateFormativa(it)) },
+                onCognitivaChange = { viewModel.onEvent(CourseGradesUiEvent.OnUpdateCognitiva(it)) },
+                onSave = { viewModel.onEvent(CourseGradesUiEvent.OnSave) }
             )
-            
+
             Spacer(modifier = Modifier.height(24.dp))
         }
     }

@@ -2,91 +2,171 @@ package com.onell.botso.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.onell.botso.data.local.entity.Course
-import com.onell.botso.data.local.entity.Grade
-import com.onell.botso.data.local.entity.Semester
+import com.onell.botso.domain.model.Course
+import com.onell.botso.domain.model.Grade // Modelo de Dominio puro
+import com.onell.botso.domain.model.Semester
 import com.onell.botso.domain.model.SemesterWithStats
-import com.onell.botso.domain.repository.UniRepository
+import com.onell.botso.domain.usecase.course.DeleteCourseUseCase
+import com.onell.botso.domain.usecase.course.GetCoursesForSemesterUseCase
+import com.onell.botso.domain.usecase.course.InsertCourseUseCase
+import com.onell.botso.domain.usecase.course.UpdateCourseUseCase
+import com.onell.botso.domain.usecase.grade.GetGradesForCourseUseCase
+import com.onell.botso.domain.usecase.semester.DeleteSemesterUseCase
+import com.onell.botso.domain.usecase.semester.GetAllSemestersUseCase
+import com.onell.botso.domain.usecase.semester.InsertSemesterUseCase
+import com.onell.botso.domain.usecase.semester.UpdateSemesterUseCase
+import com.onell.botso.ui.uistate.SemestersUiEvent
+import com.onell.botso.ui.uistate.SemestersUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-sealed class SemestersUiEvent {
-    data class OnAddSemester(val name: String, val startDate: Long, val endDate: Long, val isActive: Boolean) : SemestersUiEvent()
-    data class OnUpdateSemester(val semester: Semester, val name: String, val startDate: Long, val endDate: Long, val isActive: Boolean) : SemestersUiEvent()
-    data class OnDeleteSemester(val semester: Semester) : SemestersUiEvent()
-    data class OnAddCourse(val semesterId: Long, val name: String, val dayOfWeek: Int, val startTime: String, val endTime: String, val professor: String, val colorHex: String, val location: String, val isRemote: Boolean) : SemestersUiEvent()
-    data class OnEditCourse(val course: Course, val name: String, val dayOfWeek: Int, val startTime: String, val endTime: String, val professor: String, val colorHex: String, val location: String, val isRemote: Boolean) : SemestersUiEvent()
-    data class OnDeleteCourseConfirm(val course: Course) : SemestersUiEvent()
-}
-
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class SemestersViewModel @Inject constructor(
-    private val repository: UniRepository
+    private val getAllSemestersUseCase: GetAllSemestersUseCase,
+    private val getCoursesForSemesterUseCase: GetCoursesForSemesterUseCase,
+    private val getGradesForCourseUseCase: GetGradesForCourseUseCase,
+    private val insertSemesterUseCase: InsertSemesterUseCase,
+    private val updateSemesterUseCase: UpdateSemesterUseCase,
+    private val deleteSemesterUseCase: DeleteSemesterUseCase,
+    private val insertCourseUseCase: InsertCourseUseCase,
+    private val updateCourseUseCase: UpdateCourseUseCase,
+    private val deleteCourseUseCase: DeleteCourseUseCase
 ) : ViewModel() {
 
-    val semestersWithStats: StateFlow<List<SemesterWithStats>> = repository.getAllSemesters()
+    // Todo empaquetado en un único flujo de estado
+    val uiState: StateFlow<SemestersUiState> = getAllSemestersUseCase()
         .flatMapLatest { semesters ->
-            if (semesters.isEmpty()) return@flatMapLatest flowOf(emptyList<SemesterWithStats>())
-            
+            if (semesters.isEmpty()) return@flatMapLatest flowOf(SemestersUiState(emptyList()))
+
             val statsFlows = semesters.map { semester ->
-                repository.getCoursesForSemester(semester.id).flatMapLatest { courses ->
+                getCoursesForSemesterUseCase(semester.id).flatMapLatest { courses ->
                     if (courses.isEmpty()) {
                         return@flatMapLatest flowOf(SemesterWithStats(semester, emptyList(), 0.0))
                     }
-                    
+
                     val courseGradeFlows = courses.map { course ->
-                        repository.getGradesForCourse(course.id).map { grades ->
+                        getGradesForCourseUseCase(course.id).map { grades ->
                             calculateCourseAverage(grades)
                         }
                     }
-                    
+
                     combine(courseGradeFlows) { averages ->
                         val gpa = if (averages.isNotEmpty()) averages.average() else 0.0
                         SemesterWithStats(semester, courses, gpa)
                     }
                 }
             }
-            combine(statsFlows) { it.toList() }
+
+            combine(statsFlows) {
+                SemestersUiState(semestersWithStats = it.toList())
+            }
         }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), SemestersUiState())
 
     fun onEvent(event: SemestersUiEvent) {
         when (event) {
-            is SemestersUiEvent.OnAddSemester -> addSemester(event.name, event.startDate, event.endDate, event.isActive)
-            is SemestersUiEvent.OnUpdateSemester -> updateSemester(event.semester, event.name, event.startDate, event.endDate, event.isActive)
+            is SemestersUiEvent.OnAddSemester -> addSemester(
+                event.name,
+                event.startDate,
+                event.endDate,
+                event.isActive
+            )
+
+            is SemestersUiEvent.OnUpdateSemester -> updateSemester(
+                event.semester,
+                event.name,
+                event.startDate,
+                event.endDate,
+                event.isActive
+            )
+
             is SemestersUiEvent.OnDeleteSemester -> deleteSemester(event.semester)
-            is SemestersUiEvent.OnAddCourse -> addCourse(event.semesterId, event.name, event.dayOfWeek, event.startTime, event.endTime, event.professor, event.colorHex, event.location, event.isRemote)
-            is SemestersUiEvent.OnEditCourse -> updateCourse(event.course, event.name, event.dayOfWeek, event.startTime, event.endTime, event.professor, event.colorHex, event.location, event.isRemote)
+            is SemestersUiEvent.OnAddCourse -> addCourse(
+                event.semesterId,
+                event.name,
+                event.dayOfWeek,
+                event.startTime,
+                event.endTime,
+                event.professor,
+                event.colorHex,
+                event.location,
+                event.isRemote
+            )
+
+            is SemestersUiEvent.OnEditCourse -> updateCourse(
+                event.course,
+                event.name,
+                event.dayOfWeek,
+                event.startTime,
+                event.endTime,
+                event.professor,
+                event.colorHex,
+                event.location,
+                event.isRemote
+            )
+
             is SemestersUiEvent.OnDeleteCourseConfirm -> deleteCourse(event.course)
         }
     }
 
     private fun addSemester(name: String, startDate: Long, endDate: Long, isActive: Boolean) {
         viewModelScope.launch {
-            repository.insertSemester(Semester(name = name, startDate = startDate, endDate = endDate, isActive = isActive))
+            insertSemesterUseCase(
+                Semester(
+                    id = 0,
+                    name = name,
+                    startDate = startDate,
+                    endDate = endDate,
+                    isActive = isActive
+                )
+            )
         }
     }
 
-    private fun updateSemester(semester: Semester, name: String, startDate: Long, endDate: Long, isActive: Boolean) {
+    private fun updateSemester(
+        semester: Semester,
+        name: String,
+        startDate: Long,
+        endDate: Long,
+        isActive: Boolean
+    ) {
         viewModelScope.launch {
-            repository.updateSemester(semester.copy(name = name, startDate = startDate, endDate = endDate, isActive = isActive))
+            updateSemesterUseCase(
+                semester.copy(
+                    name = name,
+                    startDate = startDate,
+                    endDate = endDate,
+                    isActive = isActive
+                )
+            )
         }
     }
 
     private fun deleteSemester(semester: Semester) {
         viewModelScope.launch {
-            repository.deleteSemester(semester)
+            deleteSemesterUseCase(semester)
         }
     }
 
-    private fun addCourse(semesterId: Long, name: String, dayOfWeek: Int, startTime: String, endTime: String, professor: String, colorHex: String, location: String, isRemote: Boolean) {
+    private fun addCourse(
+        semesterId: Long,
+        name: String,
+        dayOfWeek: Int,
+        startTime: String,
+        endTime: String,
+        professor: String,
+        colorHex: String,
+        location: String,
+        isRemote: Boolean
+    ) {
         viewModelScope.launch {
-            repository.insertCourse(
+            insertCourseUseCase(
                 Course(
+                    id = 0,
                     semesterId = semesterId,
                     name = name,
                     code = name.take(3).uppercase(),
@@ -102,9 +182,19 @@ class SemestersViewModel @Inject constructor(
         }
     }
 
-    private fun updateCourse(course: Course, name: String, dayOfWeek: Int, startTime: String, endTime: String, professor: String, colorHex: String, location: String, isRemote: Boolean) {
+    private fun updateCourse(
+        course: Course,
+        name: String,
+        dayOfWeek: Int,
+        startTime: String,
+        endTime: String,
+        professor: String,
+        colorHex: String,
+        location: String,
+        isRemote: Boolean
+    ) {
         viewModelScope.launch {
-            repository.updateCourse(
+            updateCourseUseCase(
                 course.copy(
                     name = name,
                     code = name.take(3).uppercase(),
@@ -122,19 +212,19 @@ class SemestersViewModel @Inject constructor(
 
     private fun deleteCourse(course: Course) {
         viewModelScope.launch {
-            repository.deleteCourse(course)
+            deleteCourseUseCase(course)
         }
     }
 
+    // El cálculo ahora purga la dependencia de Room y exige clases de Dominio
     private fun calculateCourseAverage(grades: List<Grade>): Double {
         if (grades.isEmpty()) return 0.0
-        
-        // Group by term (Corte)
+
         val gradesByTerm = grades.groupBy { it.termId }
         val termAverages = gradesByTerm.map { (_, termGrades) ->
             termGrades.sumOf { it.score * it.weight }
         }
-        
+
         return if (termAverages.isNotEmpty()) termAverages.average() else 0.0
     }
 }

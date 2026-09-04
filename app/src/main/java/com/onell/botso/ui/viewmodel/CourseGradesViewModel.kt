@@ -2,27 +2,33 @@ package com.onell.botso.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.onell.botso.data.local.entity.Grade
-import com.onell.botso.domain.repository.UniRepository
+import com.onell.botso.domain.model.Grade
+import com.onell.botso.domain.usecase.grade.GetGradesForCourseUseCase
+import com.onell.botso.domain.usecase.grade.InsertGradeUseCase
+import com.onell.botso.domain.usecase.grade.UpdateGradeUseCase
+import com.onell.botso.ui.uistate.CourseGradesUiEvent
+import com.onell.botso.ui.uistate.CourseGradesUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-sealed class CourseGradesUiEvent {
-    data class OnSetCourseId(val id: Long) : CourseGradesUiEvent()
-    data class OnSetTermId(val termId: Int) : CourseGradesUiEvent()
-    data class OnUpdateFormativa(val value: String) : CourseGradesUiEvent()
-    data class OnUpdateCognitiva(val value: String) : CourseGradesUiEvent()
-    object OnSave : CourseGradesUiEvent()
-}
-
-@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class CourseGradesViewModel @Inject constructor(
-    private val repository: UniRepository
+    private val getGradesForCourseUseCase: GetGradesForCourseUseCase,
+    private val insertGradeUseCase: InsertGradeUseCase,
+    private val updateGradeUseCase: UpdateGradeUseCase
 ) : ViewModel() {
+
+    // Un único estado centralizado para dominar la pantalla
+    private val _uiState = MutableStateFlow(CourseGradesUiState())
+    val uiState: StateFlow<CourseGradesUiState> = _uiState.asStateFlow()
+
+    private var gradesJob: Job? = null
 
     fun onEvent(event: CourseGradesUiEvent) {
         when (event) {
@@ -34,66 +40,75 @@ class CourseGradesViewModel @Inject constructor(
         }
     }
 
-    private val _courseId = MutableStateFlow<Long?>(null)
-    
-    val grades: StateFlow<List<Grade>> = _courseId.filterNotNull().flatMapLatest { id ->
-        repository.getGradesForCourse(id)
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
-
-    // UI State for staged grades (not yet saved to DB)
-    private val _stagedFormativa = MutableStateFlow("")
-    val stagedFormativa: StateFlow<String> = _stagedFormativa.asStateFlow()
-
-    private val _stagedCognitiva = MutableStateFlow("")
-    val stagedCognitiva: StateFlow<String> = _stagedCognitiva.asStateFlow()
-
-    private val _currentTermId = MutableStateFlow(1)
-    val currentTermId: StateFlow<Int> = _currentTermId.asStateFlow()
-
-    val averageScore: StateFlow<Double> = grades.map { currentGrades ->
-        calculateTotalAverage(currentGrades)
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0.0)
-
-    val currentTermAverage: StateFlow<Double> = combine(
-        _stagedFormativa, _stagedCognitiva
-    ) { formativa, cognitiva ->
-        val f = formativa.toDoubleOrNull() ?: 0.0
-        val c = cognitiva.toDoubleOrNull() ?: 0.0
-        (f + c) / 2.0
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0.0)
-
-    fun setCourseId(id: Long) {
-        if (_courseId.value != id) {
-            _courseId.value = id
-            loadStagedGrades(id, _currentTermId.value)
+    private fun setCourseId(id: Long) {
+        if (_uiState.value.courseId != id) {
+            _uiState.update { it.copy(courseId = id) }
+            observeGrades(id)
         }
     }
 
-    fun setTermId(termId: Int) {
-        _currentTermId.value = termId
-        _courseId.value?.let { loadStagedGrades(it, termId) }
-    }
-
-    private fun loadStagedGrades(courseId: Long, termId: Int) {
-        viewModelScope.launch {
-            repository.getGradesForCourse(courseId).first().let { currentGrades ->
-                val termGrades = currentGrades.filter { it.termId == termId }
-                _stagedFormativa.value = termGrades.find { it.name.contains("Formativa") }?.score?.let { if (it == 0.0) "" else it.toString() } ?: ""
-                _stagedCognitiva.value = termGrades.find { it.name.contains("Cognitiva") }?.score?.let { if (it == 0.0) "" else it.toString() } ?: ""
+    private fun observeGrades(courseId: Long) {
+        gradesJob?.cancel() // Cancelamos el flujo anterior si cambiamos de materia
+        gradesJob = viewModelScope.launch {
+            getGradesForCourseUseCase(courseId).collect { currentGrades ->
+                _uiState.update { state ->
+                    state.copy(
+                        grades = currentGrades,
+                        averageScore = calculateTotalAverage(currentGrades)
+                    )
+                }
+                // Refresca las notas editables en pantalla con los nuevos datos
+                loadStagedGrades(_uiState.value.currentTermId, currentGrades)
             }
         }
     }
 
-    fun updateStagedFormativa(value: String) {
-        if (isValidInput(value)) {
-            _stagedFormativa.value = value
+    private fun setTermId(termId: Int) {
+        _uiState.update { it.copy(currentTermId = termId) }
+        loadStagedGrades(termId, _uiState.value.grades)
+    }
+
+    private fun loadStagedGrades(termId: Int, currentGrades: List<Grade>) {
+        val termGrades = currentGrades.filter { it.termId == termId }
+
+        val formativa = termGrades.find { it.name.contains("Formativa") }?.score?.let { if (it == 0.0) "" else it.toString() } ?: ""
+        val cognitiva = termGrades.find { it.name.contains("Cognitiva") }?.score?.let { if (it == 0.0) "" else it.toString() } ?: ""
+
+        _uiState.update {
+            it.copy(
+                stagedFormativa = formativa,
+                stagedCognitiva = cognitiva,
+                currentTermAverage = calculateTermAverage(formativa, cognitiva)
+            )
         }
     }
 
-    fun updateStagedCognitiva(value: String) {
+    private fun updateStagedFormativa(value: String) {
         if (isValidInput(value)) {
-            _stagedCognitiva.value = value
+            _uiState.update {
+                it.copy(
+                    stagedFormativa = value,
+                    currentTermAverage = calculateTermAverage(value, it.stagedCognitiva)
+                )
+            }
         }
+    }
+
+    private fun updateStagedCognitiva(value: String) {
+        if (isValidInput(value)) {
+            _uiState.update {
+                it.copy(
+                    stagedCognitiva = value,
+                    currentTermAverage = calculateTermAverage(it.stagedFormativa, value)
+                )
+            }
+        }
+    }
+
+    private fun calculateTermAverage(formativa: String, cognitiva: String): Double {
+        val f = formativa.toDoubleOrNull() ?: 0.0
+        val c = cognitiva.toDoubleOrNull() ?: 0.0
+        return (f + c) / 2.0
     }
 
     private fun isValidInput(value: String): Boolean {
@@ -102,11 +117,12 @@ class CourseGradesViewModel @Inject constructor(
         return score in 0.0..5.0
     }
 
-    fun saveGrades() {
-        val courseId = _courseId.value ?: return
-        val termId = _currentTermId.value
-        val formativaScore = _stagedFormativa.value.toDoubleOrNull() ?: 0.0
-        val cognitivaScore = _stagedCognitiva.value.toDoubleOrNull() ?: 0.0
+    private fun saveGrades() {
+        val state = _uiState.value
+        val courseId = state.courseId ?: return
+        val termId = state.currentTermId
+        val formativaScore = state.stagedFormativa.toDoubleOrNull() ?: 0.0
+        val cognitivaScore = state.stagedCognitiva.toDoubleOrNull() ?: 0.0
 
         val weight = if (termId == 3) 0.20 else 0.15
 
@@ -117,12 +133,16 @@ class CourseGradesViewModel @Inject constructor(
     }
 
     private suspend fun saveOrUpdateGrade(courseId: Long, termId: Int, name: String, score: Double, weight: Double) {
-        val currentGrades = grades.value
+        val currentGrades = _uiState.value.grades
         val existingGrade = currentGrades.find { it.termId == termId && it.name == name }
+
         if (existingGrade != null) {
-            repository.updateGrade(existingGrade.copy(score = score))
+            updateGradeUseCase(existingGrade.copy(score = score))
         } else {
-            repository.insertGrade(Grade(courseId = courseId, termId = termId, name = name, score = score, weight = weight))
+            // Usamos el modelo de Dominio puro (Grade), adiós a GradeEntity
+            insertGradeUseCase(
+                Grade(id = 0, courseId = courseId, termId = termId, name = name, score = score, weight = weight)
+            )
         }
     }
 

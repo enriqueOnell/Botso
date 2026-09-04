@@ -1,7 +1,7 @@
 package com.onell.botso.di
 
-import com.onell.botso.data.repository.UniRepositoryImpl
-import com.onell.botso.domain.repository.UniRepository
+import com.onell.botso.data.repository.*
+import com.onell.botso.domain.repository.*
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -14,7 +14,21 @@ abstract class RepositoryModule {
 
     @Binds
     @Singleton
-    abstract fun bindUniRepository(
-        uniRepositoryImpl: UniRepositoryImpl
-    ): UniRepository
+    abstract fun bindSemesterRepository(impl: SemesterRepositoryImpl): SemesterRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindCourseRepository(impl: CourseRepositoryImpl): CourseRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindGradeRepository(impl: GradeRepositoryImpl): GradeRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindTaskRepository(impl: TaskRepositoryImpl): TaskRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindClassSessionRepository(impl: ClassSessionRepositoryImpl): ClassSessionRepository
 }

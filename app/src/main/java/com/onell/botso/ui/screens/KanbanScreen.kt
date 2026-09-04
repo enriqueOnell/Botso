@@ -20,26 +20,29 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.onell.botso.data.local.entity.Task
+import com.onell.botso.domain.model.Task // Adiós TaskEntity, hola Task puro
 import com.onell.botso.domain.model.TaskWithCourse
 import com.onell.botso.ui.components.AddEditTaskDialog
 import com.onell.botso.ui.theme.UniAppTheme
-import com.onell.botso.ui.viewmodel.KanbanUiEvent
 import com.onell.botso.ui.viewmodel.KanbanViewModel
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import androidx.compose.ui.platform.LocalLocale
+import com.onell.botso.ui.uistate.KanbanColumnInfo
+import com.onell.botso.ui.uistate.KanbanUiEvent
 
 @Composable
 fun KanbanScreen(
     viewModel: KanbanViewModel = hiltViewModel()
 ) {
-    val tasks by viewModel.tasks.collectAsStateWithLifecycle()
-    val courses by viewModel.courses.collectAsStateWithLifecycle()
+    // 1. Observamos el único estado de la interfaz
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
     var showAddDialog by remember { mutableStateOf(false) }
+    // 2. Cambiamos TaskEntity por Task
     var taskToEdit by remember { mutableStateOf<Task?>(null) }
-    
+
     Scaffold(
         floatingActionButton = {
             LargeFloatingActionButton(
@@ -53,8 +56,9 @@ fun KanbanScreen(
         }
     ) { padding ->
         KanbanContent(
-            tasks = tasks,
-            columns = viewModel.columns,
+            // 3. Extraemos los datos del uiState unificado
+            tasks = uiState.tasks,
+            columns = uiState.columns,
             onTaskClick = { viewModel.onEvent(KanbanUiEvent.OnUpdateTaskStatus(it)) },
             onDeleteTask = { viewModel.onEvent(KanbanUiEvent.OnDeleteTask(it)) },
             onEditTask = { taskToEdit = it },
@@ -64,7 +68,7 @@ fun KanbanScreen(
 
     if (showAddDialog) {
         AddEditTaskDialog(
-            courses = courses,
+            courses = uiState.courses, // Sacamos los cursos del uiState
             onDismiss = { showAddDialog = false },
             onConfirm = { courseId, title, dueDate, isPriority, week, description ->
                 viewModel.onEvent(KanbanUiEvent.OnAddTask(courseId, title, dueDate, isPriority, week, description))
@@ -75,7 +79,7 @@ fun KanbanScreen(
 
     taskToEdit?.let { task ->
         AddEditTaskDialog(
-            courses = courses,
+            courses = uiState.courses,
             task = task,
             onDismiss = { taskToEdit = null },
             onConfirm = { courseId, title, dueDate, isPriority, week, description ->
@@ -89,13 +93,13 @@ fun KanbanScreen(
 @Composable
 fun KanbanContent(
     tasks: List<TaskWithCourse>,
-    columns: List<com.onell.botso.ui.viewmodel.KanbanColumnInfo>,
+    columns: List<KanbanColumnInfo>,
+    // 4. Todas las funciones callback ahora exigen el modelo puro (Task)
     onTaskClick: (Task) -> Unit,
     onDeleteTask: (Task) -> Unit,
     onEditTask: (Task) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // Pre-calculamos las tareas por columna para evitar filtrados innecesarios durante la recomposición
     val tasksByStatus = remember(tasks, columns) {
         columns.map { column ->
             column to tasks.filter { it.task.status == column.status }
@@ -108,7 +112,6 @@ fun KanbanContent(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         tasksByStatus.forEach { (column, columnTasks) ->
-            // Encabezado de sección (Por Hacer, En Progreso, Terminado)
             item(key = "header_${column.status}") {
                 Column(
                     modifier = Modifier
@@ -120,7 +123,6 @@ fun KanbanContent(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        // Mapeo dinámico para asegurar que se muestre "Terminado" si el ViewModel dice "Hecho"
                         val displayTitle = when(column.title) {
                             "Hecho" -> "Terminado"
                             else -> column.title
@@ -132,7 +134,7 @@ fun KanbanContent(
                             fontWeight = FontWeight.ExtraBold,
                             color = MaterialTheme.colorScheme.onSurface
                         )
-                        
+
                         Surface(
                             color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f),
                             shape = CircleShape
@@ -150,7 +152,6 @@ fun KanbanContent(
                 }
             }
 
-            // Lista de tarjetas para este estado
             if (columnTasks.isEmpty()) {
                 item(key = "empty_${column.status}") {
                     Box(
@@ -179,8 +180,7 @@ fun KanbanContent(
                     )
                 }
             }
-            
-            // Espaciador entre secciones
+
             item {
                 Spacer(modifier = Modifier.height(12.dp))
             }

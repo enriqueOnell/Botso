@@ -1,26 +1,28 @@
 package com.onell.botso.data.local.dao
 
 import androidx.room.*
-import com.onell.botso.data.local.entity.ClassSession
+import com.onell.botso.data.local.entity.ClassSessionEntity
+import com.onell.botso.data.local.entity.ClassSessionWithCourseEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ClassSessionDao {
-    @Query("SELECT * FROM class_sessions WHERE courseId = :courseId")
-    fun getSessionsForCourse(courseId: Long): Flow<List<ClassSession>>
+    @Transaction
+    @Query("SELECT * FROM class_sessions WHERE course_id = :courseId")
+    fun getSessionsForCourse(courseId: Long): Flow<List<ClassSessionWithCourseEntity>>
 
-    @Query("SELECT * FROM class_sessions WHERE dayOfWeek = :dayOfWeek")
-    fun getSessionsForDay(dayOfWeek: Int): Flow<List<ClassSession>>
+    @Query("SELECT * FROM class_sessions WHERE day_of_week = :dayOfWeek")
+    fun getSessionsForDay(dayOfWeek: Int): Flow<List<ClassSessionWithCourseEntity>>
 
     @Query("SELECT * FROM class_sessions")
-    fun getAllSessions(): Flow<List<ClassSession>>
+    fun getAllSessions(): Flow<List<ClassSessionEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertSession(session: ClassSession): Long
+    suspend fun insertSession(session: ClassSessionEntity): Long
 
     @Update
-    suspend fun updateSession(session: ClassSession)
+    suspend fun updateSession(session: ClassSessionEntity)
 
     @Delete
-    suspend fun deleteSession(session: ClassSession)
+    suspend fun deleteSession(session: ClassSessionEntity)
 }

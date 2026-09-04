@@ -12,8 +12,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.onell.botso.data.local.entity.Course
-import com.onell.botso.data.local.entity.Task
+import com.onell.botso.domain.model.Course // Modelos puros
+import com.onell.botso.domain.model.Semester
+import com.onell.botso.domain.model.Task
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -26,16 +27,16 @@ fun AddEditTaskDialog(
     onDismiss: () -> Unit,
     onConfirm: (Long, String, Long, Boolean, Int, String) -> Unit,
     modifier: Modifier = Modifier,
-    task: Task? = null
+    task: Task? = null // Corregido: Debe ser Task? para aceptar null
 ) {
     var title by remember { mutableStateOf(task?.title ?: "") }
-    var selectedCourseId by remember { mutableStateOf(task?.courseId ?: courses.firstOrNull()?.id ?: 0L) }
+    var selectedCourseId by remember { mutableLongStateOf(task?.courseId ?: courses.firstOrNull()?.id ?: 0L) }
     var isPriority by remember { mutableStateOf(task?.isPriority ?: false) }
     var week by remember { mutableIntStateOf(task?.week ?: 1) }
     var description by remember { mutableStateOf(task?.description ?: "") }
     var expandedCourse by remember { mutableStateOf(false) }
     var expandedWeek by remember { mutableStateOf(false) }
-    
+
     val datePickerState = rememberDatePickerState(
         initialSelectedDateMillis = task?.dueDate ?: System.currentTimeMillis()
     )
@@ -200,7 +201,7 @@ fun AddEditCourseDialog(
     onDismiss: () -> Unit,
     onConfirm: (String, Int, String, String, String, String, Boolean) -> Unit,
     modifier: Modifier = Modifier,
-    course: Course? = null
+    course: Course? = null // Corregido: Course?
 ) {
     var name by remember { mutableStateOf(course?.name ?: "") }
     var dayOfWeek by remember { mutableIntStateOf(course?.dayOfWeek ?: 1) }
@@ -209,7 +210,7 @@ fun AddEditCourseDialog(
     var professor by remember { mutableStateOf(course?.professor ?: "") }
     var location by remember { mutableStateOf(course?.location ?: "") }
     var isRemote by remember { mutableStateOf(course?.isRemote ?: false) }
-    
+
     var showStartTimePicker by remember { mutableStateOf(false) }
     var showEndTimePicker by remember { mutableStateOf(false) }
 
@@ -409,13 +410,13 @@ fun AddEditSemesterDialog(
     onDismiss: () -> Unit,
     onConfirm: (String, Long, Long) -> Unit,
     modifier: Modifier = Modifier,
-    semester: com.onell.botso.data.local.entity.Semester? = null
+    semester: Semester? = null // Corregido: Semester?
 ) {
     var name by remember { mutableStateOf(semester?.name ?: "") }
-    
+
     val startDatePickerState = rememberDatePickerState(initialSelectedDateMillis = semester?.startDate ?: System.currentTimeMillis())
     val endDatePickerState = rememberDatePickerState(initialSelectedDateMillis = semester?.endDate ?: (System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 30 * 4))
-    
+
     var showStartDatePicker by remember { mutableStateOf(false) }
     var showEndDatePicker by remember { mutableStateOf(false) }
 
@@ -511,7 +512,7 @@ fun AddEditSemesterDialog(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditClassSessionDialog(
-    courses: List<Course>,
+    courses: List<Course>, // Corregido: Course puro en lugar de CourseEntity
     onDismiss: () -> Unit,
     onConfirm: (Long, Int, String, String, String) -> Unit,
     modifier: Modifier = Modifier
@@ -521,13 +522,13 @@ fun AddEditClassSessionDialog(
     var startTime by remember { mutableStateOf("08:00") }
     var endTime by remember { mutableStateOf("10:00") }
     var room by remember { mutableStateOf("") }
-    
+
     var showStartTimePicker by remember { mutableStateOf(false) }
     var showEndTimePicker by remember { mutableStateOf(false) }
 
     var expandedCourse by remember { mutableStateOf(false) }
     var expandedDay by remember { mutableStateOf(false) }
-    
+
     val days = listOf("Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo")
 
     AlertDialog(
@@ -697,7 +698,7 @@ fun UniTimePickerDialog(
     initialMinute: Int = 0
 ) {
     val state = rememberTimePickerState(initialHour = initialHour, initialMinute = initialMinute)
-    
+
     AlertDialog(
         onDismissRequest = onDismiss,
         modifier = modifier,

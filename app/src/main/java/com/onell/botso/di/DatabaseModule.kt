@@ -1,8 +1,7 @@
 package com.onell.botso.di
 
 import android.content.Context
-import androidx.room.Room
-import com.onell.botso.data.local.UniDatabase
+import com.onell.botso.data.local.BotsoDataBase
 import com.onell.botso.data.local.dao.*
 import dagger.Module
 import dagger.Provides
@@ -17,26 +16,23 @@ object DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideDatabase(@ApplicationContext context: Context): UniDatabase {
-        return Room.databaseBuilder(
-                context,
-                UniDatabase::class.java,
-                UniDatabase.DATABASE_NAME
-            ).fallbackToDestructiveMigration(false).build()
+    fun provideBotsoDatabase(@ApplicationContext context: Context): BotsoDataBase {
+        // Usamos directamente tu companion object para garantizar una única instancia
+        return BotsoDataBase.getDatabase(context)
     }
 
     @Provides
-    fun provideSemesterDao(db: UniDatabase): SemesterDao = db.semesterDao()
+    fun provideSemesterDao(database: BotsoDataBase): SemesterDao = database.semesterDao()
 
     @Provides
-    fun provideCourseDao(db: UniDatabase): CourseDao = db.courseDao()
+    fun provideCourseDao(database: BotsoDataBase): CourseDao = database.courseDao()
 
     @Provides
-    fun provideGradeDao(db: UniDatabase): GradeDao = db.gradeDao()
+    fun provideGradeDao(database: BotsoDataBase): GradeDao = database.gradeDao()
 
     @Provides
-    fun provideTaskDao(db: UniDatabase): TaskDao = db.taskDao()
+    fun provideTaskDao(database: BotsoDataBase): TaskDao = database.taskDao()
 
     @Provides
-    fun provideClassSessionDao(db: UniDatabase): ClassSessionDao = db.classSessionDao()
+    fun provideClassSessionDao(database: BotsoDataBase): ClassSessionDao = database.classSessionDao()
 }

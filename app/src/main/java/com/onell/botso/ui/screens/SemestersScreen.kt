@@ -23,14 +23,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.onell.botso.data.local.entity.Course
-import com.onell.botso.data.local.entity.Semester
+import com.onell.botso.domain.model.Course // Modelos puros del dominio
+import com.onell.botso.domain.model.Semester
 import com.onell.botso.domain.model.SemesterWithStats
 import com.onell.botso.ui.components.AddEditCourseDialog
 import com.onell.botso.ui.components.AddEditSemesterDialog
 import com.onell.botso.ui.components.ConfirmDeleteDialog
 import com.onell.botso.ui.theme.UniAppTheme
-import com.onell.botso.ui.viewmodel.SemestersUiEvent
+import com.onell.botso.ui.uistate.SemestersUiEvent
 import com.onell.botso.ui.viewmodel.SemestersViewModel
 import java.util.*
 
@@ -40,10 +40,14 @@ fun SemestersScreen(
     viewModel: SemestersViewModel = hiltViewModel(),
     onNavigateToCourseGrades: (Long) -> Unit = {}
 ) {
-    val semestersWithStats by viewModel.semestersWithStats.collectAsStateWithLifecycle()
+    // 1. Observamos el estado centralizado purgado
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val semestersWithStats = uiState.semestersWithStats
+
     var showAddSemesterDialog by remember { mutableStateOf(false) }
     var showAddCourseDialogForSemesterId by remember { mutableStateOf<Long?>(null) }
-    
+
+    // 2. Erradicamos los "Entity" de las variables de estado
     var semesterToEdit by remember { mutableStateOf<Semester?>(null) }
     var courseToEdit by remember { mutableStateOf<Course?>(null) }
     var courseToDelete by remember { mutableStateOf<Course?>(null) }
@@ -158,6 +162,7 @@ fun SemesterCard(
     stats: SemesterWithStats,
     onCourseClick: (Long) -> Unit,
     onAddCourse: () -> Unit,
+    // 3. Los callbacks exigen modelos puros
     onEditSemester: (Semester) -> Unit,
     onEditCourse: (Course) -> Unit,
     onDeleteCourse: (Course) -> Unit,
@@ -192,7 +197,7 @@ fun SemesterCard(
                     fontWeight = FontWeight.ExtraBold
                 )
                 StatusChip(isActive = stats.semester.isActive)
-                
+
                 DropdownMenu(
                     expanded = showSemesterMenu,
                     onDismissRequest = { showSemesterMenu = false }
@@ -264,7 +269,7 @@ fun SemesterCard(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CourseRow(
-    course: Course,
+    course: Course, // 4. Adiós CourseEntity
     onClick: () -> Unit,
     onEdit: () -> Unit,
     onDelete: () -> Unit

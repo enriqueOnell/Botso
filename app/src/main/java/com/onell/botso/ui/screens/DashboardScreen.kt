@@ -17,17 +17,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.onell.botso.data.local.entity.ClassSession
-import com.onell.botso.data.local.entity.Course
-import com.onell.botso.data.local.entity.Task
 import com.onell.botso.domain.model.ClassSessionWithCourse
 import com.onell.botso.domain.model.TaskWithCourse
-import com.onell.botso.ui.theme.UniAppTheme
-import com.onell.botso.ui.viewmodel.CourseWithAverage
+import com.onell.botso.ui.uistate.CourseWithAverage
 import com.onell.botso.ui.viewmodel.DashboardViewModel
 import java.util.Locale
 
@@ -336,45 +331,5 @@ fun PriorityItem(taskWithCourse: TaskWithCourse) {
                 }
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DashboardPreview() {
-    UniAppTheme {
-        DashboardContent(
-            todayClasses = listOf(
-                ClassSessionWithCourse(
-                    session = ClassSession(courseId = 1, dayOfWeek = 1, startTime = "10:00", endTime = "11:30"),
-                    course = Course(id = 1, semesterId = 1, name = "Cálculo Diferencial", location = "Aula 302", professor = "Dr. Smith", dayOfWeek = 1, startTime = "08:00", endTime = "10:00", isRemote = false)
-                ),
-                ClassSessionWithCourse(
-                    session = ClassSession(courseId = 2, dayOfWeek = 1, startTime = "14:00", endTime = "16:00"),
-                    course = Course(id = 2, semesterId = 1, name = "Física Mecánica", location = "Zoom Meet", professor = "Ing. Pérez", dayOfWeek = 1, startTime = "14:00", endTime = "16:00", isRemote = true)
-                )
-            ),
-            pendingTasksCount = 5,
-            priorities = listOf(
-                TaskWithCourse(
-                    task = Task(id = 1, courseId = 1, title = "Taller de Derivadas", dueDate = System.currentTimeMillis(), isPriority = true, status = "TODO", week = 3, description = "Resolver ejercicios del 1 al 10"),
-                    course = Course(id = 1, semesterId = 1, name = "Cálculo Diferencial", location = "Aula 302", professor = "Dr. Smith", dayOfWeek = 1, startTime = "08:00", endTime = "10:00")
-                ),
-                TaskWithCourse(
-                    task = Task(id = 2, courseId = 2, title = "Mapa Conceptual", dueDate = System.currentTimeMillis() + 90000000, isPriority = true, status = "TODO", week = 4, description = "Hacer un mapa sobre las leyes de Newton"),
-                    course = Course(id = 2, semesterId = 1, name = "Física Mecánica", location = "Aula 101", professor = "Ing. Pérez", dayOfWeek = 2, startTime = "10:00", endTime = "12:00")
-                )
-            ),
-            courses = listOf(
-                CourseWithAverage(
-                    Course(id = 1, semesterId = 1, name = "Cálculo Diferencial", code = "MATH101", location = "Aula 302", professor = "Dr. Smith", dayOfWeek = 1, startTime = "08:00", endTime = "10:00"),
-                    4.2
-                ),
-                CourseWithAverage(
-                    Course(id = 2, semesterId = 1, name = "Física Mecánica", code = "PHYS101", location = "Aula 101", professor = "Ing. Pérez", dayOfWeek = 2, startTime = "10:00", endTime = "12:00"),
-                    3.8
-                )
-            )
-        )
     }
 }

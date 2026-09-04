@@ -20,20 +20,22 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.onell.botso.ui.components.AddEditCourseDialog
 import com.onell.botso.ui.components.ConfirmDeleteDialog
 import com.onell.botso.ui.theme.UniAppTheme
-import com.onell.botso.ui.viewmodel.ScheduleEntry
-import com.onell.botso.ui.viewmodel.ScheduleUiEvent
+import com.onell.botso.ui.uistate.ScheduleEntry
+import com.onell.botso.ui.uistate.ScheduleUiEvent
+import com.onell.botso.ui.uistate.SemestersUiEvent
 import com.onell.botso.ui.viewmodel.ScheduleViewModel
-import com.onell.botso.ui.viewmodel.SemestersUiEvent
 import com.onell.botso.ui.viewmodel.SemestersViewModel
 import java.time.LocalTime
 
 @Composable
 fun ScheduleScreen(
     viewModel: ScheduleViewModel = hiltViewModel(),
-    semestersViewModel: SemestersViewModel = hiltViewModel() // Used for editing courses
+    semestersViewModel: SemestersViewModel = hiltViewModel() // Se usa para disparar la edición del curso
 ) {
-    val entries by viewModel.scheduleEntries.collectAsStateWithLifecycle()
-    
+    // 1. Observamos el estado centralizado purgado
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val entries = uiState.scheduleEntries
+
     var entryToEdit by remember { mutableStateOf<ScheduleEntry?>(null) }
     var entryToDelete by remember { mutableStateOf<ScheduleEntry?>(null) }
 
@@ -58,25 +60,9 @@ fun ScheduleScreen(
     }
 
     entryToEdit?.let { entry ->
-        if (entry.session != null && entry.course != null) {
-            // Edit course (or session? Requirement says "Editar" on class card)
-            // If it's a session, maybe we should have an EditSessionDialog?
-            // For now, I'll allow editing the course associated with it.
+        if (entry.course != null) {
             AddEditCourseDialog(
-                course = entry.course,
-                onDismiss = { entryToEdit = null },
-                onConfirm = { name, dayOfWeek, start, end, professor, location, isRemote ->
-                    semestersViewModel.onEvent(
-                        SemestersUiEvent.OnEditCourse(
-                            entry.course, name, dayOfWeek, start, end, professor, entry.course.colorHex, location, isRemote
-                        )
-                    )
-                    entryToEdit = null
-                }
-            )
-        } else if (entry.course != null) {
-            AddEditCourseDialog(
-                course = entry.course,
+                course = entry.course, // Asegúrate de que este Dialog ahora espere un 'Course' puro
                 onDismiss = { entryToEdit = null },
                 onConfirm = { name, dayOfWeek, start, end, professor, location, isRemote ->
                     semestersViewModel.onEvent(
@@ -95,6 +81,7 @@ fun ScheduleScreen(
             title = "Eliminar Clase",
             message = "¿Estás seguro de que deseas eliminar '${entry.name}'? Si es una sesión adicional se eliminará, si es la clase principal deberás eliminar el curso.",
             onConfirm = {
+                // 2. Disparamos eventos al ViewModel limpiamente
                 if (entry.session != null) {
                     viewModel.onEvent(ScheduleUiEvent.OnDeleteSession(entry.session))
                 } else if (entry.course != null) {
