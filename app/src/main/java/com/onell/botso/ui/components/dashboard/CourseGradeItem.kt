@@ -17,7 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.onell.botso.ui.theme.Surface
 import com.onell.botso.ui.uistate.CourseWithAverage
 import java.lang.String.format
 import java.util.Locale

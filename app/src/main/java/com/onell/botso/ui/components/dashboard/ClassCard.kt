@@ -26,7 +26,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.onell.botso.domain.model.ClassSessionWithCourse
-import com.onell.botso.ui.theme.Surface
 
 @Composable
 fun ClassCard(sessionWithCourse: ClassSessionWithCourse) {

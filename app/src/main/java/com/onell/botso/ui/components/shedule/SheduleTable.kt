@@ -28,7 +28,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.onell.botso.ui.screens.ScheduleSessionCard
 import com.onell.botso.ui.uistate.ScheduleEntry
 import java.time.LocalTime
 import kotlin.collections.forEach

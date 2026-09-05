@@ -37,9 +37,6 @@ import androidx.compose.ui.unit.dp
 import com.onell.botso.domain.model.Course
 import com.onell.botso.domain.model.Semester
 import com.onell.botso.domain.model.SemesterWithStats
-import com.onell.botso.ui.screens.CourseRow
-import com.onell.botso.ui.screens.StatItem
-import com.onell.botso.ui.screens.StatusChip
 import java.util.Locale
 
 @Composable
