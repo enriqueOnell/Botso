@@ -20,7 +20,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.onell.botso.ui.components.dialogs.AddEditCourseDialog
 import com.onell.botso.ui.components.dialogs.ConfirmDeleteDialog
 import com.onell.botso.ui.components.shedule.ScheduleTable
-import com.onell.botso.ui.theme.UniAppTheme
+import com.onell.botso.ui.theme.BotsoTheme
 import com.onell.botso.ui.uistate.ScheduleEntry
 import com.onell.botso.ui.uistate.ScheduleUiEvent
 import com.onell.botso.ui.uistate.SemestersUiEvent
@@ -64,7 +64,7 @@ fun ScheduleScreen(
             AddEditCourseDialog(
                 course = entry.course, // Asegúrate de que este Dialog ahora espere un 'Course' puro
                 onDismiss = { entryToEdit = null },
-                onConfirm = { name, dayOfWeek, start, end, professor, location, isRemote ->
+                onConfirm = { _ , name, dayOfWeek, start, end, professor, location, isRemote ->
                     semestersViewModel.onEvent(
                         SemestersUiEvent.OnEditCourse(
                             entry.course, name, dayOfWeek, start, end, professor, entry.course.colorHex, location, isRemote
@@ -100,7 +100,7 @@ fun ScheduleScreen(
 @Preview(showBackground = true, device = "spec:width=411dp,height=891dp")
 @Composable
 private fun ScheduleTablePreview() {
-    UniAppTheme {
+    BotsoTheme {
         ScheduleTable(entries = emptyList(), onEdit = {}, onDelete = {})
     }
 }

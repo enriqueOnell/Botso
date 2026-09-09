@@ -33,7 +33,7 @@ import com.onell.botso.ui.components.dialogs.AddEditCourseDialog
 import com.onell.botso.ui.components.dialogs.AddEditSemesterDialog
 import com.onell.botso.ui.components.dialogs.ConfirmDeleteDialog
 import com.onell.botso.ui.components.semester.SemesterCard
-import com.onell.botso.ui.theme.UniAppTheme
+import com.onell.botso.ui.theme.BotsoTheme
 import com.onell.botso.ui.uistate.SemestersUiEvent
 import com.onell.botso.ui.viewmodel.SemestersViewModel
 
@@ -41,14 +41,14 @@ import com.onell.botso.ui.viewmodel.SemestersViewModel
 @Composable
 fun SemestersScreen(
     viewModel: SemestersViewModel = hiltViewModel(),
-    onNavigateToCourseGrades: (Long) -> Unit = {}
+    onNavigateToCourseGrades: (String) -> Unit = {}
 ) {
     // 1. Observamos el estado centralizado purgado
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val semestersWithStats = uiState.semestersWithStats
 
     var showAddSemesterDialog by remember { mutableStateOf(false) }
-    var showAddCourseDialogForSemesterId by remember { mutableStateOf<Long?>(null) }
+    var showAddCourseDialogForSemesterId by remember { mutableStateOf<String?>(null) }
 
     // 2. Erradicamos los "Entity" de las variables de estado
     var semesterToEdit by remember { mutableStateOf<Semester?>(null) }
@@ -96,8 +96,8 @@ fun SemestersScreen(
     if (showAddSemesterDialog) {
         AddEditSemesterDialog(
             onDismiss = { showAddSemesterDialog = false },
-            onConfirm = { name, start, end ->
-                viewModel.onEvent(SemestersUiEvent.OnAddSemester(name, start, end, true))
+            onConfirm = { id, name, start, end ->
+                viewModel.onEvent(SemestersUiEvent.OnAddSemester(id, name, start, end, true))
                 showAddSemesterDialog = false
             }
         )
@@ -107,8 +107,16 @@ fun SemestersScreen(
         AddEditSemesterDialog(
             semester = semester,
             onDismiss = { semesterToEdit = null },
-            onConfirm = { name, start, end ->
-                viewModel.onEvent(SemestersUiEvent.OnUpdateSemester(semester, name, start, end, semester.isActive))
+            onConfirm = { _ , name, start, end ->
+                viewModel.onEvent(
+                    SemestersUiEvent.OnUpdateSemester(
+                        semester,
+                        name,
+                        start,
+                        end,
+                        semester.isActive
+                    )
+                )
                 semesterToEdit = null
             }
         )
@@ -117,8 +125,21 @@ fun SemestersScreen(
     showAddCourseDialogForSemesterId?.let { semesterId ->
         AddEditCourseDialog(
             onDismiss = { showAddCourseDialogForSemesterId = null },
-            onConfirm = { name, dayOfWeek, start, end, professor, location, isRemote ->
-                viewModel.onEvent(SemestersUiEvent.OnAddCourse(semesterId, name, dayOfWeek, start, end, professor, "#4f378a", location, isRemote))
+            onConfirm = { id, name, dayOfWeek, start, end, professor, location, isRemote ->
+                viewModel.onEvent(
+                    SemestersUiEvent.OnAddCourse(
+                        id,
+                        semesterId,
+                        name,
+                        dayOfWeek,
+                        start,
+                        end,
+                        professor,
+                        "#4f378a",
+                        location,
+                        isRemote
+                    )
+                )
                 showAddCourseDialogForSemesterId = null
             }
         )
@@ -128,8 +149,20 @@ fun SemestersScreen(
         AddEditCourseDialog(
             course = course,
             onDismiss = { courseToEdit = null },
-            onConfirm = { name, dayOfWeek, start, end, professor, location, isRemote ->
-                viewModel.onEvent(SemestersUiEvent.OnEditCourse(course, name, dayOfWeek, start, end, professor, course.colorHex, location, isRemote))
+            onConfirm = { id, name, dayOfWeek, start, end, professor, location, isRemote ->
+                viewModel.onEvent(
+                    SemestersUiEvent.OnEditCourse(
+                        course,
+                        name,
+                        dayOfWeek,
+                        start,
+                        end,
+                        professor,
+                        course.colorHex,
+                        location,
+                        isRemote
+                    )
+                )
                 courseToEdit = null
             }
         )
@@ -161,16 +194,10 @@ fun SemestersScreen(
 }
 
 
-
-
-
-
-
-
 @Preview(showBackground = true, device = "spec:width=411dp,height=891dp")
 @Composable
 private fun SemestersScreenPreview() {
-    UniAppTheme {
+    BotsoTheme {
         SemestersScreen()
     }
 }

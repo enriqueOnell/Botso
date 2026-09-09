@@ -42,7 +42,7 @@ import java.util.Locale
 @Composable
 fun SemesterCard(
     stats: SemesterWithStats,
-    onCourseClick: (Long) -> Unit,
+    onCourseClick: (String) -> Unit,
     onAddCourse: () -> Unit,
     // 3. Los callbacks exigen modelos puros
     onEditSemester: (Semester) -> Unit,

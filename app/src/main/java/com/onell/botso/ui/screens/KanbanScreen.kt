@@ -38,7 +38,7 @@ import com.onell.botso.domain.model.Task
 import com.onell.botso.domain.model.TaskWithCourse
 import com.onell.botso.ui.components.dialogs.AddEditTaskDialog
 import com.onell.botso.ui.components.kanban.TaskCard
-import com.onell.botso.ui.theme.UniAppTheme
+import com.onell.botso.ui.theme.BotsoTheme
 import com.onell.botso.ui.uistate.KanbanColumnInfo
 import com.onell.botso.ui.uistate.KanbanUiEvent
 import com.onell.botso.ui.viewmodel.KanbanViewModel
@@ -81,8 +81,18 @@ fun KanbanScreen(
         AddEditTaskDialog(
             courses = uiState.courses, // Sacamos los cursos del uiState
             onDismiss = { showAddDialog = false },
-            onConfirm = { courseId, title, dueDate, isPriority, week, description ->
-                viewModel.onEvent(KanbanUiEvent.OnAddTask(courseId, title, dueDate, isPriority, week, description))
+            onConfirm = { id, courseId, title, dueDate, isPriority, week, description ->
+                viewModel.onEvent(
+                    KanbanUiEvent.OnAddTask(
+                        id,
+                        courseId,
+                        title,
+                        dueDate,
+                        isPriority,
+                        week,
+                        description
+                    )
+                )
                 showAddDialog = false
             }
         )
@@ -93,8 +103,18 @@ fun KanbanScreen(
             courses = uiState.courses,
             task = task,
             onDismiss = { taskToEdit = null },
-            onConfirm = { courseId, title, dueDate, isPriority, week, description ->
-                viewModel.onEvent(KanbanUiEvent.OnUpdateTask(task, courseId, title, dueDate, isPriority, week, description))
+            onConfirm = { id, courseId, title, dueDate, isPriority, week, description ->
+                viewModel.onEvent(
+                    KanbanUiEvent.OnUpdateTask(
+                        task,
+                        courseId,
+                        title,
+                        dueDate,
+                        isPriority,
+                        week,
+                        description
+                    )
+                )
                 taskToEdit = null
             }
         )
@@ -134,7 +154,7 @@ fun KanbanContent(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        val displayTitle = when(column.title) {
+                        val displayTitle = when (column.title) {
                             "Hecho" -> "Terminado"
                             else -> column.title
                         }
@@ -202,7 +222,7 @@ fun KanbanContent(
 @Preview(showBackground = true)
 @Composable
 fun KanbanPreview() {
-    UniAppTheme {
+    BotsoTheme {
         KanbanScreen()
     }
 }

@@ -9,9 +9,9 @@ interface CourseRepository {
 
     // Courses
     fun getAllCourses(): Flow<List<Course>>
-    fun getCoursesForSemester(semesterId: Long): Flow<List<Course>>
-    fun getCourseById(courseId: Long): Flow<Course?>
-    suspend fun insertCourse(course: Course): Long
+    fun getCoursesForSemester(semesterId: String): Flow<List<Course>>
+    fun getCourseById(courseId: String): Flow<Course?>
+    suspend fun insertCourse(course: Course)
     suspend fun updateCourse(course: Course)
     suspend fun deleteCourse(course: Course)
 }

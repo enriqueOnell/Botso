@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 
 @Composable
-fun UniBottomNavigationBar(
+fun BotsoBottomNavigationBar(
     currentRoute: Route,
     onNavigate: (Route) -> Unit,
     modifier: Modifier = Modifier

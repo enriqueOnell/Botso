@@ -8,8 +8,8 @@ interface ClassSessionRepository {
     // Class Sessions
     fun getAllClassSessions(): Flow<List<ClassSession>>
     fun getSessionsForDay(dayOfWeek: Int): Flow<List<ClassSessionWithCourse>>
-    fun getSessionsForCourse(courseId: Long): Flow<List<ClassSessionWithCourse>>
-    suspend fun insertClassSession(session: ClassSession): Long
+    fun getSessionsForCourse(courseId: String): Flow<List<ClassSessionWithCourse>>
+    suspend fun insertClassSession(session: ClassSession)
     suspend fun updateClassSession(session: ClassSession)
     suspend fun deleteClassSession(session: ClassSession)
 }

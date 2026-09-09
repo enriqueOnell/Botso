@@ -8,7 +8,7 @@ import javax.inject.Inject
 class GetGradesForCourseUseCase @Inject constructor(
     private val repository: GradeRepository
 ) {
-    operator fun invoke(courseId: Long): Flow<List<Grade>> {
+    operator fun invoke(courseId: String): Flow<List<Grade>> {
         return repository.getGradesForCourse(courseId)
     }
 }

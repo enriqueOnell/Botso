@@ -7,7 +7,7 @@ import javax.inject.Inject
 class InsertCourseUseCase @Inject constructor(
     private val repository: CourseRepository
 ) {
-    suspend operator fun invoke(course: Course): Long {
+    suspend operator fun invoke(course: Course) {
         return repository.insertCourse(course)
     }
 }

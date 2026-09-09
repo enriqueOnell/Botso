@@ -9,7 +9,7 @@ interface SemesterRepository {
     fun getAllSemesters(): Flow<List<Semester>>
     fun getSemestersWithCourses(): Flow<List<SemesterWithCourse>>
     fun getActiveSemester(): Flow<Semester?>
-    suspend fun insertSemester(semester: Semester): Long
+    suspend fun insertSemester(semester: Semester)
     suspend fun updateSemester(semester: Semester)
 
     suspend fun deleteSemester(semester: Semester)

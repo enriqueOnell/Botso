@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import java.util.UUID
 
 @Entity(
     tableName = "courses",
@@ -19,8 +20,8 @@ import androidx.room.PrimaryKey
     indices = [Index(value = ["semester_id"])]
 )
 data class CourseEntity(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    @ColumnInfo(name = "semester_id") val semesterId: Long,
+    @PrimaryKey val id:String = UUID.randomUUID().toString(),
+    @ColumnInfo(name = "semester_id") val semesterId: String,
     @ColumnInfo(name = "name") val name: String,
     @ColumnInfo(name = "code") val code: String = "",
     @ColumnInfo(name = "color_hex") val colorHex: String = "",

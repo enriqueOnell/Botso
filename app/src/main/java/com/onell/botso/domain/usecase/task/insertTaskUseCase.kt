@@ -7,7 +7,7 @@ import javax.inject.Inject
 class InsertTaskUseCase @Inject constructor(
     private val repository: TaskRepository
 ) {
-    suspend operator fun invoke(task: Task): Long {
+    suspend operator fun invoke(task: Task) {
         return repository.insertTask(task)
     }
 }

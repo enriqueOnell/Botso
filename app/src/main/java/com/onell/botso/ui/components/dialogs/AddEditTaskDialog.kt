@@ -47,12 +47,17 @@ import kotlin.collections.forEach
 fun AddEditTaskDialog(
     courses: List<Course>,
     onDismiss: () -> Unit,
-    onConfirm: (Long, String, Long, Boolean, Int, String) -> Unit,
+    onConfirm: (String, String, String, Long, Boolean, Int, String) -> Unit,
     modifier: Modifier = Modifier,
     task: Task? = null // Corregido: Debe ser Task? para aceptar null
 ) {
+    var id by remember { mutableStateOf(task?.id ?: "") }
     var title by remember { mutableStateOf(task?.title ?: "") }
-    var selectedCourseId by remember { mutableLongStateOf(task?.courseId ?: courses.firstOrNull()?.id ?: 0L) }
+    var selectedCourseId by remember {
+        mutableStateOf(
+            task?.courseId ?: courses.firstOrNull()?.id ?: ""
+        )
+    }
     var isPriority by remember { mutableStateOf(task?.isPriority ?: false) }
     var week by remember { mutableIntStateOf(task?.week ?: 1) }
     var description by remember { mutableStateOf(task?.description ?: "") }
@@ -87,12 +92,15 @@ fun AddEditTaskDialog(
                     onExpandedChange = { expandedCourse = !expandedCourse }
                 ) {
                     OutlinedTextField(
-                        value = courses.find { it.id == selectedCourseId }?.name ?: "Seleccionar Curso",
+                        value = courses.find { it.id == selectedCourseId }?.name
+                            ?: "Seleccionar Curso",
                         onValueChange = {},
                         readOnly = true,
                         label = { Text("Curso") },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedCourse) },
-                        modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable, true).fillMaxWidth(),
+                        modifier = Modifier
+                            .menuAnchor(MenuAnchorType.PrimaryNotEditable, true)
+                            .fillMaxWidth(),
                         shape = RoundedCornerShape(24.dp)
                     )
                     ExposedDropdownMenu(
@@ -124,7 +132,10 @@ fun AddEditTaskDialog(
                         label = { Text("Fecha") },
                         trailingIcon = {
                             IconButton(onClick = { showDatePicker = true }) {
-                                Icon(Icons.Rounded.CalendarToday, contentDescription = "Seleccionar fecha")
+                                Icon(
+                                    Icons.Rounded.CalendarToday,
+                                    contentDescription = "Seleccionar fecha"
+                                )
                             }
                         },
                         modifier = Modifier.weight(1.5f),
@@ -142,7 +153,9 @@ fun AddEditTaskDialog(
                             readOnly = true,
                             label = { Text("Semana") },
                             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedWeek) },
-                            modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable, true).fillMaxWidth(),
+                            modifier = Modifier
+                                .menuAnchor(MenuAnchorType.PrimaryNotEditable, true)
+                                .fillMaxWidth(),
                             shape = RoundedCornerShape(24.dp)
                         )
                         ExposedDropdownMenu(
@@ -180,8 +193,9 @@ fun AddEditTaskDialog(
         confirmButton = {
             Button(
                 onClick = {
-                    if (title.isNotBlank() && selectedCourseId != 0L) {
+                    if (title.isNotBlank() && selectedCourseId.isNotBlank()) {
                         onConfirm(
+                            id,
                             selectedCourseId,
                             title,
                             datePickerState.selectedDateMillis ?: System.currentTimeMillis(),

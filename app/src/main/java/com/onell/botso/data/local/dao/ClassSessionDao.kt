@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 interface ClassSessionDao {
     @Transaction
     @Query("SELECT * FROM class_sessions WHERE course_id = :courseId")
-    fun getSessionsForCourse(courseId: Long): Flow<List<ClassSessionWithCourseEntity>>
+    fun getSessionsForCourse(courseId: String): Flow<List<ClassSessionWithCourseEntity>>
 
     @Query("SELECT * FROM class_sessions WHERE day_of_week = :dayOfWeek")
     fun getSessionsForDay(dayOfWeek: Int): Flow<List<ClassSessionWithCourseEntity>>
@@ -18,7 +18,7 @@ interface ClassSessionDao {
     fun getAllSessions(): Flow<List<ClassSessionEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertSession(session: ClassSessionEntity): Long
+    suspend fun insertSession(session: ClassSessionEntity)
 
     @Update
     suspend fun updateSession(session: ClassSessionEntity)

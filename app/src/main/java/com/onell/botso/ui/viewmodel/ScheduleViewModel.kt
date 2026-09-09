@@ -58,19 +58,20 @@ class ScheduleViewModel @Inject constructor(
 
         // 2. Mantenemos tu lógica defensiva para mostrar "sesiones fantasma" de materias sin horario oficial
         val coursesWithSessions = allSessions.map { it.courseId }.toSet()
-        val courseEntries = courses.filter { it.id !in coursesWithSessions && it.startTime.isNotBlank() }
-            .map { course ->
-                ScheduleEntry(
-                    name = course.name,
-                    dayOfWeek = course.dayOfWeek,
-                    startTime = course.startTime,
-                    endTime = course.endTime,
-                    location = course.location,
-                    colorHex = course.colorHex,
-                    course = course,
-                    session = null
-                )
-            }
+        val courseEntries =
+            courses.filter { it.id !in coursesWithSessions && it.startTime.isNotBlank() }
+                .map { course ->
+                    ScheduleEntry(
+                        name = course.name,
+                        dayOfWeek = course.dayOfWeek,
+                        startTime = course.startTime,
+                        endTime = course.endTime,
+                        location = course.location,
+                        colorHex = course.colorHex,
+                        course = course,
+                        session = null
+                    )
+                }
 
         // 3. Empaquetamos todo en el nuevo estado puro
         ScheduleUiState(
@@ -80,7 +81,15 @@ class ScheduleViewModel @Inject constructor(
 
     fun onEvent(event: ScheduleUiEvent) {
         when (event) {
-            is ScheduleUiEvent.OnAddSession -> addSession(event.courseId, event.dayOfWeek, event.startTime, event.endTime, event.room)
+            is ScheduleUiEvent.OnAddSession -> addSession(
+                event.id,
+                event.courseId,
+                event.dayOfWeek,
+                event.startTime,
+                event.endTime,
+                event.room
+            )
+
             is ScheduleUiEvent.OnDeleteSession -> deleteSession(event.session)
             is ScheduleUiEvent.OnUpdateSession -> updateSession(event.session)
             is ScheduleUiEvent.OnUpdateCourse -> updateCourse(event.course)
@@ -88,12 +97,19 @@ class ScheduleViewModel @Inject constructor(
         }
     }
 
-    private fun addSession(courseId: Long, dayOfWeek: Int, startTime: String, endTime: String, room: String) {
+    private fun addSession(
+        id: String,
+        courseId: String,
+        dayOfWeek: Int,
+        startTime: String,
+        endTime: String,
+        room: String
+    ) {
         viewModelScope.launch {
             insertClassSessionUseCase(
                 // Construimos el modelo puro
                 ClassSession(
-                    id = 0,
+                    id = id,
                     courseId = courseId,
                     dayOfWeek = dayOfWeek,
                     startTime = startTime,

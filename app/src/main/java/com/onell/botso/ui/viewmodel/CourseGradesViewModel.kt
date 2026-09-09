@@ -40,14 +40,14 @@ class CourseGradesViewModel @Inject constructor(
         }
     }
 
-    private fun setCourseId(id: Long) {
+    private fun setCourseId(id: String) {
         if (_uiState.value.courseId != id) {
             _uiState.update { it.copy(courseId = id) }
             observeGrades(id)
         }
     }
 
-    private fun observeGrades(courseId: Long) {
+    private fun observeGrades(courseId: String) {
         gradesJob?.cancel() // Cancelamos el flujo anterior si cambiamos de materia
         gradesJob = viewModelScope.launch {
             getGradesForCourseUseCase(courseId).collect { currentGrades ->
@@ -118,6 +118,7 @@ class CourseGradesViewModel @Inject constructor(
     }
 
     private fun saveGrades() {
+        val id = _uiState.value.courseId ?: return
         val state = _uiState.value
         val courseId = state.courseId ?: return
         val termId = state.currentTermId
@@ -127,12 +128,12 @@ class CourseGradesViewModel @Inject constructor(
         val weight = if (termId == 3) 0.20 else 0.15
 
         viewModelScope.launch {
-            saveOrUpdateGrade(courseId, termId, "Nota Formativa", formativaScore, weight)
-            saveOrUpdateGrade(courseId, termId, "Nota Cognitiva", cognitivaScore, weight)
+            saveOrUpdateGrade(id, courseId, termId, "Nota Formativa", formativaScore, weight)
+            saveOrUpdateGrade(id, courseId, termId, "Nota Cognitiva", cognitivaScore, weight)
         }
     }
 
-    private suspend fun saveOrUpdateGrade(courseId: Long, termId: Int, name: String, score: Double, weight: Double) {
+    private suspend fun saveOrUpdateGrade(id: String ,courseId: String, termId: Int, name: String, score: Double, weight: Double) {
         val currentGrades = _uiState.value.grades
         val existingGrade = currentGrades.find { it.termId == termId && it.name == name }
 
@@ -141,7 +142,7 @@ class CourseGradesViewModel @Inject constructor(
         } else {
             // Usamos el modelo de Dominio puro (Grade), adiós a GradeEntity
             insertGradeUseCase(
-                Grade(id = 0, courseId = courseId, termId = termId, name = name, score = score, weight = weight)
+                Grade(id = id, courseId = courseId, termId = termId, name = name, score = score, weight = weight)
             )
         }
     }

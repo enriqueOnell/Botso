@@ -16,5 +16,5 @@ sealed interface Route {
     data object Semesters : Route
 
     @Serializable
-    data class CourseGrades(val courseId: Long) : Route
+    data class CourseGrades(val courseId: String) : Route
 }

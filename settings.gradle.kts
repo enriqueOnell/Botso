@@ -22,5 +22,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "UniApp"
+rootProject.name = "botso"
 include(":app")

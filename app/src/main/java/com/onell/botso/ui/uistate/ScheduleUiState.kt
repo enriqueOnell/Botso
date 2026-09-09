@@ -19,7 +19,16 @@ data class ScheduleEntry(
 )
 
 sealed class ScheduleUiEvent {
-    data class OnAddSession(val courseId: Long, val dayOfWeek: Int, val startTime: String, val endTime: String, val room: String) : ScheduleUiEvent()
+
+    data class OnAddSession(
+        val id: String,
+        val courseId: String,
+        val dayOfWeek: Int,
+        val startTime: String,
+        val endTime: String,
+        val room: String
+    ) : ScheduleUiEvent()
+
     data class OnDeleteSession(val session: ClassSession) : ScheduleUiEvent()
     data class OnUpdateSession(val session: ClassSession) : ScheduleUiEvent()
     data class OnUpdateCourse(val course: Course) : ScheduleUiEvent()

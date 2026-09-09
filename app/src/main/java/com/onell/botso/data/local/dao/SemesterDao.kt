@@ -18,7 +18,7 @@ interface SemesterDao {
     fun getActiveSemester(): Flow<SemesterEntity?>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertSemester(semester: SemesterEntity): Long
+    suspend fun insertSemester(semester: SemesterEntity)
 
     @Update
     suspend fun updateSemester(semester: SemesterEntity)

@@ -8,7 +8,7 @@ import javax.inject.Inject
 class GetPriorityTasksUseCase @Inject constructor(
     private val repository: TaskRepository
 ) {
-    operator fun invoke(courseId: Long): Flow<List<TaskWithCourse>> {
+    operator fun invoke(courseId: String): Flow<List<TaskWithCourse>> {
         return repository.getPriorityTasks(courseId)
     }
 }

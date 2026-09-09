@@ -50,19 +50,44 @@ class KanbanViewModel @Inject constructor(
 
     fun onEvent(event: KanbanUiEvent) {
         when (event) {
-            is KanbanUiEvent.OnAddTask -> addTask(event.courseId, event.title, event.dueDate, event.isPriority, event.week, event.description)
+            is KanbanUiEvent.OnAddTask -> addTask(
+                event.id,
+                event.courseId,
+                event.title,
+                event.dueDate,
+                event.isPriority,
+                event.week,
+                event.description
+            )
+
             is KanbanUiEvent.OnUpdateTaskStatus -> updateTaskStatus(event.task)
             is KanbanUiEvent.OnDeleteTask -> deleteTask(event.task)
-            is KanbanUiEvent.OnUpdateTask -> updateTask(event.task, event.courseId, event.title, event.dueDate, event.isPriority, event.week, event.description)
+            is KanbanUiEvent.OnUpdateTask -> updateTask(
+                event.task,
+                event.courseId,
+                event.title,
+                event.dueDate,
+                event.isPriority,
+                event.week,
+                event.description
+            )
         }
     }
 
-    private fun addTask(courseId: Long, title: String, dueDate: Long, isPriority: Boolean, week: Int, description: String) {
+    private fun addTask(
+        id: String,
+        courseId: String,
+        title: String,
+        dueDate: Long,
+        isPriority: Boolean,
+        week: Int,
+        description: String
+    ) {
         viewModelScope.launch {
             insertTaskUseCase(
                 // Forjamos el modelo de Dominio (Task) en lugar de TaskEntity
                 Task(
-                    id = 0,
+                    id = id,
                     courseId = courseId,
                     title = title,
                     dueDate = dueDate,
@@ -75,7 +100,15 @@ class KanbanViewModel @Inject constructor(
         }
     }
 
-    private fun updateTask(task: Task, courseId: Long, title: String, dueDate: Long, isPriority: Boolean, week: Int, description: String) {
+    private fun updateTask(
+        task: Task,
+        courseId: String,
+        title: String,
+        dueDate: Long,
+        isPriority: Boolean,
+        week: Int,
+        description: String
+    ) {
         viewModelScope.launch {
             updateTaskUseCase(
                 task.copy(

@@ -7,7 +7,7 @@ import javax.inject.Inject
 class InsertClassSessionUseCase @Inject constructor(
     private val repository: ClassSessionRepository
 ) {
-    suspend operator fun invoke(session: ClassSession): Long {
+    suspend operator fun invoke(session: ClassSession) {
         return repository.insertClassSession(session)
     }
 }

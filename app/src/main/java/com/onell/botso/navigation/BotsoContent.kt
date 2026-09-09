@@ -12,14 +12,14 @@ import androidx.compose.ui.Modifier
 import com.onell.botso.ui.screens.*
 
 @Composable
-fun UniAppContent() {
+fun BotsoContent() {
     val backStack = remember { mutableStateListOf<Route>(Route.Dashboard) }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
             val currentRoute = backStack.lastOrNull() ?: Route.Dashboard
-            UniBottomNavigationBar(
+            BotsoBottomNavigationBar(
                 currentRoute = currentRoute,
                 onNavigate = { route ->
                     if (backStack.lastOrNull() != route) {

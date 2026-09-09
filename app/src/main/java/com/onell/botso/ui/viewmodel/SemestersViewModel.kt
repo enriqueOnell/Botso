@@ -37,7 +37,6 @@ class SemestersViewModel @Inject constructor(
     private val deleteCourseUseCase: DeleteCourseUseCase
 ) : ViewModel() {
 
-    // Todo empaquetado en un único flujo de estado
     val uiState: StateFlow<SemestersUiState> = getAllSemestersUseCase()
         .flatMapLatest { semesters ->
             if (semesters.isEmpty()) return@flatMapLatest flowOf(SemestersUiState(emptyList()))
@@ -70,6 +69,7 @@ class SemestersViewModel @Inject constructor(
     fun onEvent(event: SemestersUiEvent) {
         when (event) {
             is SemestersUiEvent.OnAddSemester -> addSemester(
+                event.id,
                 event.name,
                 event.startDate,
                 event.endDate,
@@ -86,6 +86,7 @@ class SemestersViewModel @Inject constructor(
 
             is SemestersUiEvent.OnDeleteSemester -> deleteSemester(event.semester)
             is SemestersUiEvent.OnAddCourse -> addCourse(
+                event.id,
                 event.semesterId,
                 event.name,
                 event.dayOfWeek,
@@ -113,11 +114,17 @@ class SemestersViewModel @Inject constructor(
         }
     }
 
-    private fun addSemester(name: String, startDate: Long, endDate: Long, isActive: Boolean) {
+    private fun addSemester(
+        id: String,
+        name: String,
+        startDate: Long,
+        endDate: Long,
+        isActive: Boolean
+    ) {
         viewModelScope.launch {
             insertSemesterUseCase(
                 Semester(
-                    id = 0,
+                    id = id,
                     name = name,
                     startDate = startDate,
                     endDate = endDate,
@@ -153,7 +160,8 @@ class SemestersViewModel @Inject constructor(
     }
 
     private fun addCourse(
-        semesterId: Long,
+        id: String,
+        semesterId: String,
         name: String,
         dayOfWeek: Int,
         startTime: String,
@@ -166,7 +174,7 @@ class SemestersViewModel @Inject constructor(
         viewModelScope.launch {
             insertCourseUseCase(
                 Course(
-                    id = 0,
+                    id = id,
                     semesterId = semesterId,
                     name = name,
                     code = name.take(3).uppercase(),

@@ -33,10 +33,11 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun AddEditSemesterDialog(
     onDismiss: () -> Unit,
-    onConfirm: (String, Long, Long) -> Unit,
+    onConfirm: (String, String, Long, Long) -> Unit,
     modifier: Modifier = Modifier,
     semester: Semester? = null // Corregido: Semester?
 ) {
+    var id by remember { mutableStateOf(semester?.id ?: "") }
     var name by remember { mutableStateOf(semester?.name ?: "") }
 
     val startDatePickerState = rememberDatePickerState(initialSelectedDateMillis = semester?.startDate ?: System.currentTimeMillis())
@@ -104,6 +105,7 @@ fun AddEditSemesterDialog(
                 onClick = {
                     if (name.isNotBlank()) {
                         onConfirm(
+                            id,
                             name,
                             startDatePickerState.selectedDateMillis ?: System.currentTimeMillis(),
                             endDatePickerState.selectedDateMillis ?: System.currentTimeMillis()

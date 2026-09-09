@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import java.util.UUID
 
 @Entity(
     tableName = "tasks",
@@ -19,8 +20,8 @@ import androidx.room.PrimaryKey
     indices = [Index(value = ["course_id"])]
 )
 data class TaskEntity(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    @ColumnInfo(name = "course_id") val courseId: Long,
+    @PrimaryKey val id: String = UUID.randomUUID().toString(),
+    @ColumnInfo(name = "course_id") val courseId: String,
     @ColumnInfo(name = "title")val title: String,
     @ColumnInfo(name = "due_date")val dueDate: Long,
     @ColumnInfo(name = "is_priority")val isPriority: Boolean,

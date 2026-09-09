@@ -24,7 +24,7 @@ class SemesterRepositoryImpl @Inject constructor(
     override fun getActiveSemester(): Flow<Semester?> =
         semesterDao.getActiveSemester().map { it?.toDomain() }
 
-    override suspend fun insertSemester(semester: Semester): Long =
+    override suspend fun insertSemester(semester: Semester) =
         semesterDao.insertSemester(semester.toEntity())
 
     override suspend fun updateSemester(semester: Semester) =

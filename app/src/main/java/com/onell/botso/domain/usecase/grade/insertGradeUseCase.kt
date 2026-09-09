@@ -7,7 +7,7 @@ import javax.inject.Inject
 class InsertGradeUseCase @Inject constructor(
     private val repository: GradeRepository
 ) {
-    suspend operator fun invoke(grade: Grade): Long {
+    suspend operator fun invoke(grade: Grade) {
         return repository.insertGrade(grade)
     }
 }

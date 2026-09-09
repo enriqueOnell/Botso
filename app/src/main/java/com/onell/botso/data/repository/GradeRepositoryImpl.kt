@@ -15,10 +15,10 @@ class GradeRepositoryImpl @Inject constructor(
     override fun getAllGrades(): Flow<List<Grade>> =
         gradeDao.getAllGrades().map { list -> list.map { it.toDomain() } }
 
-    override fun getGradesForCourse(courseId: Long): Flow<List<Grade>> =
+    override fun getGradesForCourse(courseId: String): Flow<List<Grade>> =
         gradeDao.getGradesForCourse(courseId).map { list -> list.map { it.toDomain() } }
 
-    override suspend fun insertGrade(grade: Grade): Long =
+    override suspend fun insertGrade(grade: Grade) =
         gradeDao.insertGrade(grade.toEntity())
 
     override suspend fun updateGrade(grade: Grade) =

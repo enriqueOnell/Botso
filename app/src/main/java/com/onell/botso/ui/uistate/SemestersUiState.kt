@@ -10,6 +10,7 @@ data class SemestersUiState(
 
 sealed class SemestersUiEvent {
     data class OnAddSemester(
+        val id: String,
         val name: String,
         val startDate: Long,
         val endDate: Long,
@@ -27,7 +28,8 @@ sealed class SemestersUiEvent {
     data class OnDeleteSemester(val semester: Semester) : SemestersUiEvent()
 
     data class OnAddCourse(
-        val semesterId: Long,
+        val id: String,
+        val semesterId: String,
         val name: String,
         val dayOfWeek: Int,
         val startTime: String,

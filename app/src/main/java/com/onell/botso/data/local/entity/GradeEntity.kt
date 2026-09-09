@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import java.util.UUID
 
 @Entity(
     tableName = "grades",
@@ -19,10 +20,10 @@ import androidx.room.PrimaryKey
     indices = [Index(value = ["course_id"])]
 )
 data class GradeEntity(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    @ColumnInfo(name = "course_id") val courseId: Long,
+    @PrimaryKey val id: String = UUID.randomUUID().toString(),
+    @ColumnInfo(name = "course_id") val courseId: String,
     @ColumnInfo(name = "name") val name: String,
     @ColumnInfo(name = "score") val score: Double,
     @ColumnInfo(name = "weight") val weight: Double,
-    @ColumnInfo(name = "termId") val termId: Int // e.g., 1 for Midterm, 2 for Final
+    @ColumnInfo(name = "termId") val termId: Int
 )

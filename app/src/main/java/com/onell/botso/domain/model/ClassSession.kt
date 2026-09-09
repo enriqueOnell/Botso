@@ -1,10 +1,10 @@
 package com.onell.botso.domain.model
 
 data class ClassSession(
-    val id: Long = 0,
-    val courseId: Long,
-    val dayOfWeek: Int, // 1 (Mon) to 7 (Sun)
-    val startTime: String, // HH:mm
-    val endTime: String, // HH:mm
+    val id: String,
+    val courseId: String,
+    val dayOfWeek: Int,
+    val startTime: String,
+    val endTime: String,
     val room: String = ""
 )

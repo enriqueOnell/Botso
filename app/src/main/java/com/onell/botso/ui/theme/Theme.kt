@@ -50,7 +50,7 @@ private val LightColorScheme = lightColorScheme(
 )
 
 @Composable
-fun UniAppTheme(
+fun BotsoTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     dynamicColor: Boolean = false, // Set to false to prefer our Academic Organic theme
     content: @Composable () -> Unit

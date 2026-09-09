@@ -20,8 +20,8 @@ data class KanbanColumnInfo(
 )
 
 sealed class KanbanUiEvent {
-    data class OnAddTask(val courseId: Long, val title: String, val dueDate: Long, val isPriority: Boolean, val week: Int, val description: String) : KanbanUiEvent()
+    data class OnAddTask(val id: String, val courseId: String, val title: String, val dueDate: Long, val isPriority: Boolean, val week: Int, val description: String) : KanbanUiEvent()
     data class OnUpdateTaskStatus(val task: Task) : KanbanUiEvent()
     data class OnDeleteTask(val task: Task) : KanbanUiEvent()
-    data class OnUpdateTask(val task: Task, val courseId: Long, val title: String, val dueDate: Long, val isPriority: Boolean, val week: Int, val description: String) : KanbanUiEvent()
+    data class OnUpdateTask(val task: Task, val courseId: String, val title: String, val dueDate: Long, val isPriority: Boolean, val week: Int, val description: String) : KanbanUiEvent()
 }

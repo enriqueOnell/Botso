@@ -7,13 +7,13 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface GradeDao {
     @Query("SELECT * FROM grades WHERE course_id = :courseId")
-    fun getGradesForCourse(courseId: Long): Flow<List<GradeEntity>>
+    fun getGradesForCourse(courseId: String): Flow<List<GradeEntity>>
 
     @Query("SELECT * FROM grades")
     fun getAllGrades(): Flow<List<GradeEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertGrade(grade: GradeEntity): Long
+    suspend fun insertGrade(grade: GradeEntity)
 
     @Update
     suspend fun updateGrade(grade: GradeEntity)

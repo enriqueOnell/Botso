@@ -30,14 +30,14 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.onell.botso.ui.components.dialogs.course.CircularGradeProgress
 import com.onell.botso.ui.components.dialogs.course.GradeInputSection
-import com.onell.botso.ui.theme.UniAppTheme
+import com.onell.botso.ui.theme.BotsoTheme
 import com.onell.botso.ui.uistate.CourseGradesUiEvent
 import com.onell.botso.ui.viewmodel.CourseGradesViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CourseGradesScreen(
-    courseId: Long,
+    courseId: String,
     viewModel: CourseGradesViewModel = hiltViewModel(),
     onBack: () -> Unit = {}
 ) {
@@ -113,7 +113,7 @@ fun CourseGradesScreen(
 @Preview(showBackground = true, device = "spec:width=411dp,height=891dp")
 @Composable
 private fun CourseGradesScreenPreview() {
-    UniAppTheme {
-        CourseGradesScreen(courseId = 1L)
+    BotsoTheme {
+        CourseGradesScreen(courseId = " ")
     }
 }

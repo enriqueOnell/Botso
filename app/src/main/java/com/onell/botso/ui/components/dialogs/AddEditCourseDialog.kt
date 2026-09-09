@@ -36,10 +36,11 @@ import java.util.Locale
 @Composable
 fun AddEditCourseDialog(
     onDismiss: () -> Unit,
-    onConfirm: (String, Int, String, String, String, String, Boolean) -> Unit,
+    onConfirm: (String ,String, Int, String, String, String, String, Boolean) -> Unit,
     modifier: Modifier = Modifier,
     course: Course? = null // Corregido: Course?
 ) {
+    var id by remember { mutableStateOf(course?.id ?: "") }
     var name by remember { mutableStateOf(course?.name ?: "") }
     var dayOfWeek by remember { mutableIntStateOf(course?.dayOfWeek ?: 1) }
     var startTime by remember { mutableStateOf(course?.startTime ?: "08:00") }
@@ -164,7 +165,7 @@ fun AddEditCourseDialog(
             Button(
                 onClick = {
                     if (name.isNotBlank()) {
-                        onConfirm(name, dayOfWeek, startTime, endTime, professor, location, isRemote)
+                        onConfirm(id, name, dayOfWeek, startTime, endTime, professor, location, isRemote)
                     }
                 },
                 shape = RoundedCornerShape(24.dp)
@@ -183,7 +184,7 @@ fun AddEditCourseDialog(
         val parts = startTime.split(":")
         val h = parts.getOrNull(0)?.toIntOrNull() ?: 8
         val m = parts.getOrNull(1)?.toIntOrNull() ?: 0
-        UniTimePickerDialog(
+        BotsoTimePickerDialog(
             onDismiss = { showStartTimePicker = false },
             onConfirm = { hour, minute ->
                 startTime = String.format(Locale.getDefault(), "%02d:%02d", hour, minute)
@@ -198,7 +199,7 @@ fun AddEditCourseDialog(
         val parts = endTime.split(":")
         val h = parts.getOrNull(0)?.toIntOrNull() ?: 10
         val m = parts.getOrNull(1)?.toIntOrNull() ?: 0
-        UniTimePickerDialog(
+        BotsoTimePickerDialog(
             onDismiss = { showEndTimePicker = false },
             onConfirm = { hour, minute ->
                 endTime = String.format(Locale.getDefault(), "%02d:%02d", hour, minute)

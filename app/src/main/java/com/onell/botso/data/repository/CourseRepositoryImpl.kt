@@ -16,16 +16,16 @@ class CourseRepositoryImpl @Inject constructor(
         return courseDao.getAllCourses().map { list -> list.map { entity -> entity.toDomain() } }
     }
 
-    override fun getCoursesForSemester(semesterId: Long): Flow<List<Course>> {
+    override fun getCoursesForSemester(semesterId: String): Flow<List<Course>> {
         return courseDao.getCoursesForSemester(semesterId)
             .map { list -> list.map { entity -> entity.toDomain() } }
     }
 
-    override fun getCourseById(courseId: Long): Flow<Course?> {
+    override fun getCourseById(courseId: String): Flow<Course?> {
         return courseDao.getCourseById(courseId).map { entity -> entity?.toDomain() }
     }
 
-    override suspend fun insertCourse(course: Course): Long {
+    override suspend fun insertCourse(course: Course) {
         return courseDao.insertCourse(course.toEntity())
     }
 

@@ -8,7 +8,7 @@ import javax.inject.Inject
 class GetTasksWithCourseUseCase @Inject constructor(
     private val repository: TaskRepository
 ) {
-    operator fun invoke(courseId: Long): Flow<List<TaskWithCourse>> {
+    operator fun invoke(courseId: String): Flow<List<TaskWithCourse>> {
         return repository.getTasksWithCourse(courseId)
     }
 }

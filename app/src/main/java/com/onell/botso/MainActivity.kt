@@ -5,8 +5,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.LaunchedEffect
-import com.onell.botso.navigation.UniAppContent
-import com.onell.botso.ui.theme.UniAppTheme
+import com.onell.botso.navigation.BotsoContent
+import com.onell.botso.ui.theme.BotsoTheme
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -16,8 +16,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            UniAppTheme {
-                UniAppContent()
+            BotsoTheme {
+                BotsoContent()
             }
         }
     }

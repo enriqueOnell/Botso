@@ -8,7 +8,7 @@ import javax.inject.Inject
 class GetCourseByIdUseCase @Inject constructor(
     private val repository: CourseRepository
 ) {
-    operator fun invoke(courseId: Long): Flow<Course?> {
+    operator fun invoke(courseId: String): Flow<Course?> {
         return repository.getCourseById(courseId)
     }
 }

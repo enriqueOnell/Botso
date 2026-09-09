@@ -8,11 +8,11 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface TaskDao {
     @Query("SELECT * FROM tasks WHERE course_id = :courseId")
-    fun getTasksForCourse(courseId: Long): Flow<List<TaskEntity>> // ¡Fuerza la entidad pura!
+    fun getTasksForCourse(courseId: String): Flow<List<TaskEntity>> // ¡Fuerza la entidad pura!
 
     @Transaction
     @Query("SELECT * FROM tasks WHERE course_id = :courseId")
-    fun getTasksWithCourse(courseId: Long): Flow<List<TaskWithCourseEntity>>
+    fun getTasksWithCourse(courseId: String): Flow<List<TaskWithCourseEntity>>
 
     @Query("SELECT * FROM tasks WHERE status != 'DONE'")
     fun getPendingTasks(): Flow<List<TaskEntity>>
@@ -24,7 +24,7 @@ interface TaskDao {
     fun getAllTasks(): Flow<List<TaskEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertTask(task: TaskEntity): Long
+    suspend fun insertTask(task: TaskEntity)
 
     @Update
     suspend fun updateTask(task: TaskEntity)

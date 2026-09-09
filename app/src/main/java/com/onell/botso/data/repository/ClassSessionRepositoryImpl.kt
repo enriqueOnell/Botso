@@ -1,7 +1,6 @@
 package com.onell.botso.data.repository
 
 import com.onell.botso.data.local.dao.ClassSessionDao
-import com.onell.botso.data.local.dao.CourseDao
 import com.onell.botso.data.mapper.toDomain
 import com.onell.botso.data.mapper.toEntity
 import com.onell.botso.domain.model.ClassSession
@@ -23,10 +22,10 @@ class ClassSessionRepositoryImpl @Inject constructor(
         return sessionDao.getSessionsForDay(dayOfWeek).map { list -> list.map { it.toDomain() } }
     }
 
-    override fun getSessionsForCourse(courseId: Long): Flow<List<ClassSessionWithCourse>> =
+    override fun getSessionsForCourse(courseId: String): Flow<List<ClassSessionWithCourse>> =
         sessionDao.getSessionsForCourse(courseId).map { list -> list.map { it.toDomain() } }
 
-    override suspend fun insertClassSession(session: ClassSession): Long =
+    override suspend fun insertClassSession(session: ClassSession) =
         sessionDao.insertSession(session.toEntity())
 
     override suspend fun updateClassSession(session: ClassSession) =

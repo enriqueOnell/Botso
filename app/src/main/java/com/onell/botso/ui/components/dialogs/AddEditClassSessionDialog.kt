@@ -33,12 +33,12 @@ import kotlin.collections.forEach
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditClassSessionDialog(
-    courses: List<Course>, // Corregido: Course puro en lugar de CourseEntity
+    courses: List<Course>,
     onDismiss: () -> Unit,
-    onConfirm: (Long, Int, String, String, String) -> Unit,
+    onConfirm: (String, Int, String, String, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var selectedCourseId by remember { mutableLongStateOf(courses.firstOrNull()?.id ?: 0L) }
+    var selectedCourseId by remember { mutableStateOf(courses.firstOrNull()?.id ?: "") }
     var dayOfWeek by remember { mutableIntStateOf(1) }
     var startTime by remember { mutableStateOf("08:00") }
     var endTime by remember { mutableStateOf("10:00") }
@@ -162,7 +162,7 @@ fun AddEditClassSessionDialog(
         confirmButton = {
             Button(
                 onClick = {
-                    if (selectedCourseId != 0L) {
+                    if (selectedCourseId.isNotBlank()) {
                         onConfirm(selectedCourseId, dayOfWeek, startTime, endTime, room)
                     }
                 },
@@ -182,7 +182,7 @@ fun AddEditClassSessionDialog(
         val parts = startTime.split(":")
         val h = parts.getOrNull(0)?.toIntOrNull() ?: 8
         val m = parts.getOrNull(1)?.toIntOrNull() ?: 0
-        UniTimePickerDialog(
+        BotsoTimePickerDialog(
             onDismiss = { showStartTimePicker = false },
             onConfirm = { hour, minute ->
                 startTime = String.format(Locale.getDefault(), "%02d:%02d", hour, minute)
@@ -197,7 +197,7 @@ fun AddEditClassSessionDialog(
         val parts = endTime.split(":")
         val h = parts.getOrNull(0)?.toIntOrNull() ?: 10
         val m = parts.getOrNull(1)?.toIntOrNull() ?: 0
-        UniTimePickerDialog(
+        BotsoTimePickerDialog(
             onDismiss = { showEndTimePicker = false },
             onConfirm = { hour, minute ->
                 endTime = String.format(Locale.getDefault(), "%02d:%02d", hour, minute)

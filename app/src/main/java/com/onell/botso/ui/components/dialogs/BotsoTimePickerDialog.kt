@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun UniTimePickerDialog(
+fun BotsoTimePickerDialog(
     onDismiss: () -> Unit,
     onConfirm: (Int, Int) -> Unit,
     modifier: Modifier = Modifier,
