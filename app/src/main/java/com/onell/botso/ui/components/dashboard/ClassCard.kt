@@ -46,7 +46,7 @@ fun ClassCard(sessionWithCourse: ClassSessionWithCourse) {
                     fontWeight = FontWeight.Medium,
                     color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
-                if (sessionWithCourse.course.isRemote) {
+                if (sessionWithCourse.session.isRemote) {
                     Surface(
                         color = MaterialTheme.colorScheme.tertiary,
                         shape = RoundedCornerShape(24.dp)
@@ -71,7 +71,7 @@ fun ClassCard(sessionWithCourse: ClassSessionWithCourse) {
                 Icon(Icons.Rounded.Class, contentDescription = null, modifier = Modifier.size(16.dp))
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
-                    text = sessionWithCourse.course.location,
+                    text = sessionWithCourse.session.room,
                     style = MaterialTheme.typography.bodyMedium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,

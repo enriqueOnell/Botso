@@ -5,7 +5,6 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import java.util.UUID
 
 @Entity(
     tableName = "class_sessions",
@@ -20,10 +19,18 @@ import java.util.UUID
     indices = [Index(value = ["course_id"])]
 )
 data class ClassSessionEntity(
-    @PrimaryKey val id: String = UUID.randomUUID().toString(),
-    @ColumnInfo(name = "course_id") val courseId: String,
-    @ColumnInfo(name = "day_of_week") val dayOfWeek: Int, // 1 (Mon) to 7 (Sun)
-    @ColumnInfo(name = "start_time") val startTime: String, // HH:mm
-    @ColumnInfo(name = "end_time") val endTime: String, // HH:mm
-    @ColumnInfo(name = "room") val room: String = ""
+    @PrimaryKey
+    val id: String,
+    @ColumnInfo(name = "course_id")
+    val courseId: String,
+    @ColumnInfo(name = "day_of_week")
+    val dayOfWeek: Int,
+    @ColumnInfo(name = "start_time")
+    val startTime: String,
+    @ColumnInfo(name = "end_time")
+    val endTime: String,
+    @ColumnInfo(name = "room")
+    val room: String = "",
+    @ColumnInfo(name = "is_remote")
+    val isRemote: Boolean = false
 )

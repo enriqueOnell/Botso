@@ -5,5 +5,5 @@ data class Semester(
     val name: String,
     val startDate: Long,
     val endDate: Long,
-    val isActive: Boolean
+    val isActive: Boolean = true
 )

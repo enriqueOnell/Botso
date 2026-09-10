@@ -2,6 +2,7 @@ package com.onell.botso.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.onell.botso.domain.model.ClassSession
 import com.onell.botso.domain.model.Course
 import com.onell.botso.domain.model.Grade // Modelo de Dominio puro
 import com.onell.botso.domain.model.Semester
@@ -11,6 +12,9 @@ import com.onell.botso.domain.usecase.course.GetCoursesForSemesterUseCase
 import com.onell.botso.domain.usecase.course.InsertCourseUseCase
 import com.onell.botso.domain.usecase.course.UpdateCourseUseCase
 import com.onell.botso.domain.usecase.grade.GetGradesForCourseUseCase
+import com.onell.botso.domain.usecase.session.InsertClassSessionUseCase
+import com.onell.botso.domain.usecase.session.UpdateClassSessionUseCase
+import com.onell.botso.domain.usecase.session.GetSessionsForCourseUseCase
 import com.onell.botso.domain.usecase.semester.DeleteSemesterUseCase
 import com.onell.botso.domain.usecase.semester.GetAllSemestersUseCase
 import com.onell.botso.domain.usecase.semester.InsertSemesterUseCase
@@ -21,6 +25,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import java.util.UUID
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -29,12 +34,15 @@ class SemestersViewModel @Inject constructor(
     private val getAllSemestersUseCase: GetAllSemestersUseCase,
     private val getCoursesForSemesterUseCase: GetCoursesForSemesterUseCase,
     private val getGradesForCourseUseCase: GetGradesForCourseUseCase,
+    private val getSessionsForCourseUseCase: GetSessionsForCourseUseCase,
     private val insertSemesterUseCase: InsertSemesterUseCase,
     private val updateSemesterUseCase: UpdateSemesterUseCase,
     private val deleteSemesterUseCase: DeleteSemesterUseCase,
     private val insertCourseUseCase: InsertCourseUseCase,
     private val updateCourseUseCase: UpdateCourseUseCase,
-    private val deleteCourseUseCase: DeleteCourseUseCase
+    private val deleteCourseUseCase: DeleteCourseUseCase,
+    private val insertClassSessionUseCase: InsertClassSessionUseCase,
+    private val updateClassSessionUseCase: UpdateClassSessionUseCase
 ) : ViewModel() {
 
     val uiState: StateFlow<SemestersUiState> = getAllSemestersUseCase()
@@ -52,10 +60,17 @@ class SemestersViewModel @Inject constructor(
                             calculateCourseAverage(grades)
                         }
                     }
+                    
+                    val courseSessionFlows = courses.map { course ->
+                        getSessionsForCourseUseCase(course.id)
+                    }
 
-                    combine(courseGradeFlows) { averages ->
+                    combine(
+                        if (courseGradeFlows.isEmpty()) flowOf(emptyList()) else combine(courseGradeFlows) { it.toList() },
+                        if (courseSessionFlows.isEmpty()) flowOf(emptyList()) else combine(courseSessionFlows) { it.toList().flatten() }
+                    ) { averages, sessionsWithCourses ->
                         val gpa = if (averages.isNotEmpty()) averages.average() else 0.0
-                        SemesterWithStats(semester, courses, gpa)
+                        SemesterWithStats(semester, sessionsWithCourses, gpa)
                     }
                 }
             }
@@ -86,28 +101,14 @@ class SemestersViewModel @Inject constructor(
 
             is SemestersUiEvent.OnDeleteSemester -> deleteSemester(event.semester)
             is SemestersUiEvent.OnAddCourse -> addCourse(
-                event.id,
                 event.semesterId,
-                event.name,
-                event.dayOfWeek,
-                event.startTime,
-                event.endTime,
-                event.professor,
-                event.colorHex,
-                event.location,
-                event.isRemote
+                event.course,
+                event.session
             )
 
             is SemestersUiEvent.OnEditCourse -> updateCourse(
                 event.course,
-                event.name,
-                event.dayOfWeek,
-                event.startTime,
-                event.endTime,
-                event.professor,
-                event.colorHex,
-                event.location,
-                event.isRemote
+                event.session
             )
 
             is SemestersUiEvent.OnDeleteCourseConfirm -> deleteCourse(event.course)
@@ -124,7 +125,7 @@ class SemestersViewModel @Inject constructor(
         viewModelScope.launch {
             insertSemesterUseCase(
                 Semester(
-                    id = id,
+                    id = if (id.isBlank()) UUID.randomUUID().toString() else id,
                     name = name,
                     startDate = startDate,
                     endDate = endDate,
@@ -160,61 +161,25 @@ class SemestersViewModel @Inject constructor(
     }
 
     private fun addCourse(
-        id: String,
         semesterId: String,
-        name: String,
-        dayOfWeek: Int,
-        startTime: String,
-        endTime: String,
-        professor: String,
-        colorHex: String,
-        location: String,
-        isRemote: Boolean
+        course: Course,
+        session: ClassSession
     ) {
         viewModelScope.launch {
-            insertCourseUseCase(
-                Course(
-                    id = id,
-                    semesterId = semesterId,
-                    name = name,
-                    code = name.take(3).uppercase(),
-                    professor = professor,
-                    dayOfWeek = dayOfWeek,
-                    startTime = startTime,
-                    endTime = endTime,
-                    colorHex = colorHex,
-                    location = location,
-                    isRemote = isRemote
-                )
-            )
+            val courseId = if (course.id.isBlank()) UUID.randomUUID().toString() else course.id
+            val courseToInsert = course.copy(id = courseId, semesterId = semesterId)
+            insertCourseUseCase(courseToInsert)
+            insertClassSessionUseCase(session.copy(id = if (session.id.isBlank()) UUID.randomUUID().toString() else session.id, courseId = courseId))
         }
     }
 
     private fun updateCourse(
         course: Course,
-        name: String,
-        dayOfWeek: Int,
-        startTime: String,
-        endTime: String,
-        professor: String,
-        colorHex: String,
-        location: String,
-        isRemote: Boolean
+        session: ClassSession
     ) {
         viewModelScope.launch {
-            updateCourseUseCase(
-                course.copy(
-                    name = name,
-                    code = name.take(3).uppercase(),
-                    professor = professor,
-                    dayOfWeek = dayOfWeek,
-                    startTime = startTime,
-                    endTime = endTime,
-                    colorHex = colorHex,
-                    location = location,
-                    isRemote = isRemote
-                )
-            )
+            updateCourseUseCase(course)
+            updateClassSessionUseCase(session.copy(courseId = course.id))
         }
     }
 

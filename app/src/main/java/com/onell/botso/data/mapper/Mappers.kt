@@ -32,7 +32,7 @@ fun ClassSessionEntity.toDomain(): ClassSession {
 
 fun ClassSession.toEntity(): ClassSessionEntity{
     return ClassSessionEntity(
-        id = if (this.id.isBlank()) UUID.randomUUID().toString() else this.id,
+        id = this.id.ifBlank { UUID.randomUUID().toString() },
         courseId = this.courseId,
         dayOfWeek = this.dayOfWeek,
         startTime = this.startTime,
@@ -47,27 +47,17 @@ fun CourseEntity.toDomain(): Course {
         name = this.name,
         code = this.code,
         colorHex = this.colorHex,
-        location = this.location,
         professor = this.professor,
-        dayOfWeek = this.dayOfWeek,
-        startTime = this.startTime,
-        endTime = this.endTime,
-        isRemote = this.isRemote
     )
 }
 fun Course.toEntity(): CourseEntity {
     return CourseEntity(
-        id = if (this.id.isBlank()) UUID.randomUUID().toString() else this.id,
+        id = this.id.ifBlank { UUID.randomUUID().toString() },
         semesterId = this.semesterId,
         name = this.name,
         code = this.code,
         colorHex = this.colorHex,
-        location = this.location,
         professor = this.professor,
-        dayOfWeek = this.dayOfWeek,
-        startTime = this.startTime,
-        endTime = this.endTime,
-        isRemote = this.isRemote
     )
 }
 
@@ -84,7 +74,7 @@ fun GradeEntity.toDomain(): Grade{
 
 fun Grade.toEntity(): GradeEntity{
     return GradeEntity(
-        id = if (this.id.isBlank()) UUID.randomUUID().toString() else this.id,
+        id = this.id.ifBlank { UUID.randomUUID().toString() },
         courseId = this.courseId,
         name = this.name,
         score = this.score,
@@ -105,7 +95,7 @@ fun SemesterEntity.toDomain(): Semester {
 
 fun Semester.toEntity(): SemesterEntity {
     return SemesterEntity(
-        id = if (this.id.isBlank()) UUID.randomUUID().toString() else this.id,
+        id = this.id.ifBlank { UUID.randomUUID().toString() },
         name = this.name,
         startDate = this.startDate,
         endDate = this.endDate,
@@ -129,7 +119,7 @@ fun TaskEntity.toDomain(): Task{
 
 fun Task.toEntity(): TaskEntity{
     return TaskEntity(
-        id = if (this.id.isBlank()) UUID.randomUUID().toString() else this.id,
+        id = this.id.ifBlank { UUID.randomUUID().toString() },
         courseId = this.courseId,
         title = this.title,
         dueDate = this.dueDate,

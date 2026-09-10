@@ -15,7 +15,7 @@ import com.onell.botso.data.local.entity.*
         TaskEntity::class,
         ClassSessionEntity::class
     ],
-    version = 7,
+    version = 8,
     exportSchema = false
 )
 abstract class BotsoDataBase : RoomDatabase() {

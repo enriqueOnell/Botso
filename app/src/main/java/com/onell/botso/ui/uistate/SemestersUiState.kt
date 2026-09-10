@@ -1,5 +1,6 @@
 package com.onell.botso.ui.uistate
 
+import com.onell.botso.domain.model.ClassSession
 import com.onell.botso.domain.model.Course
 import com.onell.botso.domain.model.Semester
 import com.onell.botso.domain.model.SemesterWithStats
@@ -28,28 +29,14 @@ sealed class SemestersUiEvent {
     data class OnDeleteSemester(val semester: Semester) : SemestersUiEvent()
 
     data class OnAddCourse(
-        val id: String,
         val semesterId: String,
-        val name: String,
-        val dayOfWeek: Int,
-        val startTime: String,
-        val endTime: String,
-        val professor: String,
-        val colorHex: String,
-        val location: String,
-        val isRemote: Boolean
+        val course: Course,
+        val session: ClassSession
     ) : SemestersUiEvent()
 
     data class OnEditCourse(
         val course: Course,
-        val name: String,
-        val dayOfWeek: Int,
-        val startTime: String,
-        val endTime: String,
-        val professor: String,
-        val colorHex: String,
-        val location: String,
-        val isRemote: Boolean
+        val session: ClassSession
     ) : SemestersUiEvent()
 
     data class OnDeleteCourseConfirm(val course: Course) : SemestersUiEvent()

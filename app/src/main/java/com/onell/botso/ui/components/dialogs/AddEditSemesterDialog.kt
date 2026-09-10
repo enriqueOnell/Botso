@@ -112,6 +112,7 @@ fun AddEditSemesterDialog(
                         )
                     }
                 },
+                enabled = name.isNotBlank(),
                 shape = RoundedCornerShape(24.dp)
             ) {
                 Text(if (semester == null) "Crear" else "Guardar")

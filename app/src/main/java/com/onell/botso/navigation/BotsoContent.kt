@@ -23,7 +23,7 @@ fun BotsoContent() {
                 currentRoute = currentRoute,
                 onNavigate = { route ->
                     if (backStack.lastOrNull() != route) {
-                        if (route is Route.Dashboard || route is Route.Schedule || 
+                        if (route is Route.Dashboard || 
                             route is Route.Kanban || route is Route.Semesters) {
                             backStack.clear()
                         }
@@ -40,7 +40,6 @@ fun BotsoContent() {
             entryProvider = { key ->
                 when (key) {
                     is Route.Dashboard -> NavEntry(key) { DashboardScreen() }
-                    is Route.Schedule -> NavEntry(key) { ScheduleScreen() }
                     is Route.Kanban -> NavEntry(key) { KanbanScreen() }
                     is Route.Semesters -> NavEntry(key) { 
                         SemestersScreen(

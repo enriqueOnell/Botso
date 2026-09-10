@@ -29,6 +29,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.onell.botso.domain.model.ClassSession
+import com.onell.botso.domain.model.ClassSessionWithCourse
 import com.onell.botso.domain.model.Course
 import java.util.Locale
 
@@ -36,18 +38,21 @@ import java.util.Locale
 @Composable
 fun AddEditCourseDialog(
     onDismiss: () -> Unit,
-    onConfirm: (String ,String, Int, String, String, String, String, Boolean) -> Unit,
+    onConfirm: (Course, ClassSession) -> Unit,
     modifier: Modifier = Modifier,
-    course: Course? = null // Corregido: Course?
+    sessionWithCourse: ClassSessionWithCourse? = null // Corregido: Course?
 ) {
-    var id by remember { mutableStateOf(course?.id ?: "") }
-    var name by remember { mutableStateOf(course?.name ?: "") }
-    var dayOfWeek by remember { mutableIntStateOf(course?.dayOfWeek ?: 1) }
-    var startTime by remember { mutableStateOf(course?.startTime ?: "08:00") }
-    var endTime by remember { mutableStateOf(course?.endTime ?: "10:00") }
-    var professor by remember { mutableStateOf(course?.professor ?: "") }
-    var location by remember { mutableStateOf(course?.location ?: "") }
-    var isRemote by remember { mutableStateOf(course?.isRemote ?: false) }
+    var courseId by remember { mutableStateOf(sessionWithCourse?.course?.id ?: "") }
+    var sessionId by remember { mutableStateOf(sessionWithCourse?.session?.id ?: "") }
+    var semesterId by remember { mutableStateOf(sessionWithCourse?.course?.semesterId ?: "") }
+    var name by remember { mutableStateOf(sessionWithCourse?.course?.name ?: "") }
+    var colorHex by remember { mutableStateOf(sessionWithCourse?.course?.colorHex ?: "#4f378a") }
+    var dayOfWeek by remember { mutableIntStateOf(sessionWithCourse?.session?.dayOfWeek ?: 1) }
+    var startTime by remember { mutableStateOf(sessionWithCourse?.session?.startTime ?: "08:00") }
+    var endTime by remember { mutableStateOf(sessionWithCourse?.session?.endTime ?: "10:00") }
+    var professor by remember { mutableStateOf(sessionWithCourse?.course?.professor ?: "") }
+    var location by remember { mutableStateOf(sessionWithCourse?.session?.room ?: "") }
+    var isRemote by remember { mutableStateOf(sessionWithCourse?.session?.isRemote ?: false) }
 
     var showStartTimePicker by remember { mutableStateOf(false) }
     var showEndTimePicker by remember { mutableStateOf(false) }
@@ -59,7 +64,7 @@ fun AddEditCourseDialog(
         onDismissRequest = onDismiss,
         modifier = modifier,
         shape = RoundedCornerShape(24.dp),
-        title = { Text(if (course == null) "Nuevo Curso" else "Editar Curso") },
+        title = { Text(if (sessionWithCourse?.course == null) "Nuevo Curso" else "Editar Curso") },
         text = {
             Column(
                 modifier = Modifier.verticalScroll(rememberScrollState()),
@@ -164,13 +169,31 @@ fun AddEditCourseDialog(
         confirmButton = {
             Button(
                 onClick = {
-                    if (name.isNotBlank()) {
-                        onConfirm(id, name, dayOfWeek, startTime, endTime, professor, location, isRemote)
+                    if (name.isNotBlank() && startTime.isNotBlank() && endTime.isNotBlank()) {
+                        val newCourse = Course(
+                            id = courseId,
+                            semesterId = semesterId,
+                            name = name,
+                            code = name.take(3).uppercase(),
+                            colorHex = colorHex,
+                            professor = professor
+                        )
+                        val newSession = ClassSession(
+                            id = sessionId,
+                            courseId = courseId,
+                            dayOfWeek = dayOfWeek,
+                            startTime = startTime,
+                            endTime = endTime,
+                            room = location,
+                            isRemote = isRemote
+                        )
+                        onConfirm(newCourse, newSession)
                     }
                 },
+                enabled = name.isNotBlank() && startTime.isNotBlank() && endTime.isNotBlank(),
                 shape = RoundedCornerShape(24.dp)
             ) {
-                Text(if (course == null) "Añadir" else "Guardar")
+                Text(if (sessionWithCourse?.course == null) "Añadir" else "Guardar")
             }
         },
         dismissButton = {

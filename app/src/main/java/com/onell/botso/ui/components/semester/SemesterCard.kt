@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.onell.botso.domain.model.ClassSessionWithCourse
 import com.onell.botso.domain.model.Course
 import com.onell.botso.domain.model.Semester
 import com.onell.botso.domain.model.SemesterWithStats
@@ -46,7 +47,7 @@ fun SemesterCard(
     onAddCourse: () -> Unit,
     // 3. Los callbacks exigen modelos puros
     onEditSemester: (Semester) -> Unit,
-    onEditCourse: (Course) -> Unit,
+    onEditCourse: (ClassSessionWithCourse) -> Unit,
     onDeleteCourse: (Course) -> Unit,
     onDeleteSemester: (Semester) -> Unit
 ) {
@@ -135,12 +136,12 @@ fun SemesterCard(
                         Icon(Icons.Default.Add, contentDescription = "Añadir Curso", modifier = Modifier.size(20.dp))
                     }
                 }
-                stats.courses.forEach { course ->
+                stats.courses.forEach { sessionWithCourse ->
                     CourseRow(
-                        course = course,
-                        onClick = { onCourseClick(course.id) },
-                        onEdit = { onEditCourse(course) },
-                        onDelete = { onDeleteCourse(course) }
+                        sessionWithCourse = sessionWithCourse,
+                        onClick = { onCourseClick(sessionWithCourse.course.id) },
+                        onEdit = { onEditCourse(sessionWithCourse) },
+                        onDelete = { onDeleteCourse(sessionWithCourse.course) }
                     )
                 }
             }

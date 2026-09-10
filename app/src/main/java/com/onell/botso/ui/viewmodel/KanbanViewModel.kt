@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
@@ -85,7 +86,7 @@ class KanbanViewModel @Inject constructor(
             insertTaskUseCase(
                 // Forjamos el modelo de Dominio (Task) en lugar de TaskEntity
                 Task(
-                    id = "",
+                    id = UUID.randomUUID().toString(),
                     courseId = courseId,
                     title = title,
                     dueDate = dueDate,

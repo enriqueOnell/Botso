@@ -19,7 +19,6 @@ fun BotsoBottomNavigationBar(
     NavigationBar(modifier = modifier) {
         val items = listOf(
             BottomNavItem("Dashboard", Route.Dashboard, Icons.Default.Dashboard),
-            BottomNavItem("Schedule", Route.Schedule, Icons.Default.DateRange),
             BottomNavItem("Kanban", Route.Kanban, Icons.Default.ViewKanban),
             BottomNavItem("Semesters", Route.Semesters, Icons.AutoMirrored.Filled.List)
         )

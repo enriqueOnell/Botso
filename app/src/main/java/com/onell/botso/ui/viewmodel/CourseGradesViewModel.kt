@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
@@ -118,7 +119,6 @@ class CourseGradesViewModel @Inject constructor(
     }
 
     private fun saveGrades() {
-        val id = _uiState.value.courseId ?: return
         val state = _uiState.value
         val courseId = state.courseId ?: return
         val termId = state.currentTermId
@@ -128,12 +128,12 @@ class CourseGradesViewModel @Inject constructor(
         val weight = if (termId == 3) 0.20 else 0.15
 
         viewModelScope.launch {
-            saveOrUpdateGrade(id, courseId, termId, "Nota Formativa", formativaScore, weight)
-            saveOrUpdateGrade(id, courseId, termId, "Nota Cognitiva", cognitivaScore, weight)
+            saveOrUpdateGrade(courseId, termId, "Nota Formativa", formativaScore, weight)
+            saveOrUpdateGrade(courseId, termId, "Nota Cognitiva", cognitivaScore, weight)
         }
     }
 
-    private suspend fun saveOrUpdateGrade(id: String ,courseId: String, termId: Int, name: String, score: Double, weight: Double) {
+    private suspend fun saveOrUpdateGrade(courseId: String, termId: Int, name: String, score: Double, weight: Double) {
         val currentGrades = _uiState.value.grades
         val existingGrade = currentGrades.find { it.termId == termId && it.name == name }
 
@@ -142,7 +142,7 @@ class CourseGradesViewModel @Inject constructor(
         } else {
             // Usamos el modelo de Dominio puro (Grade), adiós a GradeEntity
             insertGradeUseCase(
-                Grade(id = id, courseId = courseId, termId = termId, name = name, score = score, weight = weight)
+                Grade(id = UUID.randomUUID().toString(), courseId = courseId, termId = termId, name = name, score = score, weight = weight)
             )
         }
     }
