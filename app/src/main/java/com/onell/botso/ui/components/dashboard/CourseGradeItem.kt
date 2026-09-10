@@ -48,15 +48,15 @@ fun CourseGradeItem(courseWithAverage: CourseWithAverage) {
                 )
             }
             Surface(
-                color = if (courseWithAverage.average >= 3.0) Color(0xFFA0F399) else Color(0xFFFFDAD6),
+                color = if (courseWithAverage.averageGrade >= 3.0) Color(0xFFA0F399) else Color(0xFFFFDAD6),
                 shape = RoundedCornerShape(24.dp)
             ) {
                 Text(
-                    text = format(Locale.US, "%.2f", courseWithAverage.average),
+                    text = format(Locale.US, "%.2f", courseWithAverage.averageGrade),
                     modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.ExtraBold,
-                    color = if (courseWithAverage.average >= 3.0) Color(0xFF002106) else Color(0xFF410002)
+                    color = if (courseWithAverage.averageGrade >= 3.0) Color(0xFF002106) else Color(0xFF410002)
                 )
             }
         }

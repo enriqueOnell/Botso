@@ -51,7 +51,6 @@ class KanbanViewModel @Inject constructor(
     fun onEvent(event: KanbanUiEvent) {
         when (event) {
             is KanbanUiEvent.OnAddTask -> addTask(
-                event.id,
                 event.courseId,
                 event.title,
                 event.dueDate,
@@ -75,7 +74,6 @@ class KanbanViewModel @Inject constructor(
     }
 
     private fun addTask(
-        id: String,
         courseId: String,
         title: String,
         dueDate: Long,
@@ -87,7 +85,7 @@ class KanbanViewModel @Inject constructor(
             insertTaskUseCase(
                 // Forjamos el modelo de Dominio (Task) en lugar de TaskEntity
                 Task(
-                    id = id,
+                    id = "",
                     courseId = courseId,
                     title = title,
                     dueDate = dueDate,

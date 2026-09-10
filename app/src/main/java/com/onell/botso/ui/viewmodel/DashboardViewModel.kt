@@ -11,70 +11,67 @@ import com.onell.botso.domain.usecase.task.GetAllTasksUseCase
 import com.onell.botso.ui.uistate.CourseWithAverage
 import com.onell.botso.ui.uistate.DashboardUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.stateIn
-import java.time.Instant
+import kotlinx.coroutines.launch
 import java.time.LocalDate
-import java.time.ZoneId
 import javax.inject.Inject
 
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
     private val getSessionsForDayUseCase: GetSessionsForDayUseCase,
-    private val getAllTasksUseCase: GetAllTasksUseCase, // 1. Cambiamos el arma aquí
+    private val getAllTasksUseCase: GetAllTasksUseCase,
     private val getAllCoursesUseCase: GetAllCoursesUseCase,
     private val getAllGradesUseCase: GetAllGradesUseCase
 ) : ViewModel() {
+    private val _uiState = MutableStateFlow<DashboardUiState>(DashboardUiState.Loading)
+    val uiState: StateFlow<DashboardUiState> = _uiState.asStateFlow()
 
-    private val dayOfWeek = LocalDate.now().dayOfWeek.value
+     init {
+         loadDashboardData()
+     }
 
-    val uiState: StateFlow<DashboardUiState> = combine(
-        getSessionsForDayUseCase(dayOfWeek),
-        getAllTasksUseCase(), // 2. Disparamos la búsqueda global sin ID
-        getAllCoursesUseCase(),
-        getAllGradesUseCase()
-    ) { sessions, allTasks, courses, grades ->
-        val today = LocalDate.now()
+    val dayOfWeek = LocalDate.now().dayOfWeek.value
 
-        // 3. Forjamos el TaskWithCourse cruzando las dos listas manualmente
-        val tasksWithCourse = allTasks.map { task ->
-            // Buscamos a qué materia pertenece esta tarea
-            val courseForTask = courses.firstOrNull { it.id == task.courseId }
-                ?: return@map null // Si la materia no existe (no debería pasar), la descartamos
+    private fun loadDashboardData() {
+        viewModelScope.launch {
+            try {
+                combine(
+                    getSessionsForDayUseCase(dayOfWeek),
+                    getAllTasksUseCase(),
+                    getAllCoursesUseCase(),
+                    getAllGradesUseCase()
+                ) { sessions, tasks, courses, grades ->
 
-            TaskWithCourse(task = task, course = courseForTask)
-        }.filterNotNull() // Limpiamos los nulos por seguridad
+                    // Cruce de Task con Course para generar TaskWithCourse
+                    val priorityTasksWithCourse = tasks
+                        .filter { it.isPriority && it.status != "DONE" }
+                        .sortedBy { it.dueDate }
+                        .mapNotNull { task ->
+                            val course = courses.firstOrNull { it.id == task.courseId }
+                            if (course != null) TaskWithCourse(task = task, course = course) else null
+                        }
 
-        val todayClasses = sessions.sortedBy { it.session.startTime }
-
-        // Ahora puedes seguir usando tasksWithCourse exactamente igual que antes
-        val pendingTasks = tasksWithCourse.filter { it.task.status != "DONE" }
-
-        val priorities = pendingTasks.filter {
-            it.task.isPriority ||
-                    Instant.ofEpochMilli(it.task.dueDate).atZone(ZoneId.systemDefault())
-                        .toLocalDate().isBefore(today.plusDays(1))
-        }.sortedBy { it.task.dueDate }
-
-        val coursesWithGrades = courses.map { course ->
-            val courseGrades = grades.filter { it.courseId == course.id }
-            CourseWithAverage(course, calculateCourseAverage(courseGrades))
+                    DashboardUiState.Success(
+                        todayClasses = sessions.sortedBy { it.session.startTime },
+                        pendingTasksCount = tasks.count { it.status != "DONE" },
+                        priorityTasks = priorityTasksWithCourse,
+                        coursesWithGrades = courses.map { course ->
+                            val courseGrades = grades.filter { it.courseId == course.id }
+                            CourseWithAverage(course, calculateCourseAverage(courseGrades))
+                        }
+                    )
+                }
+                    .collect { updatedState -> _uiState.value = updatedState }
+            } catch (e: Exception) {
+                _uiState.value = DashboardUiState.Error("Error al cargar los datos: ${e.message}")
+            }
         }
-
-        DashboardUiState(
-            todayClasses = todayClasses,
-            pendingTasksCount = pendingTasks.size,
-            priorities = priorities,
-            coursesWithGrades = coursesWithGrades
-        )
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), DashboardUiState())
-
-    // ... (calculateCourseAverage queda igual)
+    }
 }
 
-// El cálculo ahora exige la clase Grade del dominio
 private fun calculateCourseAverage(grades: List<Grade>): Double {
     if (grades.isEmpty()) return 0.0
     val gradesByTerm = grades.groupBy { it.termId }

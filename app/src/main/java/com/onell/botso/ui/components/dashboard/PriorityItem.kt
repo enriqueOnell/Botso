@@ -26,15 +26,18 @@ import androidx.compose.ui.unit.dp
 import com.onell.botso.domain.model.TaskWithCourse
 
 @Composable
-fun PriorityItem(taskWithCourse: TaskWithCourse) {
+fun PriorityItem(
+    taskWithCourse: TaskWithCourse,
+    modifier: Modifier = Modifier
+) {
     val indicatorColor = if (taskWithCourse.task.dueDate < System.currentTimeMillis() + 86400000) {
-        Color(0xFFBA1A1A) // Red (Vence hoy)
+        Color(0xFFBA1A1A) // Red (Vence hoy o ya venció)
     } else {
-        Color(0xFFA0F399) // Green (Mañana)
+        Color(0xFFA0F399) // Green (Mañana o después)
     }
 
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
@@ -52,7 +55,7 @@ fun PriorityItem(taskWithCourse: TaskWithCourse) {
                     .background(indicatorColor)
             )
             Spacer(modifier = Modifier.width(12.dp))
-            Column {
+            Column(modifier = Modifier.weight(1f)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = taskWithCourse.task.title,

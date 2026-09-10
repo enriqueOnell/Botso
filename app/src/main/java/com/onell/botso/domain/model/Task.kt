@@ -1,7 +1,5 @@
 package com.onell.botso.domain.model
 
-import androidx.room.PrimaryKey
-
 data class Task(
 val id: String,
 val courseId: String,

@@ -20,15 +20,16 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -40,23 +41,27 @@ import com.onell.botso.domain.model.Task
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import kotlin.collections.forEach
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditTaskDialog(
     courses: List<Course>,
     onDismiss: () -> Unit,
-    onConfirm: (String, String, String, Long, Boolean, Int, String) -> Unit,
+    onConfirm: (String, String, Long, Boolean, Int, String) -> Unit,
     modifier: Modifier = Modifier,
-    task: Task? = null // Corregido: Debe ser Task? para aceptar null
+    task: Task? = null
 ) {
-    var id by remember { mutableStateOf(task?.id ?: "") }
     var title by remember { mutableStateOf(task?.title ?: "") }
     var selectedCourseId by remember {
         mutableStateOf(
-            task?.courseId ?: courses.firstOrNull()?.id ?: ""
+            task?.courseId ?: ""
         )
+    }
+
+    LaunchedEffect(courses) {
+        if (selectedCourseId.isBlank() && courses.isNotEmpty()) {
+            selectedCourseId = courses.first().id
+        }
     }
     var isPriority by remember { mutableStateOf(task?.isPriority ?: false) }
     var week by remember { mutableIntStateOf(task?.week ?: 1) }
@@ -117,6 +122,13 @@ fun AddEditTaskDialog(
                             )
                         }
                     }
+                }
+                if (courses.isEmpty()) {
+                    Text(
+                        text = "⚠️ No hay cursos disponibles. Debes crear un curso primero.",
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall
+                    )
                 }
 
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -195,7 +207,6 @@ fun AddEditTaskDialog(
                 onClick = {
                     if (title.isNotBlank() && selectedCourseId.isNotBlank()) {
                         onConfirm(
-                            id,
                             selectedCourseId,
                             title,
                             datePickerState.selectedDateMillis ?: System.currentTimeMillis(),
@@ -205,6 +216,7 @@ fun AddEditTaskDialog(
                         )
                     }
                 },
+                enabled = title.isNotBlank() && selectedCourseId.isNotBlank() && courses.isNotEmpty(),
                 shape = RoundedCornerShape(24.dp)
             ) {
                 Text(if (task == null) "Añadir" else "Guardar")

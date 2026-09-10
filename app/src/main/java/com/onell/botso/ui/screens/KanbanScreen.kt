@@ -47,11 +47,9 @@ import com.onell.botso.ui.viewmodel.KanbanViewModel
 fun KanbanScreen(
     viewModel: KanbanViewModel = hiltViewModel()
 ) {
-    // 1. Observamos el único estado de la interfaz
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     var showAddDialog by remember { mutableStateOf(false) }
-    // 2. Cambiamos TaskEntity por Task
     var taskToEdit by remember { mutableStateOf<Task?>(null) }
 
     Scaffold(
@@ -67,7 +65,6 @@ fun KanbanScreen(
         }
     ) { padding ->
         KanbanContent(
-            // 3. Extraemos los datos del uiState unificado
             tasks = uiState.tasks,
             columns = uiState.columns,
             onTaskClick = { viewModel.onEvent(KanbanUiEvent.OnUpdateTaskStatus(it)) },
@@ -79,12 +76,11 @@ fun KanbanScreen(
 
     if (showAddDialog) {
         AddEditTaskDialog(
-            courses = uiState.courses, // Sacamos los cursos del uiState
+            courses = uiState.courses,
             onDismiss = { showAddDialog = false },
-            onConfirm = { id, courseId, title, dueDate, isPriority, week, description ->
+            onConfirm = { courseId, title, dueDate, isPriority, week, description ->
                 viewModel.onEvent(
                     KanbanUiEvent.OnAddTask(
-                        id,
                         courseId,
                         title,
                         dueDate,
@@ -103,7 +99,7 @@ fun KanbanScreen(
             courses = uiState.courses,
             task = task,
             onDismiss = { taskToEdit = null },
-            onConfirm = { id, courseId, title, dueDate, isPriority, week, description ->
+            onConfirm = { courseId, title, dueDate, isPriority, week, description ->
                 viewModel.onEvent(
                     KanbanUiEvent.OnUpdateTask(
                         task,
@@ -125,7 +121,6 @@ fun KanbanScreen(
 fun KanbanContent(
     tasks: List<TaskWithCourse>,
     columns: List<KanbanColumnInfo>,
-    // 4. Todas las funciones callback ahora exigen el modelo puro (Task)
     onTaskClick: (Task) -> Unit,
     onDeleteTask: (Task) -> Unit,
     onEditTask: (Task) -> Unit,

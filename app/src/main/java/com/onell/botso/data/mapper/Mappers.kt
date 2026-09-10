@@ -17,6 +17,7 @@ import com.onell.botso.domain.model.SemesterWithCourse
 import com.onell.botso.domain.model.SemesterWithStats
 import com.onell.botso.domain.model.Task
 import com.onell.botso.domain.model.TaskWithCourse
+import java.util.UUID
 
 fun ClassSessionEntity.toDomain(): ClassSession {
     return ClassSession(
@@ -31,7 +32,7 @@ fun ClassSessionEntity.toDomain(): ClassSession {
 
 fun ClassSession.toEntity(): ClassSessionEntity{
     return ClassSessionEntity(
-        id = this.id,
+        id = if (this.id.isBlank()) UUID.randomUUID().toString() else this.id,
         courseId = this.courseId,
         dayOfWeek = this.dayOfWeek,
         startTime = this.startTime,
@@ -56,7 +57,7 @@ fun CourseEntity.toDomain(): Course {
 }
 fun Course.toEntity(): CourseEntity {
     return CourseEntity(
-        id = this.id,
+        id = if (this.id.isBlank()) UUID.randomUUID().toString() else this.id,
         semesterId = this.semesterId,
         name = this.name,
         code = this.code,
@@ -83,7 +84,7 @@ fun GradeEntity.toDomain(): Grade{
 
 fun Grade.toEntity(): GradeEntity{
     return GradeEntity(
-        id = this.id,
+        id = if (this.id.isBlank()) UUID.randomUUID().toString() else this.id,
         courseId = this.courseId,
         name = this.name,
         score = this.score,
@@ -104,7 +105,7 @@ fun SemesterEntity.toDomain(): Semester {
 
 fun Semester.toEntity(): SemesterEntity {
     return SemesterEntity(
-        id = this.id,
+        id = if (this.id.isBlank()) UUID.randomUUID().toString() else this.id,
         name = this.name,
         startDate = this.startDate,
         endDate = this.endDate,
@@ -128,7 +129,7 @@ fun TaskEntity.toDomain(): Task{
 
 fun Task.toEntity(): TaskEntity{
     return TaskEntity(
-        id = this.id,
+        id = if (this.id.isBlank()) UUID.randomUUID().toString() else this.id,
         courseId = this.courseId,
         title = this.title,
         dueDate = this.dueDate,
