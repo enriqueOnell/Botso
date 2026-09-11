@@ -17,7 +17,7 @@ interface TaskDao {
     @Query("SELECT * FROM tasks WHERE status != 'DONE'")
     fun getPendingTasks(): Flow<List<TaskEntity>>
 
-    @Query("SELECT * FROM tasks WHERE is_priority = 'true' AND status != 'DONE'")
+    @Query("SELECT * FROM tasks WHERE is_priority = 1 AND status != 'DONE'")
     fun getPriorityTasks(): Flow<List<TaskEntity>>
 
     @Query("SELECT * FROM tasks")
