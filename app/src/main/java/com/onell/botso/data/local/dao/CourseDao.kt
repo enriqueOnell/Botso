@@ -1,12 +1,8 @@
 package com.onell.botso.data.local.dao
 
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
-import androidx.room.Update
+import androidx.room.*
 import com.onell.botso.data.local.entity.CourseEntity
+import com.onell.botso.data.local.entity.CourseWithGradesEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -19,6 +15,10 @@ interface CourseDao {
 
     @Query("SELECT * FROM courses")
     fun getAllCourses(): Flow<List<CourseEntity>>
+
+    @Transaction
+    @Query("SELECT * FROM courses")
+    fun getCoursesWithGrades(): Flow<List<CourseWithGradesEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCourse(course: CourseEntity)

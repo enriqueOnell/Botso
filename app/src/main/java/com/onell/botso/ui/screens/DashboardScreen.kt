@@ -23,22 +23,20 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.google.android.gms.tasks.Tasks
 import com.onell.botso.domain.model.ClassSession
 import com.onell.botso.domain.model.ClassSessionWithCourse
 import com.onell.botso.domain.model.Course
+import com.onell.botso.domain.model.CourseWithGrades
+import com.onell.botso.domain.model.Grade
 import com.onell.botso.domain.model.Task
 import com.onell.botso.ui.components.dashboard.ClassCard
 import com.onell.botso.ui.components.dashboard.CourseGradeItem
 import com.onell.botso.ui.components.dashboard.PendingTasksCard
 import com.onell.botso.ui.components.dashboard.PriorityItem
-import com.onell.botso.ui.uistate.CourseWithAverage
 import com.onell.botso.ui.uistate.DashboardUiState
 import com.onell.botso.ui.viewmodel.DashboardViewModel
 import java.time.LocalDate
 import java.time.LocalTime
-import java.time.format.DateTimeFormatter
-import kotlin.collections.List
 
 @Composable
 fun DashboardScreen(
@@ -197,14 +195,23 @@ fun DashboardScreenPreview() {
         )
     )
     val courses = listOf(
-        CourseWithAverage(
+        CourseWithGrades(
             course = Course(
                 id = "id2",
                 semesterId = "semesterId",
                 name = "name",
                 professor = "professor"
             ),
-            averageGrade = 3.5
+            grades = listOf(
+                Grade(
+                    id = "g1",
+                    courseId = "id2",
+                    name = "Formativa",
+                    score = 4.0,
+                    weight = 0.5,
+                    termId = 1
+                )
+            )
         )
     )
     val todayClasses = listOf(

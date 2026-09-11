@@ -38,6 +38,7 @@ import java.time.format.DateTimeFormatter
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditCourseDialog(
+    semesterId: String = "",
     onDismiss: () -> Unit,
     onConfirm: (Course, ClassSession) -> Unit,
     modifier: Modifier = Modifier,
@@ -45,7 +46,7 @@ fun AddEditCourseDialog(
 ) {
     var courseId by remember { mutableStateOf(sessionWithCourse?.course?.id ?: "") }
     var sessionId by remember { mutableStateOf(sessionWithCourse?.session?.id ?: "") }
-    var semesterId by remember { mutableStateOf(sessionWithCourse?.course?.semesterId ?: "") }
+    var currentSemesterId by remember { mutableStateOf(sessionWithCourse?.course?.semesterId?.takeIf { it.isNotBlank() } ?: semesterId) }
     var name by remember { mutableStateOf(sessionWithCourse?.course?.name ?: "") }
     var dayOfWeek by remember { mutableIntStateOf(sessionWithCourse?.session?.dayOfWeek ?: 1) }
     var startTime by remember { mutableStateOf(sessionWithCourse?.session?.startTime ?: LocalTime.of(8, 0)) }
@@ -172,7 +173,7 @@ fun AddEditCourseDialog(
                     if (name.isNotBlank()) {
                         val newCourse = Course(
                             id = courseId,
-                            semesterId = semesterId,
+                            semesterId = currentSemesterId,
                             name = name,
                             professor = professor
                         )

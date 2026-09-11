@@ -124,6 +124,7 @@ fun SemestersScreen(
 
     showAddCourseDialogForSemesterId?.let { semesterId ->
         AddEditCourseDialog(
+            semesterId = semesterId,
             onDismiss = { showAddCourseDialogForSemesterId = null },
             onConfirm = { newCourse, newSession ->
                 viewModel.onEvent(

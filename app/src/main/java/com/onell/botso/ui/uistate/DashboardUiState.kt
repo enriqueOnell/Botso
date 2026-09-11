@@ -1,9 +1,10 @@
 package com.onell.botso.ui.uistate
 
 import com.onell.botso.domain.model.ClassSessionWithCourse
-import com.onell.botso.domain.model.Course
+import com.onell.botso.domain.model.CourseWithGrades
 import com.onell.botso.domain.model.Task
-import com.onell.botso.domain.model.TaskWithCourse
+
+typealias CourseWithAverage = CourseWithGrades
 
 sealed interface DashboardUiState {
     data object Loading : DashboardUiState
@@ -14,11 +15,6 @@ sealed interface DashboardUiState {
         val todayClasses: List<ClassSessionWithCourse> = emptyList(),
         val pendingTasksCount: Int = 0,
         val priorityTasks: List<Task> = emptyList(),
-        val coursesWithGrades: List<CourseWithAverage> = emptyList()
+        val coursesWithGrades: List<CourseWithGrades> = emptyList()
     ) : DashboardUiState
 }
-
-data class CourseWithAverage(
-    val course: Course,
-    val averageGrade: Double
-)

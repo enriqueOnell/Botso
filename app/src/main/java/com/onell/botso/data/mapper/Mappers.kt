@@ -3,6 +3,7 @@ package com.onell.botso.data.mapper
 import com.onell.botso.data.local.entity.ClassSessionEntity
 import com.onell.botso.data.local.entity.ClassSessionWithCourseEntity
 import com.onell.botso.data.local.entity.CourseEntity
+import com.onell.botso.data.local.entity.CourseWithGradesEntity
 import com.onell.botso.data.local.entity.GradeEntity
 import com.onell.botso.data.local.entity.SemesterEntity
 import com.onell.botso.data.local.entity.SemesterWithCourseEntity
@@ -11,6 +12,7 @@ import com.onell.botso.data.local.entity.TaskWithCourseEntity
 import com.onell.botso.domain.model.ClassSession
 import com.onell.botso.domain.model.ClassSessionWithCourse
 import com.onell.botso.domain.model.Course
+import com.onell.botso.domain.model.CourseWithGrades
 import com.onell.botso.domain.model.Grade
 import com.onell.botso.domain.model.Semester
 import com.onell.botso.domain.model.SemesterWithCourse
@@ -148,5 +150,12 @@ fun ClassSessionWithCourseEntity.toDomain(): ClassSessionWithCourse {
     return ClassSessionWithCourse (
         session = this.classSession.toDomain(),
         course = this.course.toDomain()
+    )
+}
+
+fun CourseWithGradesEntity.toDomain(): CourseWithGrades {
+    return CourseWithGrades(
+        course = this.course.toDomain(),
+        grades = this.grades.map { it.toDomain() }
     )
 }

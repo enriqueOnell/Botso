@@ -4,6 +4,7 @@ import com.onell.botso.data.local.dao.CourseDao
 import com.onell.botso.data.mapper.toDomain
 import com.onell.botso.data.mapper.toEntity
 import com.onell.botso.domain.model.Course
+import com.onell.botso.domain.model.CourseWithGrades
 import com.onell.botso.domain.repository.CourseRepository
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.Flow
@@ -23,6 +24,10 @@ class CourseRepositoryImpl @Inject constructor(
 
     override fun getCourseById(courseId: String): Flow<Course?> {
         return courseDao.getCourseById(courseId).map { entity -> entity?.toDomain() }
+    }
+
+    override fun getCoursesWithGrades(): Flow<List<CourseWithGrades>> {
+        return courseDao.getCoursesWithGrades().map { list -> list.map { entity -> entity.toDomain() } }
     }
 
     override suspend fun insertCourse(course: Course) {
