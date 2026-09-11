@@ -4,6 +4,7 @@ import com.onell.botso.domain.model.ClassSession
 import com.onell.botso.domain.model.Course
 import com.onell.botso.domain.model.Semester
 import com.onell.botso.domain.model.SemesterWithStats
+import java.time.LocalDate
 
 data class SemestersUiState(
     val semestersWithStats: List<SemesterWithStats> = emptyList()
@@ -13,16 +14,16 @@ sealed class SemestersUiEvent {
     data class OnAddSemester(
         val id: String,
         val name: String,
-        val startDate: Long,
-        val endDate: Long,
+        val startDate: LocalDate,
+        val endDate: LocalDate,
         val isActive: Boolean
     ) : SemestersUiEvent()
 
     data class OnUpdateSemester(
         val semester: Semester,
         val name: String,
-        val startDate: Long,
-        val endDate: Long,
+        val startDate: LocalDate,
+        val endDate: LocalDate,
         val isActive: Boolean
     ) : SemestersUiEvent()
 

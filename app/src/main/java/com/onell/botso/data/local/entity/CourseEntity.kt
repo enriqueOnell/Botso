@@ -25,10 +25,6 @@ data class CourseEntity(
     val semesterId: String,
     @ColumnInfo(name = "name")
     val name: String,
-    @ColumnInfo(name = "code")
-    val code: String = "",
-    @ColumnInfo(name = "color_hex")
-    val colorHex: String = "",
     @ColumnInfo(name = "professor")
     val professor: String = ""
 )

@@ -26,7 +26,7 @@ data class TaskEntity(
     @ColumnInfo(name = "title")
     val title: String,
     @ColumnInfo(name = "due_date")
-    val dueDate: Long,
+    val dueDate: String,
     @ColumnInfo(name = "is_priority")
     val isPriority: Boolean = false,
     @ColumnInfo(name = "has_attachment")

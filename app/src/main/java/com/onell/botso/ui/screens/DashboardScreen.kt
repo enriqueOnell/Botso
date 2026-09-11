@@ -23,12 +23,22 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.google.android.gms.tasks.Tasks
+import com.onell.botso.domain.model.ClassSession
+import com.onell.botso.domain.model.ClassSessionWithCourse
+import com.onell.botso.domain.model.Course
+import com.onell.botso.domain.model.Task
 import com.onell.botso.ui.components.dashboard.ClassCard
 import com.onell.botso.ui.components.dashboard.CourseGradeItem
 import com.onell.botso.ui.components.dashboard.PendingTasksCard
 import com.onell.botso.ui.components.dashboard.PriorityItem
+import com.onell.botso.ui.uistate.CourseWithAverage
 import com.onell.botso.ui.uistate.DashboardUiState
 import com.onell.botso.ui.viewmodel.DashboardViewModel
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
+import kotlin.collections.List
 
 @Composable
 fun DashboardScreen(
@@ -140,10 +150,10 @@ fun DashboardContent(
 
                 items(
                     items = uiState.priorityTasks,
-                    key = { it.task.id }
-                ) { taskWithCourse ->
+                    key = { it.id }
+                ) { task ->
                     PriorityItem(
-                        taskWithCourse = taskWithCourse,
+                        task = task,
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -173,7 +183,56 @@ fun DashboardContent(
 @Preview(showBackground = true)
 @Composable
 fun DashboardScreenPreview() {
-    MaterialTheme {
-        DashboardContent(uiState = DashboardUiState.Success())
-    }
+    val tasks = listOf(
+        Task(
+            id = "id",
+            courseId = "courseId",
+            title = "title",
+            dueDate = LocalDate.now(),
+            isPriority = true,
+            hasAttachment = true,
+            status = "DONE",
+            week = 3,
+            description = ""
+        )
+    )
+    val courses = listOf(
+        CourseWithAverage(
+            course = Course(
+                id = "id2",
+                semesterId = "semesterId",
+                name = "name",
+                professor = "professor"
+            ),
+            averageGrade = 3.5
+        )
+    )
+    val todayClasses = listOf(
+        ClassSessionWithCourse(
+            session = ClassSession(
+                "12",
+                "id2",
+                1,
+                LocalTime.of(10,9),
+                LocalTime.of(20,17),
+                "room",
+                true
+            ),
+            course = Course(
+                id = "id2",
+                semesterId = "semesterId",
+                name = "name",
+                professor = "professor"
+            )
+        )
+    )
+
+    DashboardContent(
+        uiState = DashboardUiState.Success(
+            priorityTasks = tasks,
+            coursesWithGrades = courses,
+            todayClasses = todayClasses
+        )
+    )
+
 }

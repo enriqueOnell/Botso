@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.onell.botso.domain.model.Semester
 import java.time.Instant
+import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
@@ -33,15 +34,18 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun AddEditSemesterDialog(
     onDismiss: () -> Unit,
-    onConfirm: (String, String, Long, Long) -> Unit,
+    onConfirm: (String, String, LocalDate, LocalDate) -> Unit,
     modifier: Modifier = Modifier,
-    semester: Semester? = null // Corregido: Semester?
+    semester: Semester? = null
 ) {
     var id by remember { mutableStateOf(semester?.id ?: "") }
     var name by remember { mutableStateOf(semester?.name ?: "") }
 
-    val startDatePickerState = rememberDatePickerState(initialSelectedDateMillis = semester?.startDate ?: System.currentTimeMillis())
-    val endDatePickerState = rememberDatePickerState(initialSelectedDateMillis = semester?.endDate ?: (System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 30 * 4))
+    val startDateMillis = semester?.startDate?.atStartOfDay(ZoneId.of("UTC"))?.toInstant()?.toEpochMilli() ?: System.currentTimeMillis()
+    val endDateMillis = semester?.endDate?.atStartOfDay(ZoneId.of("UTC"))?.toInstant()?.toEpochMilli() ?: (System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 30 * 4)
+
+    val startDatePickerState = rememberDatePickerState(initialSelectedDateMillis = startDateMillis)
+    val endDatePickerState = rememberDatePickerState(initialSelectedDateMillis = endDateMillis)
 
     var showStartDatePicker by remember { mutableStateOf(false) }
     var showEndDatePicker by remember { mutableStateOf(false) }
@@ -104,12 +108,11 @@ fun AddEditSemesterDialog(
             Button(
                 onClick = {
                     if (name.isNotBlank()) {
-                        onConfirm(
-                            id,
-                            name,
-                            startDatePickerState.selectedDateMillis ?: System.currentTimeMillis(),
-                            endDatePickerState.selectedDateMillis ?: System.currentTimeMillis()
-                        )
+                        val startMillis = startDatePickerState.selectedDateMillis ?: System.currentTimeMillis()
+                        val endMillis = endDatePickerState.selectedDateMillis ?: System.currentTimeMillis()
+                        val startDate = Instant.ofEpochMilli(startMillis).atZone(ZoneId.of("UTC")).toLocalDate()
+                        val endDate = Instant.ofEpochMilli(endMillis).atZone(ZoneId.of("UTC")).toLocalDate()
+                        onConfirm(id, name, startDate, endDate)
                     }
                 },
                 enabled = name.isNotBlank(),

@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import com.onell.botso.domain.model.Course
 import com.onell.botso.domain.model.Task
 import java.time.Instant
+import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
@@ -47,7 +48,7 @@ import java.time.format.DateTimeFormatter
 fun AddEditTaskDialog(
     courses: List<Course>,
     onDismiss: () -> Unit,
-    onConfirm: (String, String, Long, Boolean, Int, String) -> Unit,
+    onConfirm: (String, String, LocalDate, Boolean, Int, String) -> Unit,
     modifier: Modifier = Modifier,
     task: Task? = null
 ) {
@@ -69,8 +70,9 @@ fun AddEditTaskDialog(
     var expandedCourse by remember { mutableStateOf(false) }
     var expandedWeek by remember { mutableStateOf(false) }
 
+    val initialDateMillis = task?.dueDate?.atStartOfDay(ZoneId.of("UTC"))?.toInstant()?.toEpochMilli() ?: System.currentTimeMillis()
     val datePickerState = rememberDatePickerState(
-        initialSelectedDateMillis = task?.dueDate ?: System.currentTimeMillis()
+        initialSelectedDateMillis = initialDateMillis
     )
     var showDatePicker by remember { mutableStateOf(false) }
 
@@ -206,10 +208,12 @@ fun AddEditTaskDialog(
             Button(
                 onClick = {
                     if (title.isNotBlank() && selectedCourseId.isNotBlank()) {
+                        val dueDateMillis = datePickerState.selectedDateMillis ?: System.currentTimeMillis()
+                        val dueDate = Instant.ofEpochMilli(dueDateMillis).atZone(ZoneId.of("UTC")).toLocalDate()
                         onConfirm(
                             selectedCourseId,
                             title,
-                            datePickerState.selectedDateMillis ?: System.currentTimeMillis(),
+                            dueDate,
                             isPriority,
                             week,
                             description

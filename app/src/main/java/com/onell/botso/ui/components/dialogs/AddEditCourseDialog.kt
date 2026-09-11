@@ -32,7 +32,8 @@ import androidx.compose.ui.unit.dp
 import com.onell.botso.domain.model.ClassSession
 import com.onell.botso.domain.model.ClassSessionWithCourse
 import com.onell.botso.domain.model.Course
-import java.util.Locale
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,16 +41,15 @@ fun AddEditCourseDialog(
     onDismiss: () -> Unit,
     onConfirm: (Course, ClassSession) -> Unit,
     modifier: Modifier = Modifier,
-    sessionWithCourse: ClassSessionWithCourse? = null // Corregido: Course?
+    sessionWithCourse: ClassSessionWithCourse? = null
 ) {
     var courseId by remember { mutableStateOf(sessionWithCourse?.course?.id ?: "") }
     var sessionId by remember { mutableStateOf(sessionWithCourse?.session?.id ?: "") }
     var semesterId by remember { mutableStateOf(sessionWithCourse?.course?.semesterId ?: "") }
     var name by remember { mutableStateOf(sessionWithCourse?.course?.name ?: "") }
-    var colorHex by remember { mutableStateOf(sessionWithCourse?.course?.colorHex ?: "#4f378a") }
     var dayOfWeek by remember { mutableIntStateOf(sessionWithCourse?.session?.dayOfWeek ?: 1) }
-    var startTime by remember { mutableStateOf(sessionWithCourse?.session?.startTime ?: "08:00") }
-    var endTime by remember { mutableStateOf(sessionWithCourse?.session?.endTime ?: "10:00") }
+    var startTime by remember { mutableStateOf(sessionWithCourse?.session?.startTime ?: LocalTime.of(8, 0)) }
+    var endTime by remember { mutableStateOf(sessionWithCourse?.session?.endTime ?: LocalTime.of(10, 0)) }
     var professor by remember { mutableStateOf(sessionWithCourse?.course?.professor ?: "") }
     var location by remember { mutableStateOf(sessionWithCourse?.session?.room ?: "") }
     var isRemote by remember { mutableStateOf(sessionWithCourse?.session?.isRemote ?: false) }
@@ -110,7 +110,7 @@ fun AddEditCourseDialog(
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     Box(modifier = Modifier.weight(1f)) {
                         OutlinedTextField(
-                            value = startTime,
+                            value = startTime.format(DateTimeFormatter.ofPattern("HH:mm")),
                             onValueChange = {},
                             readOnly = true,
                             label = { Text("Inicio") },
@@ -125,7 +125,7 @@ fun AddEditCourseDialog(
                     }
                     Box(modifier = Modifier.weight(1f)) {
                         OutlinedTextField(
-                            value = endTime,
+                            value = endTime.format(DateTimeFormatter.ofPattern("HH:mm")),
                             onValueChange = {},
                             readOnly = true,
                             label = { Text("Fin") },
@@ -169,13 +169,11 @@ fun AddEditCourseDialog(
         confirmButton = {
             Button(
                 onClick = {
-                    if (name.isNotBlank() && startTime.isNotBlank() && endTime.isNotBlank()) {
+                    if (name.isNotBlank()) {
                         val newCourse = Course(
                             id = courseId,
                             semesterId = semesterId,
                             name = name,
-                            code = name.take(3).uppercase(),
-                            colorHex = colorHex,
                             professor = professor
                         )
                         val newSession = ClassSession(
@@ -190,7 +188,7 @@ fun AddEditCourseDialog(
                         onConfirm(newCourse, newSession)
                     }
                 },
-                enabled = name.isNotBlank() && startTime.isNotBlank() && endTime.isNotBlank(),
+                enabled = name.isNotBlank(),
                 shape = RoundedCornerShape(24.dp)
             ) {
                 Text(if (sessionWithCourse?.course == null) "Añadir" else "Guardar")
@@ -204,32 +202,26 @@ fun AddEditCourseDialog(
     )
 
     if (showStartTimePicker) {
-        val parts = startTime.split(":")
-        val h = parts.getOrNull(0)?.toIntOrNull() ?: 8
-        val m = parts.getOrNull(1)?.toIntOrNull() ?: 0
         BotsoTimePickerDialog(
             onDismiss = { showStartTimePicker = false },
             onConfirm = { hour, minute ->
-                startTime = String.format(Locale.getDefault(), "%02d:%02d", hour, minute)
+                startTime = LocalTime.of(hour, minute)
                 showStartTimePicker = false
             },
-            initialHour = h,
-            initialMinute = m
+            initialHour = startTime.hour,
+            initialMinute = startTime.minute
         )
     }
 
     if (showEndTimePicker) {
-        val parts = endTime.split(":")
-        val h = parts.getOrNull(0)?.toIntOrNull() ?: 10
-        val m = parts.getOrNull(1)?.toIntOrNull() ?: 0
         BotsoTimePickerDialog(
             onDismiss = { showEndTimePicker = false },
             onConfirm = { hour, minute ->
-                endTime = String.format(Locale.getDefault(), "%02d:%02d", hour, minute)
+                endTime = LocalTime.of(hour, minute)
                 showEndTimePicker = false
             },
-            initialHour = h,
-            initialMinute = m
+            initialHour = endTime.hour,
+            initialMinute = endTime.minute
         )
     }
 }

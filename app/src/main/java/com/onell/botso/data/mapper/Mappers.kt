@@ -14,9 +14,10 @@ import com.onell.botso.domain.model.Course
 import com.onell.botso.domain.model.Grade
 import com.onell.botso.domain.model.Semester
 import com.onell.botso.domain.model.SemesterWithCourse
-import com.onell.botso.domain.model.SemesterWithStats
 import com.onell.botso.domain.model.Task
 import com.onell.botso.domain.model.TaskWithCourse
+import java.time.LocalDate
+import java.time.LocalTime
 import java.util.UUID
 
 fun ClassSessionEntity.toDomain(): ClassSession {
@@ -24,9 +25,10 @@ fun ClassSessionEntity.toDomain(): ClassSession {
         id = this.id,
         courseId = this.courseId,
         dayOfWeek = this.dayOfWeek,
-        startTime = this.startTime,
-        endTime = this.endTime,
-        room = this.room
+        startTime = LocalTime.parse(this.startTime),
+        endTime = LocalTime.parse(this.endTime),
+        room = this.room,
+        isRemote = this.isRemote
     )
 }
 
@@ -35,9 +37,10 @@ fun ClassSession.toEntity(): ClassSessionEntity{
         id = this.id.ifBlank { UUID.randomUUID().toString() },
         courseId = this.courseId,
         dayOfWeek = this.dayOfWeek,
-        startTime = this.startTime,
-        endTime = this.endTime,
-        room = this.room
+        startTime = this.startTime.toString(),
+        endTime = this.endTime.toString(),
+        room = this.room,
+        isRemote = this.isRemote
     )
 }
 fun CourseEntity.toDomain(): Course {
@@ -45,8 +48,6 @@ fun CourseEntity.toDomain(): Course {
         id = this.id,
         semesterId = this.semesterId,
         name = this.name,
-        code = this.code,
-        colorHex = this.colorHex,
         professor = this.professor,
     )
 }
@@ -55,8 +56,6 @@ fun Course.toEntity(): CourseEntity {
         id = this.id.ifBlank { UUID.randomUUID().toString() },
         semesterId = this.semesterId,
         name = this.name,
-        code = this.code,
-        colorHex = this.colorHex,
         professor = this.professor,
     )
 }
@@ -87,8 +86,8 @@ fun SemesterEntity.toDomain(): Semester {
     return Semester(
         id = this.id,
         name = this.name,
-        startDate = this.startDate,
-        endDate = this.endDate,
+        startDate = LocalDate.parse(this.startDate),
+        endDate = LocalDate.parse(this.endDate),
         isActive = this.isActive
     )
 }
@@ -97,8 +96,8 @@ fun Semester.toEntity(): SemesterEntity {
     return SemesterEntity(
         id = this.id.ifBlank { UUID.randomUUID().toString() },
         name = this.name,
-        startDate = this.startDate,
-        endDate = this.endDate,
+        startDate = this.startDate.toString(),
+        endDate = this.endDate.toString(),
         isActive = this.isActive
     )
 }
@@ -108,7 +107,7 @@ fun TaskEntity.toDomain(): Task{
         id = this.id,
         courseId = this.courseId,
         title = this.title,
-        dueDate = this.dueDate,
+        dueDate = LocalDate.parse(this.dueDate),
         isPriority = this.isPriority,
         hasAttachment = this.hasAttachment,
         status = this.status,
@@ -122,7 +121,7 @@ fun Task.toEntity(): TaskEntity{
         id = this.id.ifBlank { UUID.randomUUID().toString() },
         courseId = this.courseId,
         title = this.title,
-        dueDate = this.dueDate,
+        dueDate = this.dueDate.toString(),
         isPriority = this.isPriority,
         hasAttachment = this.hasAttachment,
         status = this.status,
@@ -133,19 +132,19 @@ fun Task.toEntity(): TaskEntity{
 
 fun SemesterWithCourseEntity.toDomain(): SemesterWithCourse {
     return SemesterWithCourse(
-        semester = this.semester.toDomain(), // Llama al mapper base de SemesterEntity
-        courses = this.courses.map { it.toDomain() } // Mapea la lista entera de CourseEntity
+        semester = this.semester.toDomain(),
+        courses = this.courses.map { it.toDomain() }
     )
 }
 
 fun TaskWithCourseEntity.toDomain(): TaskWithCourse {
     return TaskWithCourse(
-        task = this.task.toDomain(), // Mapper base de TaskEntity
-        course = this.course.toDomain() // Mapper base de CourseEntity
+        task = this.task.toDomain(),
+        course = this.course.toDomain()
     )
 }
 
-fun ClassSessionWithCourseEntity.toDomain(): ClassSessionWithCourse { // O el nombre que le des en Dominio
+fun ClassSessionWithCourseEntity.toDomain(): ClassSessionWithCourse {
     return ClassSessionWithCourse (
         session = this.classSession.toDomain(),
         course = this.course.toDomain()

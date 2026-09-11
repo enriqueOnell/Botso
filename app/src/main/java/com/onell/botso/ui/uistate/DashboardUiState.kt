@@ -13,7 +13,7 @@ sealed interface DashboardUiState {
     data class Success(
         val todayClasses: List<ClassSessionWithCourse> = emptyList(),
         val pendingTasksCount: Int = 0,
-        val priorityTasks: List<TaskWithCourse> = emptyList(),
+        val priorityTasks: List<Task> = emptyList(),
         val coursesWithGrades: List<CourseWithAverage> = emptyList()
     ) : DashboardUiState
 }

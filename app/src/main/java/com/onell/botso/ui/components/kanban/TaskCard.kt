@@ -45,6 +45,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.onell.botso.domain.model.TaskWithCourse
 import java.time.Instant
+import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
@@ -140,7 +141,7 @@ fun TaskCard(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        val isDueToday = task.dueDate < System.currentTimeMillis() + 86400000
+                        val isDueToday = task.dueDate.isBefore(LocalDate.now().plusDays(1))
                         Icon(
                             if (isDueToday) Icons.Rounded.NotificationImportant else Icons.Rounded.CalendarToday,
                             contentDescription = null,
@@ -149,9 +150,7 @@ fun TaskCard(
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
-                            text = Instant.ofEpochMilli(task.dueDate)
-                                .atZone(ZoneId.of("UTC"))
-                                .toLocalDate()
+                            text = task.dueDate
                                 .format(DateTimeFormatter.ofPattern("dd MMM, yyyy", LocalLocale.current.platformLocale)),
                             style = MaterialTheme.typography.bodySmall,
                             fontWeight = if (isDueToday) FontWeight.Bold else FontWeight.Normal,

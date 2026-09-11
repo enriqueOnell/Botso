@@ -25,6 +25,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 import java.util.UUID
 import javax.inject.Inject
 
@@ -118,8 +119,8 @@ class SemestersViewModel @Inject constructor(
     private fun addSemester(
         id: String,
         name: String,
-        startDate: Long,
-        endDate: Long,
+        startDate: LocalDate,
+        endDate: LocalDate,
         isActive: Boolean
     ) {
         viewModelScope.launch {
@@ -138,8 +139,8 @@ class SemestersViewModel @Inject constructor(
     private fun updateSemester(
         semester: Semester,
         name: String,
-        startDate: Long,
-        endDate: Long,
+        startDate: LocalDate,
+        endDate: LocalDate,
         isActive: Boolean
     ) {
         viewModelScope.launch {

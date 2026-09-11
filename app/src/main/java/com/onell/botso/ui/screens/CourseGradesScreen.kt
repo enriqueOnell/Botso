@@ -28,8 +28,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.onell.botso.ui.components.dialogs.course.CircularGradeProgress
-import com.onell.botso.ui.components.dialogs.course.GradeInputSection
+import com.onell.botso.ui.components.courseGrade.CircularGradeProgress
+import com.onell.botso.ui.components.courseGrade.GradeInputSection
 import com.onell.botso.ui.theme.BotsoTheme
 import com.onell.botso.ui.uistate.CourseGradesUiEvent
 import com.onell.botso.ui.viewmodel.CourseGradesViewModel

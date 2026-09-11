@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 import java.util.UUID
 import javax.inject.Inject
 
@@ -77,7 +78,7 @@ class KanbanViewModel @Inject constructor(
     private fun addTask(
         courseId: String,
         title: String,
-        dueDate: Long,
+        dueDate: LocalDate,
         isPriority: Boolean,
         week: Int,
         description: String
@@ -103,7 +104,7 @@ class KanbanViewModel @Inject constructor(
         task: Task,
         courseId: String,
         title: String,
-        dueDate: Long,
+        dueDate: java.time.LocalDate,
         isPriority: Boolean,
         week: Int,
         description: String

@@ -1,4 +1,4 @@
-package com.onell.botso.ui.components.dialogs.course
+package com.onell.botso.ui.components.courseGrade
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer

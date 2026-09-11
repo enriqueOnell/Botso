@@ -8,6 +8,7 @@ import com.onell.botso.domain.usecase.course.GetAllCoursesUseCase
 import com.onell.botso.domain.usecase.grade.GetAllGradesUseCase
 import com.onell.botso.domain.usecase.session.GetSessionsForDayUseCase
 import com.onell.botso.domain.usecase.task.GetAllTasksUseCase
+import com.onell.botso.domain.usecase.task.GetAllPriorityTasksUseCase
 import com.onell.botso.ui.uistate.CourseWithAverage
 import com.onell.botso.ui.uistate.DashboardUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,17 +24,19 @@ import javax.inject.Inject
 class DashboardViewModel @Inject constructor(
     private val getSessionsForDayUseCase: GetSessionsForDayUseCase,
     private val getAllTasksUseCase: GetAllTasksUseCase,
+    private val getAllPriorityTasksUseCase: GetAllPriorityTasksUseCase,
     private val getAllCoursesUseCase: GetAllCoursesUseCase,
     private val getAllGradesUseCase: GetAllGradesUseCase
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<DashboardUiState>(DashboardUiState.Loading)
     val uiState: StateFlow<DashboardUiState> = _uiState.asStateFlow()
 
-     init {
-         loadDashboardData()
-     }
+    private val dayOfWeek: Int
+        get() = LocalDate.now().dayOfWeek.value
 
-    val dayOfWeek = LocalDate.now().dayOfWeek.value
+    init {
+        loadDashboardData()
+    }
 
     private fun loadDashboardData() {
         viewModelScope.launch {
@@ -41,9 +44,10 @@ class DashboardViewModel @Inject constructor(
                 combine(
                     getSessionsForDayUseCase(dayOfWeek),
                     getAllTasksUseCase(),
+                    getAllPriorityTasksUseCase(),
                     getAllCoursesUseCase(),
                     getAllGradesUseCase()
-                ) { sessions, tasks, courses, grades ->
+                ) { sessions, tasks,priotityTasks, courses, grades ->
 
                     // Cruce de Task con Course para generar TaskWithCourse
                     val priorityTasksWithCourse = tasks
@@ -57,7 +61,7 @@ class DashboardViewModel @Inject constructor(
                     DashboardUiState.Success(
                         todayClasses = sessions.sortedBy { it.session.startTime },
                         pendingTasksCount = tasks.count { it.status != "DONE" },
-                        priorityTasks = priorityTasksWithCourse,
+                        priorityTasks = priotityTasks.sortedBy { it.isPriority },
                         coursesWithGrades = courses.map { course ->
                             val courseGrades = grades.filter { it.courseId == course.id }
                             CourseWithAverage(course, calculateCourseAverage(courseGrades))

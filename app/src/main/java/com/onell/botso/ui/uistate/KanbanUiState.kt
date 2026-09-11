@@ -3,6 +3,7 @@ package com.onell.botso.ui.uistate
 import com.onell.botso.domain.model.Course
 import com.onell.botso.domain.model.Task
 import com.onell.botso.domain.model.TaskWithCourse
+import java.time.LocalDate
 
 data class KanbanUiState(
     val tasks: List<TaskWithCourse> = emptyList(),
@@ -23,7 +24,7 @@ sealed class KanbanUiEvent {
     data class OnAddTask(
         val courseId: String,
         val title: String,
-        val dueDate: Long,
+        val dueDate: LocalDate,
         val isPriority: Boolean,
         val week: Int,
         val description: String
@@ -35,7 +36,7 @@ sealed class KanbanUiEvent {
         val task: Task,
         val courseId: String,
         val title: String,
-        val dueDate: Long,
+        val dueDate: LocalDate,
         val isPriority: Boolean,
         val week: Int,
         val description: String

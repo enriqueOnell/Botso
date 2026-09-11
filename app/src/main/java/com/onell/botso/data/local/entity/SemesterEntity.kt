@@ -11,9 +11,9 @@ data class SemesterEntity(
     @ColumnInfo(name = "name")
     val name: String,
     @ColumnInfo(name = "start_date")
-    val startDate: Long,
+    val startDate: String,
     @ColumnInfo(name = "end_date")
-    val endDate: Long,
+    val endDate: String,
     @ColumnInfo(name = "is_active")
     val isActive: Boolean = true
 )

@@ -8,7 +8,7 @@ data class ClassSessionWithCourseEntity(
     val classSession: ClassSessionEntity,
 
     @Relation(
-        parentColumn = "id",
+        parentColumn = "course_id",
         entityColumn = "id"
     )
     val course: CourseEntity

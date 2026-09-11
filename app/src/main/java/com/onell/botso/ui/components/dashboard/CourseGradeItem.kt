@@ -41,11 +41,13 @@ fun CourseGradeItem(courseWithAverage: CourseWithAverage) {
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Bold
                 )
-                Text(
-                    text = courseWithAverage.course.code,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                if (courseWithAverage.course.professor.isNotBlank()) {
+                    Text(
+                        text = courseWithAverage.course.professor,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
             }
             Surface(
                 color = if (courseWithAverage.averageGrade >= 3.0) Color(0xFFA0F399) else Color(0xFFFFDAD6),

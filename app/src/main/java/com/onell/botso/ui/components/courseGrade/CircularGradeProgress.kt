@@ -1,4 +1,4 @@
-package com.onell.botso.ui.components.dialogs.course
+package com.onell.botso.ui.components.courseGrade
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Box

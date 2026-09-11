@@ -11,6 +11,7 @@ interface ClassSessionDao {
     @Query("SELECT * FROM class_sessions WHERE course_id = :courseId")
     fun getSessionsForCourse(courseId: String): Flow<List<ClassSessionWithCourseEntity>>
 
+    @Transaction
     @Query("SELECT * FROM class_sessions WHERE day_of_week = :dayOfWeek")
     fun getSessionsForDay(dayOfWeek: Int): Flow<List<ClassSessionWithCourseEntity>>
 

@@ -22,18 +22,21 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.onell.botso.domain.model.TaskWithCourse
+import com.onell.botso.domain.model.Task
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun PriorityItem(
-    taskWithCourse: TaskWithCourse,
+    task: Task,
     modifier: Modifier = Modifier
 ) {
-    val indicatorColor = if (taskWithCourse.task.dueDate < System.currentTimeMillis() + 86400000) {
-        Color(0xFFBA1A1A) // Red (Vence hoy o ya venció)
+    val indicatorColor = if (task.dueDate.isBefore(LocalDate.now().plusDays(1))) {
+        Color(0xFFBA1A1A)
     } else {
-        Color(0xFFA0F399) // Green (Mañana o después)
+        Color(0xFFA0F399)
     }
 
     Card(
@@ -58,34 +61,18 @@ fun PriorityItem(
             Column(modifier = Modifier.weight(1f)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        text = taskWithCourse.task.title,
+                        text = task.title,
                         style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.Bold,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.weight(1f, fill = false)
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Surface(
-                        color = MaterialTheme.colorScheme.secondaryContainer,
-                        shape = RoundedCornerShape(24.dp)
-                    ) {
-                        Text(
-                            text = "Semana ${taskWithCourse.task.week}",
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSecondaryContainer
-                        )
-                    }
                 }
-                Text(
-                    text = taskWithCourse.course.name,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                if (taskWithCourse.task.description.isNotBlank()) {
+
+                if (task.description.isNotBlank()) {
                     Text(
-                        text = taskWithCourse.task.description,
+                        text = task.description,
                         style = MaterialTheme.typography.bodySmall,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
@@ -93,6 +80,35 @@ fun PriorityItem(
                     )
                 }
             }
+            Surface(
+                color = MaterialTheme.colorScheme.secondaryContainer,
+                shape = RoundedCornerShape(24.dp)
+            ) {
+                Text(
+                    text = task.dueDate.format(DateTimeFormatter.ofPattern("dd MMM")),
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer
+                )
+            }
         }
     }
+}
+
+@Preview
+@Composable
+fun PriorityItemPreview() {
+    PriorityItem(
+        Task(
+            id = "id",
+            courseId = "courseId",
+            title = "title",
+            dueDate = LocalDate.now(),
+            isPriority = true,
+            hasAttachment = true,
+            status = "DONE",
+            week = 3,
+            description = "MAMAGUEVo"
+        )
+    )
 }
