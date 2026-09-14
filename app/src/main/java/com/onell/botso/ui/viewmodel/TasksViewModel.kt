@@ -9,8 +9,8 @@ import com.onell.botso.domain.usecase.task.DeleteTaskUseCase
 import com.onell.botso.domain.usecase.task.GetAllTasksUseCase
 import com.onell.botso.domain.usecase.task.InsertTaskUseCase
 import com.onell.botso.domain.usecase.task.UpdateTaskUseCase
-import com.onell.botso.ui.uistate.KanbanUiEvent
-import com.onell.botso.ui.uistate.KanbanUiState
+import com.onell.botso.ui.uistate.TasksUiEvent
+import com.onell.botso.ui.uistate.TasksUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -22,7 +22,7 @@ import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
-class KanbanViewModel @Inject constructor(
+class TasksViewModel @Inject constructor(
     private val getAllTasksUseCase: GetAllTasksUseCase,
     private val getAllCoursesUseCase: GetAllCoursesUseCase,
     private val insertTaskUseCase: InsertTaskUseCase,
@@ -30,13 +30,11 @@ class KanbanViewModel @Inject constructor(
     private val deleteTaskUseCase: DeleteTaskUseCase
 ) : ViewModel() {
 
-    // Centralizamos todo en un único flujo de estado
-    val uiState: StateFlow<KanbanUiState> = combine(
+    val uiState: StateFlow<TasksUiState> = combine(
         getAllTasksUseCase(),
         getAllCoursesUseCase()
     ) { allTasks, courses ->
 
-        // Cruzamos las listas manualmente para emparejar la tarea con su materia
         val tasksWithCourse = allTasks.mapNotNull { task ->
             val courseForTask = courses.firstOrNull { it.id == task.courseId }
             if (courseForTask != null) {
@@ -44,15 +42,15 @@ class KanbanViewModel @Inject constructor(
             } else null
         }
 
-        KanbanUiState(
+        TasksUiState(
             tasks = tasksWithCourse,
             courses = courses
         )
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), KanbanUiState())
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), TasksUiState())
 
-    fun onEvent(event: KanbanUiEvent) {
+    fun onEvent(event: TasksUiEvent) {
         when (event) {
-            is KanbanUiEvent.OnAddTask -> addTask(
+            is TasksUiEvent.OnAddTask -> addTask(
                 event.courseId,
                 event.title,
                 event.dueDate,
@@ -61,9 +59,9 @@ class KanbanViewModel @Inject constructor(
                 event.description
             )
 
-            is KanbanUiEvent.OnUpdateTaskStatus -> updateTaskStatus(event.task)
-            is KanbanUiEvent.OnDeleteTask -> deleteTask(event.task)
-            is KanbanUiEvent.OnUpdateTask -> updateTask(
+            is TasksUiEvent.OnUpdateTaskStatus -> updateTaskStatus(event.task)
+            is TasksUiEvent.OnDeleteTask -> deleteTask(event.task)
+            is TasksUiEvent.OnUpdateTask -> updateTask(
                 event.task,
                 event.courseId,
                 event.title,
@@ -85,7 +83,6 @@ class KanbanViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
             insertTaskUseCase(
-                // Forjamos el modelo de Dominio (Task) en lugar de TaskEntity
                 Task(
                     id = UUID.randomUUID().toString(),
                     courseId = courseId,
@@ -104,7 +101,7 @@ class KanbanViewModel @Inject constructor(
         task: Task,
         courseId: String,
         title: String,
-        dueDate: java.time.LocalDate,
+        dueDate: LocalDate,
         isPriority: Boolean,
         week: Int,
         description: String

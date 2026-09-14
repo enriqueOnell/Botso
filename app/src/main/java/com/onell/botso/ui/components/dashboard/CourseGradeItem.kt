@@ -17,12 +17,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.onell.botso.ui.uistate.CourseWithAverage
+import com.onell.botso.domain.model.CourseWithGrades
 import java.lang.String.format
 import java.util.Locale
 
 @Composable
-fun CourseGradeItem(courseWithAverage: CourseWithAverage) {
+fun CourseGradeItem(courseWithGrades: CourseWithGrades) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
@@ -37,28 +37,28 @@ fun CourseGradeItem(courseWithAverage: CourseWithAverage) {
         ) {
             Column {
                 Text(
-                    text = courseWithAverage.course.name,
+                    text = courseWithGrades.course.name,
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Bold
                 )
-                if (courseWithAverage.course.professor.isNotBlank()) {
+                if (courseWithGrades.course.professor.isNotBlank()) {
                     Text(
-                        text = courseWithAverage.course.professor,
+                        text = courseWithGrades.course.professor,
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
             Surface(
-                color = if (courseWithAverage.averageGrade >= 3.0) Color(0xFFA0F399) else Color(0xFFFFDAD6),
+                color = if (courseWithGrades.averageGrade >= 3.0) Color(0xFFA0F399) else Color(0xFFFFDAD6),
                 shape = RoundedCornerShape(24.dp)
             ) {
                 Text(
-                    text = format(Locale.US, "%.2f", courseWithAverage.averageGrade),
+                    text = format(Locale.US, "%.2f", courseWithGrades.averageGrade),
                     modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.ExtraBold,
-                    color = if (courseWithAverage.averageGrade >= 3.0) Color(0xFF002106) else Color(0xFF410002)
+                    color = if (courseWithGrades.averageGrade >= 3.0) Color(0xFF002106) else Color(0xFF410002)
                 )
             }
         }

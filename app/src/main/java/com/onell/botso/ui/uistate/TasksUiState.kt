@@ -5,22 +5,22 @@ import com.onell.botso.domain.model.Task
 import com.onell.botso.domain.model.TaskWithCourse
 import java.time.LocalDate
 
-data class KanbanUiState(
+data class TasksUiState(
     val tasks: List<TaskWithCourse> = emptyList(),
     val courses: List<Course> = emptyList(),
-    val columns: List<KanbanColumnInfo> = listOf(
-        KanbanColumnInfo("TODO", "Por Hacer"),
-        KanbanColumnInfo("IN_PROGRESS", "En Progreso"),
-        KanbanColumnInfo("DONE", "Hecho")
+    val columns: List<TasksColumnInfo> = listOf(
+        TasksColumnInfo("TODO", "Por Hacer"),
+        TasksColumnInfo("IN_PROGRESS", "En Progreso"),
+        TasksColumnInfo("DONE", "Hecho")
     )
 )
 
-data class KanbanColumnInfo(
+data class TasksColumnInfo(
     val status: String,
     val title: String
 )
 
-sealed class KanbanUiEvent {
+sealed class TasksUiEvent {
     data class OnAddTask(
         val courseId: String,
         val title: String,
@@ -28,10 +28,10 @@ sealed class KanbanUiEvent {
         val isPriority: Boolean,
         val week: Int,
         val description: String
-    ) : KanbanUiEvent()
+    ) : TasksUiEvent()
 
-    data class OnUpdateTaskStatus(val task: Task) : KanbanUiEvent()
-    data class OnDeleteTask(val task: Task) : KanbanUiEvent()
+    data class OnUpdateTaskStatus(val task: Task) : TasksUiEvent()
+    data class OnDeleteTask(val task: Task) : TasksUiEvent()
     data class OnUpdateTask(
         val task: Task,
         val courseId: String,
@@ -40,5 +40,5 @@ sealed class KanbanUiEvent {
         val isPriority: Boolean,
         val week: Int,
         val description: String
-    ) : KanbanUiEvent()
+    ) : TasksUiEvent()
 }

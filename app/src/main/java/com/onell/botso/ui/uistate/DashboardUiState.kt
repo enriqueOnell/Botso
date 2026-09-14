@@ -4,8 +4,6 @@ import com.onell.botso.domain.model.ClassSessionWithCourse
 import com.onell.botso.domain.model.CourseWithGrades
 import com.onell.botso.domain.model.Task
 
-typealias CourseWithAverage = CourseWithGrades
-
 sealed interface DashboardUiState {
     data object Loading : DashboardUiState
 

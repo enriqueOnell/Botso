@@ -168,9 +168,9 @@ fun DashboardContent(
                 items(
                     items = uiState.coursesWithGrades,
                     key = { it.course.id }
-                ) { courseWithAverage ->
+                ) { courseWithGrades ->
                     CourseGradeItem(
-                        courseWithAverage = courseWithAverage,
+                        courseWithGrades = courseWithGrades,
                     )
                 }
             }

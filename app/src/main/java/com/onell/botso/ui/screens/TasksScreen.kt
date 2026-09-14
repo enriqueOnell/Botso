@@ -37,15 +37,15 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.onell.botso.domain.model.Task
 import com.onell.botso.domain.model.TaskWithCourse
 import com.onell.botso.ui.components.dialogs.AddEditTaskDialog
-import com.onell.botso.ui.components.kanban.TaskCard
+import com.onell.botso.ui.components.tasks.TaskCard
 import com.onell.botso.ui.theme.BotsoTheme
-import com.onell.botso.ui.uistate.KanbanColumnInfo
-import com.onell.botso.ui.uistate.KanbanUiEvent
-import com.onell.botso.ui.viewmodel.KanbanViewModel
+import com.onell.botso.ui.uistate.TasksColumnInfo
+import com.onell.botso.ui.uistate.TasksUiEvent
+import com.onell.botso.ui.viewmodel.TasksViewModel
 
 @Composable
-fun KanbanScreen(
-    viewModel: KanbanViewModel = hiltViewModel()
+fun TasksScreen(
+    viewModel: TasksViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -64,11 +64,11 @@ fun KanbanScreen(
             }
         }
     ) { padding ->
-        KanbanContent(
+        TasksContent(
             tasks = uiState.tasks,
             columns = uiState.columns,
-            onTaskClick = { viewModel.onEvent(KanbanUiEvent.OnUpdateTaskStatus(it)) },
-            onDeleteTask = { viewModel.onEvent(KanbanUiEvent.OnDeleteTask(it)) },
+            onTaskClick = { viewModel.onEvent(TasksUiEvent.OnUpdateTaskStatus(it)) },
+            onDeleteTask = { viewModel.onEvent(TasksUiEvent.OnDeleteTask(it)) },
             onEditTask = { taskToEdit = it },
             modifier = Modifier.padding(padding)
         )
@@ -80,7 +80,7 @@ fun KanbanScreen(
             onDismiss = { showAddDialog = false },
             onConfirm = { courseId, title, dueDate, isPriority, week, description ->
                 viewModel.onEvent(
-                    KanbanUiEvent.OnAddTask(
+                    TasksUiEvent.OnAddTask(
                         courseId,
                         title,
                         dueDate,
@@ -101,7 +101,7 @@ fun KanbanScreen(
             onDismiss = { taskToEdit = null },
             onConfirm = { courseId, title, dueDate, isPriority, week, description ->
                 viewModel.onEvent(
-                    KanbanUiEvent.OnUpdateTask(
+                    TasksUiEvent.OnUpdateTask(
                         task,
                         courseId,
                         title,
@@ -118,9 +118,9 @@ fun KanbanScreen(
 }
 
 @Composable
-fun KanbanContent(
+fun TasksContent(
     tasks: List<TaskWithCourse>,
-    columns: List<KanbanColumnInfo>,
+    columns: List<TasksColumnInfo>,
     onTaskClick: (Task) -> Unit,
     onDeleteTask: (Task) -> Unit,
     onEditTask: (Task) -> Unit,
@@ -216,8 +216,8 @@ fun KanbanContent(
 
 @Preview(showBackground = true)
 @Composable
-fun KanbanPreview() {
+fun TasksPreview() {
     BotsoTheme {
-        KanbanScreen()
+        TasksScreen()
     }
 }

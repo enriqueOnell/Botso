@@ -7,7 +7,7 @@ sealed interface Route {
     data object Dashboard : Route
 
     @Serializable
-    data object Kanban : Route
+    data object Tasks : Route
 
     @Serializable
     data object Semesters : Route

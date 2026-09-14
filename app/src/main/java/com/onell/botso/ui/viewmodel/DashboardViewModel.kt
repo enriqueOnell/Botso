@@ -26,8 +26,6 @@ class DashboardViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<DashboardUiState>(DashboardUiState.Loading)
     val uiState: StateFlow<DashboardUiState> = _uiState.asStateFlow()
 
-    private val dayOfWeek: Int
-        get() = LocalDate.now().dayOfWeek.value
 
     init {
         loadDashboardData()
@@ -37,15 +35,15 @@ class DashboardViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 combine(
-                    getSessionsForDayUseCase(dayOfWeek),
+                    getSessionsForDayUseCase(LocalDate.now().dayOfWeek.value),
                     getAllTasksUseCase(),
                     getAllPriorityTasksUseCase(),
                     getCoursesWithGradesUseCase()
-                ) { sessions, tasks, priorityTasks, coursesWithGrades ->
+                ) { sessionsForDay, pendingTasks, priorityTasks, coursesWithGrades ->
 
                     DashboardUiState.Success(
-                        todayClasses = sessions.sortedBy { it.session.startTime },
-                        pendingTasksCount = tasks.count { it.status != "DONE" },
+                        todayClasses = sessionsForDay,
+                        pendingTasksCount = pendingTasks.count { it.status != "DONE" },
                         priorityTasks = priorityTasks,
                         coursesWithGrades = coursesWithGrades
                     )
