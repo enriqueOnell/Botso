@@ -28,9 +28,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.FileProvider
+import android.content.Intent
+import androidx.compose.runtime.LaunchedEffect
+import java.io.File
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.onell.botso.domain.model.ClassSessionWithCourse
 import com.onell.botso.domain.model.Course
 import com.onell.botso.domain.model.Semester
@@ -67,9 +71,26 @@ fun SemesterContent(
     var showAddCourseDialogForSemesterId by remember { mutableStateOf<String?>(null) }
 
     var semesterToEdit by remember { mutableStateOf<Semester?>(null) }
-    var courseToEdit by remember { mutableStateOf<Course?>(null) }
+    var sessionWithCourseToEdit by remember { mutableStateOf<ClassSessionWithCourse?>(null) }
     var courseToDelete by remember { mutableStateOf<Course?>(null) }
     var semesterToDelete by remember { mutableStateOf<Semester?>(null) }
+
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        viewModel.pdfGeneratedEvent.collect { pdfPath ->
+            val file = File(pdfPath)
+            if (file.exists()) {
+                val uri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
+                val intent = Intent(Intent.ACTION_SEND).apply {
+                    type = "application/pdf"
+                    putExtra(Intent.EXTRA_STREAM, uri)
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                }
+                context.startActivity(Intent.createChooser(intent, "Compartir Reporte"))
+            }
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -129,9 +150,10 @@ fun SemesterContent(
                                 showAddCourseDialogForSemesterId = semesterData.semester.id
                             },
                             onEditSemester = { semesterToEdit = it },
-                            onEditCourse = { courseToEdit = it },
+                            onEditCourse = { sessionWithCourseToEdit = it },
                             onDeleteCourse = { courseToDelete = it },
-                            onDeleteSemester = { semesterToDelete = it }
+                            onDeleteSemester = { semesterToDelete = it },
+                            onExportPdf = { viewModel.exportSemesterToPdf(it) }
                         )
                     }
                 }
@@ -142,7 +164,6 @@ fun SemesterContent(
             AddEditSemesterDialog(
                 onDismiss = { showAddSemesterDialog = false },
                 onConfirm = { nuevoSemestre ->
-                    // ¡Atrapamos el objeto y atacamos el ViewModel!
                     viewModel.addSemester(nuevoSemestre)
                     showAddSemesterDialog = false
                 }
@@ -154,7 +175,6 @@ fun SemesterContent(
                 semester = semester,
                 onDismiss = { semesterToEdit = null },
                 onConfirm = { semestreActualizado ->
-                    // ¡Atrapamos el objeto editado!
                     viewModel.updateSemester(semestreActualizado)
                     semesterToEdit = null
                 }
@@ -172,12 +192,13 @@ fun SemesterContent(
             )
         }
 
-        courseToEdit?.let { course ->
+        sessionWithCourseToEdit?.let { sessionWithCourse ->
             AddEditCourseDialog(
-                onDismiss = { courseToEdit = null },
+                sessionWithCourse = sessionWithCourse,
+                onDismiss = { sessionWithCourseToEdit = null },
                 onConfirm = { updatedCourse, updatedSession ->
                     viewModel.updateCourse(updatedCourse, updatedSession)
-                    courseToEdit = null
+                    sessionWithCourseToEdit = null
                 }
             )
         }

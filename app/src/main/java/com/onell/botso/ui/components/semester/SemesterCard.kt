@@ -14,6 +14,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.icons.rounded.PictureAsPdf
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
@@ -34,9 +35,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.onell.botso.domain.model.Course // Importamos el Course puro
+import com.onell.botso.domain.model.ClassSession
+import com.onell.botso.domain.model.ClassSessionWithCourse
+import com.onell.botso.domain.model.Course
 import com.onell.botso.domain.model.Semester
 import com.onell.botso.domain.model.SemesterWithCourse
+import java.time.LocalTime
 
 @Composable
 fun SemesterCard(
@@ -44,10 +48,10 @@ fun SemesterCard(
     onCourseClick: (String) -> Unit,
     onAddCourse: () -> Unit,
     onEditSemester: (Semester) -> Unit,
-    // ¡ATENCIÓN A ESTAS DOS LÍNEAS! Ahora exigen un Course, no el envoltorio
-    onEditCourse: (Course) -> Unit,
+    onEditCourse: (ClassSessionWithCourse) -> Unit,
     onDeleteCourse: (Course) -> Unit,
-    onDeleteSemester: (Semester) -> Unit
+    onDeleteSemester: (Semester) -> Unit,
+    onExportPdf: (Semester) -> Unit = {}
 ) {
     var expanded by remember { mutableStateOf(false) }
     var showSemesterMenu by remember { mutableStateOf(false) }
@@ -92,6 +96,14 @@ fun SemesterCard(
                         leadingIcon = { Icon(Icons.Rounded.Edit, contentDescription = null) }
                     )
                     DropdownMenuItem(
+                        text = { Text("Exportar a PDF") },
+                        onClick = {
+                            onExportPdf(semesterData.semester)
+                            showSemesterMenu = false
+                        },
+                        leadingIcon = { Icon(Icons.Rounded.PictureAsPdf, contentDescription = null) }
+                    )
+                    DropdownMenuItem(
                         text = { Text("Eliminar Semestre") },
                         onClick = {
                             onDeleteSemester(semesterData.semester)
@@ -123,12 +135,25 @@ fun SemesterCard(
                     }
                 }
 
-                // ¡AQUÍ ESTÁ LA CORRECCIÓN! Iteramos y pasamos cursos puros
                 semesterData.courses.forEach { course ->
                     CourseRow(
-                        course = course, // Se lo entregamos al componente
+                        course = course,
                         onClick = { onCourseClick(course.id) },
-                        onEdit = { onEditCourse(course) },
+                        onEdit = {
+                            val sessionWithCourse = ClassSessionWithCourse(
+                                session = ClassSession(
+                                    id = course.id,
+                                    courseId = course.id,
+                                    dayOfWeek = 1,
+                                    startTime = LocalTime.of(8, 0),
+                                    endTime = LocalTime.of(10, 0),
+                                    room = "",
+                                    isRemote = false
+                                ),
+                                course = course
+                            )
+                            onEditCourse(sessionWithCourse)
+                        },
                         onDelete = { onDeleteCourse(course) }
                     )
                 }

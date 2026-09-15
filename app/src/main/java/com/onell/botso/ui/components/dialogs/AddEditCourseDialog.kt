@@ -44,16 +44,16 @@ fun AddEditCourseDialog(
     onConfirm: (Course, ClassSession) -> Unit,
     sessionWithCourse: ClassSessionWithCourse? = null
 ) {
-    var courseId by remember { mutableStateOf(sessionWithCourse?.course?.id ?: "") }
-    var sessionId by remember { mutableStateOf(sessionWithCourse?.session?.id ?: "") }
-    var currentSemesterId by remember { mutableStateOf(sessionWithCourse?.course?.semesterId?.takeIf { it.isNotBlank() } ?: semesterId) }
-    var name by remember { mutableStateOf(sessionWithCourse?.course?.name ?: "") }
-    var dayOfWeek by remember { mutableIntStateOf(sessionWithCourse?.session?.dayOfWeek ?: 1) }
-    var startTime by remember { mutableStateOf(sessionWithCourse?.session?.startTime ?: LocalTime.of(8, 0)) }
-    var endTime by remember { mutableStateOf(sessionWithCourse?.session?.endTime ?: LocalTime.of(10, 0)) }
-    var professor by remember { mutableStateOf(sessionWithCourse?.course?.professor ?: "") }
-    var location by remember { mutableStateOf(sessionWithCourse?.session?.room ?: "") }
-    var isRemote by remember { mutableStateOf(sessionWithCourse?.session?.isRemote ?: false) }
+    var courseId by remember(sessionWithCourse) { mutableStateOf(sessionWithCourse?.course?.id ?: "") }
+    var sessionId by remember(sessionWithCourse) { mutableStateOf(sessionWithCourse?.session?.id ?: "") }
+    var currentSemesterId by remember(sessionWithCourse) { mutableStateOf(sessionWithCourse?.course?.semesterId?.takeIf { it.isNotBlank() } ?: semesterId) }
+    var name by remember(sessionWithCourse) { mutableStateOf(sessionWithCourse?.course?.name ?: "") }
+    var dayOfWeek by remember(sessionWithCourse) { mutableIntStateOf(sessionWithCourse?.session?.dayOfWeek ?: 1) }
+    var startTime by remember(sessionWithCourse) { mutableStateOf(sessionWithCourse?.session?.startTime ?: LocalTime.of(8, 0)) }
+    var endTime by remember(sessionWithCourse) { mutableStateOf(sessionWithCourse?.session?.endTime ?: LocalTime.of(10, 0)) }
+    var professor by remember(sessionWithCourse) { mutableStateOf(sessionWithCourse?.course?.professor ?: "") }
+    var location by remember(sessionWithCourse) { mutableStateOf(sessionWithCourse?.session?.room ?: "") }
+    var isRemote by remember(sessionWithCourse) { mutableStateOf(sessionWithCourse?.session?.isRemote ?: false) }
 
     var showStartTimePicker by remember { mutableStateOf(false) }
     var showEndTimePicker by remember { mutableStateOf(false) }

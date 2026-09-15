@@ -13,13 +13,18 @@ import com.onell.botso.domain.usecase.semester.GetAllSemestersUseCase
 import com.onell.botso.domain.usecase.semester.GetSemestersWithCoursesUseCase
 import com.onell.botso.domain.usecase.semester.InsertSemesterUseCase
 import com.onell.botso.domain.usecase.semester.UpdateSemesterUseCase
+import com.onell.botso.domain.usecase.semester.GenerateSemesterReportUseCase
 import com.onell.botso.domain.usecase.session.InsertClassSessionUseCase
 import com.onell.botso.domain.usecase.session.UpdateClassSessionUseCase
 import com.onell.botso.ui.uistate.SemestersUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
@@ -37,11 +42,15 @@ class SemestersViewModel @Inject constructor(
     private val updateCourseUseCase: UpdateCourseUseCase,
     private val deleteCourseUseCase: DeleteCourseUseCase,
     private val insertClassSessionUseCase: InsertClassSessionUseCase,
-    private val updateClassSessionUseCase: UpdateClassSessionUseCase
+    private val updateClassSessionUseCase: UpdateClassSessionUseCase,
+    private val generateSemesterReportUseCase: GenerateSemesterReportUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<SemestersUiState>(SemestersUiState.Loading)
     val uiState: StateFlow<SemestersUiState> = _uiState.asStateFlow()
+
+    private val _pdfGeneratedEvent = MutableSharedFlow<String>()
+    val pdfGeneratedEvent: SharedFlow<String> = _pdfGeneratedEvent.asSharedFlow()
 
     init {
         loadSemestersAndCourses()
@@ -132,5 +141,15 @@ class SemestersViewModel @Inject constructor(
         }
     }
 
+    fun exportSemesterToPdf(semester: Semester) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val filePath = generateSemesterReportUseCase(semester)
+                _pdfGeneratedEvent.emit(filePath)
+            } catch (e: Exception) {
+                _uiState.value = SemestersUiState.Error("Error generating PDF: ${e.message}")
+            }
+        }
+    }
 
 }
