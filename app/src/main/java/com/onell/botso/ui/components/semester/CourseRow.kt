@@ -35,7 +35,7 @@ import com.onell.botso.domain.model.Course
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CourseRow(
-    sessionWithCourse: ClassSessionWithCourse,
+    course: Course,
     onClick: () -> Unit,
     onEdit: () -> Unit,
     onDelete: () -> Unit
@@ -62,7 +62,7 @@ fun CourseRow(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = sessionWithCourse.course.name,
+                    text = course.name,
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

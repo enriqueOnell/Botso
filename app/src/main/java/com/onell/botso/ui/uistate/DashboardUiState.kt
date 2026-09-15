@@ -7,12 +7,12 @@ import com.onell.botso.domain.model.Task
 sealed interface DashboardUiState {
     data object Loading : DashboardUiState
 
-    data class Error(val message: String) : DashboardUiState
-
     data class Success(
         val todayClasses: List<ClassSessionWithCourse> = emptyList(),
         val pendingTasksCount: Int = 0,
         val priorityTasks: List<Task> = emptyList(),
         val coursesWithGrades: List<CourseWithGrades> = emptyList()
     ) : DashboardUiState
+
+    data class Error(val message: String) : DashboardUiState
 }

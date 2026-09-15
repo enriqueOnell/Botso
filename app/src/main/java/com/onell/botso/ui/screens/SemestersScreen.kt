@@ -1,6 +1,7 @@
 package com.onell.botso.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -9,6 +10,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LargeFloatingActionButton
@@ -21,12 +23,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.onell.botso.domain.model.ClassSessionWithCourse
 import com.onell.botso.domain.model.Course
 import com.onell.botso.domain.model.Semester
@@ -35,24 +39,35 @@ import com.onell.botso.ui.components.dialogs.AddEditSemesterDialog
 import com.onell.botso.ui.components.dialogs.ConfirmDeleteDialog
 import com.onell.botso.ui.components.semester.SemesterCard
 import com.onell.botso.ui.theme.BotsoTheme
-import com.onell.botso.ui.uistate.SemestersUiEvent
+import com.onell.botso.ui.uistate.SemestersUiState
 import com.onell.botso.ui.viewmodel.SemestersViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SemestersScreen(
     viewModel: SemestersViewModel = hiltViewModel(),
     onNavigateToCourseGrades: (String) -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val semestersWithStats = uiState.semestersWithStats
 
+    SemesterContent(
+        viewModel,
+        uiState,
+        onNavigateToCourseGrades
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SemesterContent(
+    viewModel: SemestersViewModel,
+    uiState: SemestersUiState,
+    onNavigateToCourseGrades: (String) -> Unit
+) {
     var showAddSemesterDialog by remember { mutableStateOf(false) }
     var showAddCourseDialogForSemesterId by remember { mutableStateOf<String?>(null) }
 
-    // 2. Erradicamos los "Entity" de las variables de estado
     var semesterToEdit by remember { mutableStateOf<Semester?>(null) }
-    var sessionWithCourseToEdit by remember { mutableStateOf<ClassSessionWithCourse?>(null) }
+    var courseToEdit by remember { mutableStateOf<Course?>(null) }
     var courseToDelete by remember { mutableStateOf<Course?>(null) }
     var semesterToDelete by remember { mutableStateOf<Semester?>(null) }
 
@@ -72,114 +87,126 @@ fun SemestersScreen(
             }
         }
     ) { padding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            items(semestersWithStats) { stats ->
-                SemesterCard(
-                    stats = stats,
-                    onCourseClick = onNavigateToCourseGrades,
-                    onAddCourse = { showAddCourseDialogForSemesterId = stats.semester.id },
-                    onEditSemester = { semesterToEdit = it },
-                    onEditCourse = { sessionWithCourseToEdit = it },
-                    onDeleteCourse = { courseToDelete = it },
-                    onDeleteSemester = { semesterToDelete = it }
-                )
+
+        when (uiState) {
+            is SemestersUiState.Loading -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
+
+            is SemestersUiState.Error -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(24.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = uiState.message,
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            }
+
+            is SemestersUiState.Success -> {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(padding),
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    items(uiState.semesterWithCourses) { semesterData ->
+                        SemesterCard(
+                            semesterData = semesterData,
+                            onCourseClick = onNavigateToCourseGrades,
+                            onAddCourse = {
+                                showAddCourseDialogForSemesterId = semesterData.semester.id
+                            },
+                            onEditSemester = { semesterToEdit = it },
+                            onEditCourse = { courseToEdit = it },
+                            onDeleteCourse = { courseToDelete = it },
+                            onDeleteSemester = { semesterToDelete = it }
+                        )
+                    }
+                }
             }
         }
-    }
 
-    if (showAddSemesterDialog) {
-        AddEditSemesterDialog(
-            onDismiss = { showAddSemesterDialog = false },
-            onConfirm = { id, name, start, end ->
-                viewModel.onEvent(SemestersUiEvent.OnAddSemester(id, name, start, end, true))
-                showAddSemesterDialog = false
-            }
-        )
-    }
+        if (showAddSemesterDialog) {
+            AddEditSemesterDialog(
+                onDismiss = { showAddSemesterDialog = false },
+                onConfirm = { nuevoSemestre ->
+                    // ¡Atrapamos el objeto y atacamos el ViewModel!
+                    viewModel.addSemester(nuevoSemestre)
+                    showAddSemesterDialog = false
+                }
+            )
+        }
 
-    semesterToEdit?.let { semester ->
-        AddEditSemesterDialog(
-            semester = semester,
-            onDismiss = { semesterToEdit = null },
-            onConfirm = { _ , name, start, end ->
-                viewModel.onEvent(
-                    SemestersUiEvent.OnUpdateSemester(
-                        semester,
-                        name,
-                        start,
-                        end,
-                        semester.isActive
-                    )
-                )
-                semesterToEdit = null
-            }
-        )
-    }
+        semesterToEdit?.let { semester ->
+            AddEditSemesterDialog(
+                semester = semester,
+                onDismiss = { semesterToEdit = null },
+                onConfirm = { semestreActualizado ->
+                    // ¡Atrapamos el objeto editado!
+                    viewModel.updateSemester(semestreActualizado)
+                    semesterToEdit = null
+                }
+            )
+        }
 
-    showAddCourseDialogForSemesterId?.let { semesterId ->
-        AddEditCourseDialog(
-            semesterId = semesterId,
-            onDismiss = { showAddCourseDialogForSemesterId = null },
-            onConfirm = { newCourse, newSession ->
-                viewModel.onEvent(
-                    SemestersUiEvent.OnAddCourse(
-                        semesterId,
-                        newCourse,
-                        newSession
-                    )
-                )
-                showAddCourseDialogForSemesterId = null
-            }
-        )
-    }
+        showAddCourseDialogForSemesterId?.let { semesterId ->
+            AddEditCourseDialog(
+                semesterId = semesterId,
+                onDismiss = { showAddCourseDialogForSemesterId = null },
+                onConfirm = { newCourse, newSession ->
+                    viewModel.addCourse(newCourse, newSession)
+                    showAddCourseDialogForSemesterId = null
+                }
+            )
+        }
 
-    sessionWithCourseToEdit?.let { sessionWithCourse ->
-        AddEditCourseDialog(
-            sessionWithCourse = sessionWithCourse,
-            onDismiss = { sessionWithCourseToEdit = null },
-            onConfirm = { updatedCourse, updatedSession ->
-                viewModel.onEvent(
-                    SemestersUiEvent.OnEditCourse(
-                        updatedCourse,
-                        updatedSession
-                    )
-                )
-                sessionWithCourseToEdit = null
-            }
-        )
-    }
+        courseToEdit?.let { course ->
+            AddEditCourseDialog(
+                onDismiss = { courseToEdit = null },
+                onConfirm = { updatedCourse, updatedSession ->
+                    viewModel.updateCourse(updatedCourse, updatedSession)
+                    courseToEdit = null
+                }
+            )
+        }
 
-    courseToDelete?.let { course ->
-        ConfirmDeleteDialog(
-            title = "Eliminar Curso",
-            message = "¿Estás seguro de que deseas eliminar el curso '${course.name}'? Esta acción no se puede deshacer.",
-            onConfirm = {
-                viewModel.onEvent(SemestersUiEvent.OnDeleteCourseConfirm(course))
-                courseToDelete = null
-            },
-            onDismiss = { courseToDelete = null }
-        )
-    }
+        courseToDelete?.let { course ->
+            ConfirmDeleteDialog(
+                title = "Eliminar Curso",
+                message = "¿Estás seguro de que deseas eliminar el curso '${course.name}'? Esta acción no se puede deshacer.",
+                onConfirm = {
+                    viewModel.deleteCourse(course)
+                    courseToDelete = null
+                },
+                onDismiss = { courseToDelete = null }
+            )
+        }
 
-    semesterToDelete?.let { semester ->
-        ConfirmDeleteDialog(
-            title = "Eliminar Semestre",
-            message = "¿Estás seguro de que deseas eliminar el semestre '${semester.name}'? Se eliminarán todos los cursos y notas asociados.",
-            onConfirm = {
-                viewModel.onEvent(SemestersUiEvent.OnDeleteSemester(semester))
-                semesterToDelete = null
-            },
-            onDismiss = { semesterToDelete = null }
-        )
+        semesterToDelete?.let { semester ->
+            ConfirmDeleteDialog(
+                title = "Eliminar Semestre",
+                message = "¿Estás seguro de que deseas eliminar el semestre '${semester.name}'? Se eliminarán todos los cursos y notas asociados.",
+                onConfirm = {
+                    viewModel.deleteSemester(semester)
+                    semesterToDelete = null
+                },
+                onDismiss = { semesterToDelete = null }
+            )
+        }
     }
 }
-
 
 @Preview(showBackground = true, device = "spec:width=411dp,height=891dp")
 @Composable

@@ -26,19 +26,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.onell.botso.domain.model.Semester
 import java.time.Instant
-import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditSemesterDialog(
     onDismiss: () -> Unit,
-    onConfirm: (String, String, LocalDate, LocalDate) -> Unit,
+    onConfirm: (Semester) -> Unit, // ¡FIRMA CORREGIDA! Exige el modelo puro
     modifier: Modifier = Modifier,
     semester: Semester? = null
 ) {
-    var id by remember { mutableStateOf(semester?.id ?: "") }
     var name by remember { mutableStateOf(semester?.name ?: "") }
 
     val startDateMillis = semester?.startDate?.atStartOfDay(ZoneId.of("UTC"))?.toInstant()?.toEpochMilli() ?: System.currentTimeMillis()
@@ -109,10 +108,20 @@ fun AddEditSemesterDialog(
                 onClick = {
                     if (name.isNotBlank()) {
                         val startMillis = startDatePickerState.selectedDateMillis ?: System.currentTimeMillis()
+                        val finalStartDate = Instant.ofEpochMilli(startMillis).atZone(ZoneId.of("UTC")).toLocalDate()
+
                         val endMillis = endDatePickerState.selectedDateMillis ?: System.currentTimeMillis()
-                        val startDate = Instant.ofEpochMilli(startMillis).atZone(ZoneId.of("UTC")).toLocalDate()
-                        val endDate = Instant.ofEpochMilli(endMillis).atZone(ZoneId.of("UTC")).toLocalDate()
-                        onConfirm(id, name, startDate, endDate)
+                        val finalEndDate = Instant.ofEpochMilli(endMillis).atZone(ZoneId.of("UTC")).toLocalDate()
+
+                        val resultSemester = Semester(
+                            id = semester?.id ?: UUID.randomUUID().toString(),
+                            name = name,
+                            startDate = finalStartDate,
+                            endDate = finalEndDate,
+                            isActive = semester?.isActive ?: true
+                        )
+
+                        onConfirm(resultSemester) // ¡AQUÍ ENTREGAMOS EL OBJETO!
                     }
                 },
                 enabled = name.isNotBlank(),

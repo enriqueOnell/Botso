@@ -34,20 +34,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.onell.botso.domain.model.ClassSessionWithCourse
-import com.onell.botso.domain.model.Course
+import com.onell.botso.domain.model.Course // Importamos el Course puro
 import com.onell.botso.domain.model.Semester
-import com.onell.botso.domain.model.SemesterWithStats
-import java.util.Locale
+import com.onell.botso.domain.model.SemesterWithCourse
 
 @Composable
 fun SemesterCard(
-    stats: SemesterWithStats,
+    semesterData: SemesterWithCourse,
     onCourseClick: (String) -> Unit,
     onAddCourse: () -> Unit,
-    // 3. Los callbacks exigen modelos puros
     onEditSemester: (Semester) -> Unit,
-    onEditCourse: (ClassSessionWithCourse) -> Unit,
+    // ¡ATENCIÓN A ESTAS DOS LÍNEAS! Ahora exigen un Course, no el envoltorio
+    onEditCourse: (Course) -> Unit,
     onDeleteCourse: (Course) -> Unit,
     onDeleteSemester: (Semester) -> Unit
 ) {
@@ -75,11 +73,11 @@ fun SemesterCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = stats.semester.name,
+                    text = semesterData.semester.name,
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.ExtraBold
                 )
-                StatusChip(isActive = stats.semester.isActive)
+                StatusChip(isActive = semesterData.semester.isActive)
 
                 DropdownMenu(
                     expanded = showSemesterMenu,
@@ -88,7 +86,7 @@ fun SemesterCard(
                     DropdownMenuItem(
                         text = { Text("Editar Semestre") },
                         onClick = {
-                            onEditSemester(stats.semester)
+                            onEditSemester(semesterData.semester)
                             showSemesterMenu = false
                         },
                         leadingIcon = { Icon(Icons.Rounded.Edit, contentDescription = null) }
@@ -96,7 +94,7 @@ fun SemesterCard(
                     DropdownMenuItem(
                         text = { Text("Eliminar Semestre") },
                         onClick = {
-                            onDeleteSemester(stats.semester)
+                            onDeleteSemester(semesterData.semester)
                             showSemesterMenu = false
                         },
                         leadingIcon = { Icon(Icons.Rounded.Delete, contentDescription = null) },
@@ -109,18 +107,6 @@ fun SemesterCard(
             }
 
             Spacer(modifier = Modifier.height(16.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                StatItem(label = "Cursos", value = stats.courseCount.toString())
-                StatItem(
-                    label = "Promedio Est.",
-                    value = String.format(Locale.US, "%.2f", stats.estimatedGpa),
-                    isHighlight = stats.estimatedGpa >= 3.0
-                )
-            }
 
             if (expanded) {
                 Spacer(modifier = Modifier.height(16.dp))
@@ -136,12 +122,14 @@ fun SemesterCard(
                         Icon(Icons.Default.Add, contentDescription = "Añadir Curso", modifier = Modifier.size(20.dp))
                     }
                 }
-                stats.courses.forEach { sessionWithCourse ->
+
+                // ¡AQUÍ ESTÁ LA CORRECCIÓN! Iteramos y pasamos cursos puros
+                semesterData.courses.forEach { course ->
                     CourseRow(
-                        sessionWithCourse = sessionWithCourse,
-                        onClick = { onCourseClick(sessionWithCourse.course.id) },
-                        onEdit = { onEditCourse(sessionWithCourse) },
-                        onDelete = { onDeleteCourse(sessionWithCourse.course) }
+                        course = course, // Se lo entregamos al componente
+                        onClick = { onCourseClick(course.id) },
+                        onEdit = { onEditCourse(course) },
+                        onDelete = { onDeleteCourse(course) }
                     )
                 }
             }

@@ -38,10 +38,10 @@ import java.time.format.DateTimeFormatter
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditCourseDialog(
+    modifier: Modifier = Modifier,
     semesterId: String = "",
     onDismiss: () -> Unit,
     onConfirm: (Course, ClassSession) -> Unit,
-    modifier: Modifier = Modifier,
     sessionWithCourse: ClassSessionWithCourse? = null
 ) {
     var courseId by remember { mutableStateOf(sessionWithCourse?.course?.id ?: "") }

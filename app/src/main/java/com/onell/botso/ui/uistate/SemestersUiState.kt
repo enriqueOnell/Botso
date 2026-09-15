@@ -1,44 +1,17 @@
 package com.onell.botso.ui.uistate
 
-import com.onell.botso.domain.model.ClassSession
-import com.onell.botso.domain.model.Course
+import com.onell.botso.domain.model.CourseWithGrades
 import com.onell.botso.domain.model.Semester
-import com.onell.botso.domain.model.SemesterWithStats
-import java.time.LocalDate
+import com.onell.botso.domain.model.SemesterWithCourse
 
-data class SemestersUiState(
-    val semestersWithStats: List<SemesterWithStats> = emptyList()
-)
+sealed class SemestersUiState {
+    data object Loading : SemestersUiState()
 
-sealed class SemestersUiEvent {
-    data class OnAddSemester(
-        val id: String,
-        val name: String,
-        val startDate: LocalDate,
-        val endDate: LocalDate,
-        val isActive: Boolean
-    ) : SemestersUiEvent()
+    data class Success(
+        val allSemester: List<Semester> = emptyList(),
+        val semesterWithCourses: List<SemesterWithCourse> = emptyList(),
+        val gradesForCourse: List<CourseWithGrades> = emptyList()
+    ): SemestersUiState()
 
-    data class OnUpdateSemester(
-        val semester: Semester,
-        val name: String,
-        val startDate: LocalDate,
-        val endDate: LocalDate,
-        val isActive: Boolean
-    ) : SemestersUiEvent()
-
-    data class OnDeleteSemester(val semester: Semester) : SemestersUiEvent()
-
-    data class OnAddCourse(
-        val semesterId: String,
-        val course: Course,
-        val session: ClassSession
-    ) : SemestersUiEvent()
-
-    data class OnEditCourse(
-        val course: Course,
-        val session: ClassSession
-    ) : SemestersUiEvent()
-
-    data class OnDeleteCourseConfirm(val course: Course) : SemestersUiEvent()
+    data class Error(val message: String) : SemestersUiState()
 }
