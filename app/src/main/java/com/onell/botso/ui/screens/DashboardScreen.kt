@@ -123,7 +123,7 @@ fun DashboardContent(
                 } else {
                     items(
                         items = uiState.todayClasses,
-                        key = { it.session.id }
+                        key = { "Today ${it.session.id}" }
                     ) { courseWithSession ->
                         ClassCard(
                             sessionWithCourse = courseWithSession,
@@ -167,7 +167,7 @@ fun DashboardContent(
 
                 items(
                     items = uiState.coursesWithGrades,
-                    key = { it.course.id }
+                    key = { "All ${it.course.id}" }
                 ) { courseWithGrades ->
                     CourseGradeItem(
                         courseWithGrades = courseWithGrades,
