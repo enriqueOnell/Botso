@@ -35,12 +35,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.onell.botso.domain.model.ClassSession
-import com.onell.botso.domain.model.ClassSessionWithCourse
+import com.onell.botso.domain.model.CourseWithSession
 import com.onell.botso.domain.model.Course
 import com.onell.botso.domain.model.Semester
 import com.onell.botso.domain.model.SemesterWithCourse
-import java.time.LocalTime
 
 @Composable
 fun SemesterCard(
@@ -48,7 +46,7 @@ fun SemesterCard(
     onCourseClick: (String) -> Unit,
     onAddCourse: () -> Unit,
     onEditSemester: (Semester) -> Unit,
-    onEditCourse: (ClassSessionWithCourse) -> Unit,
+    onEditCourse: (CourseWithSession) -> Unit,
     onDeleteCourse: (Course) -> Unit,
     onDeleteSemester: (Semester) -> Unit,
     onExportPdf: (Semester) -> Unit = {}
@@ -124,6 +122,7 @@ fun SemesterCard(
                 Spacer(modifier = Modifier.height(16.dp))
                 HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
                 Spacer(modifier = Modifier.height(16.dp))
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -135,26 +134,14 @@ fun SemesterCard(
                     }
                 }
 
-                semesterData.courses.forEach { course ->
+                semesterData.courses.forEach { courseWithSession ->
                     CourseRow(
-                        course = course,
-                        onClick = { onCourseClick(course.id) },
+                        courseWithSession = courseWithSession,
+                        onClick = { onCourseClick(courseWithSession.course.id) },
                         onEdit = {
-                            val sessionWithCourse = ClassSessionWithCourse(
-                                session = ClassSession(
-                                    id = course.id,
-                                    courseId = course.id,
-                                    dayOfWeek = 1,
-                                    startTime = LocalTime.of(8, 0),
-                                    endTime = LocalTime.of(10, 0),
-                                    room = "",
-                                    isRemote = false
-                                ),
-                                course = course
-                            )
-                            onEditCourse(sessionWithCourse)
+                            onEditCourse(courseWithSession)
                         },
-                        onDelete = { onDeleteCourse(course) }
+                        onDelete = { onDeleteCourse(courseWithSession.course) }
                     )
                 }
             }

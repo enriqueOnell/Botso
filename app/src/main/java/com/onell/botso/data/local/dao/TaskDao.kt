@@ -2,17 +2,17 @@ package com.onell.botso.data.local.dao
 
 import androidx.room.*
 import com.onell.botso.data.local.entity.TaskEntity
-import com.onell.botso.data.local.entity.TaskWithCourseEntity
+import com.onell.botso.data.local.entity.CourseWithTaskEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TaskDao {
     @Query("SELECT * FROM tasks WHERE course_id = :courseId")
-    fun getTasksForCourse(courseId: String): Flow<List<TaskEntity>> // ¡Fuerza la entidad pura!
+    fun getTasksForCourse(courseId: String): Flow<List<TaskEntity>>
 
     @Transaction
-    @Query("SELECT * FROM tasks WHERE course_id = :courseId")
-    fun getTasksWithCourse(courseId: String): Flow<List<TaskWithCourseEntity>>
+    @Query("SELECT DISTINCT c.* FROM courses c INNER JOIN tasks t ON c.id = t.course_id WHERE t.course_id = :courseId")
+    fun getTasksWithCourse(courseId: String): Flow<List<CourseWithTaskEntity>>
 
     @Query("SELECT * FROM tasks WHERE status != 'DONE'")
     fun getPendingTasks(): Flow<List<TaskEntity>>

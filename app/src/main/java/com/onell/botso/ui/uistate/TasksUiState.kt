@@ -2,11 +2,11 @@ package com.onell.botso.ui.uistate
 
 import com.onell.botso.domain.model.Course
 import com.onell.botso.domain.model.Task
-import com.onell.botso.domain.model.TaskWithCourse
+import com.onell.botso.domain.model.CourseWithTask
 import java.time.LocalDate
 
 data class TasksUiState(
-    val tasks: List<TaskWithCourse> = emptyList(),
+    val tasks: List<CourseWithTask> = emptyList(),
     val courses: List<Course> = emptyList(),
     val columns: List<TasksColumnInfo> = listOf(
         TasksColumnInfo("TODO", "Por Hacer"),

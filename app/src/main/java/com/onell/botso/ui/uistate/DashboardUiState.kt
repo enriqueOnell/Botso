@@ -1,6 +1,6 @@
 package com.onell.botso.ui.uistate
 
-import com.onell.botso.domain.model.ClassSessionWithCourse
+import com.onell.botso.domain.model.CourseWithSession
 import com.onell.botso.domain.model.CourseWithGrades
 import com.onell.botso.domain.model.Task
 
@@ -8,7 +8,7 @@ sealed interface DashboardUiState {
     data object Loading : DashboardUiState
 
     data class Success(
-        val todayClasses: List<ClassSessionWithCourse> = emptyList(),
+        val todayClasses: List<CourseWithSession> = emptyList(),
         val pendingTasksCount: Int = 0,
         val priorityTasks: List<Task> = emptyList(),
         val coursesWithGrades: List<CourseWithGrades> = emptyList()

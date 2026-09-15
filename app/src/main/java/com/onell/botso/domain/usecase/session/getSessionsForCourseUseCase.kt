@@ -1,6 +1,6 @@
 package com.onell.botso.domain.usecase.session
 
-import com.onell.botso.domain.model.ClassSessionWithCourse
+import com.onell.botso.domain.model.CourseWithSession
 import com.onell.botso.domain.repository.ClassSessionRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -8,7 +8,7 @@ import javax.inject.Inject
 class GetSessionsForCourseUseCase @Inject constructor(
     private val repository: ClassSessionRepository
 ) {
-    operator fun invoke(courseId: String): Flow<List<ClassSessionWithCourse>> {
+    operator fun invoke(courseId: String): Flow<List<CourseWithSession>> {
         return repository.getSessionsForCourse(courseId)
     }
 }

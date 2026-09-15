@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.onell.botso.domain.model.Task
-import com.onell.botso.domain.model.TaskWithCourse
+import com.onell.botso.domain.model.CourseWithTask
 import com.onell.botso.ui.components.dialogs.AddEditTaskDialog
 import com.onell.botso.ui.components.tasks.TaskCard
 import com.onell.botso.ui.theme.BotsoTheme
@@ -119,7 +119,7 @@ fun TasksScreen(
 
 @Composable
 fun TasksContent(
-    tasks: List<TaskWithCourse>,
+    tasks: List<CourseWithTask>,
     columns: List<TasksColumnInfo>,
     onTaskClick: (Task) -> Unit,
     onDeleteTask: (Task) -> Unit,

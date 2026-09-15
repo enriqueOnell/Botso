@@ -25,10 +25,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.onell.botso.domain.model.ClassSessionWithCourse
+import com.onell.botso.domain.model.CourseWithSession
 
 @Composable
-fun ClassCard(sessionWithCourse: ClassSessionWithCourse) {
+fun ClassCard(sessionWithCourse: CourseWithSession) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),

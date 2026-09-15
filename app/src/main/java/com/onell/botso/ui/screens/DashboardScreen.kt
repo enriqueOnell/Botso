@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.onell.botso.domain.model.ClassSession
-import com.onell.botso.domain.model.ClassSessionWithCourse
+import com.onell.botso.domain.model.CourseWithSession
 import com.onell.botso.domain.model.Course
 import com.onell.botso.domain.model.CourseWithGrades
 import com.onell.botso.domain.model.Grade
@@ -124,9 +124,9 @@ fun DashboardContent(
                     items(
                         items = uiState.todayClasses,
                         key = { it.session.id }
-                    ) { sessionWithCourse ->
+                    ) { courseWithSession ->
                         ClassCard(
-                            sessionWithCourse = sessionWithCourse,
+                            sessionWithCourse = courseWithSession,
                         )
                     }
                 }
@@ -215,7 +215,7 @@ fun DashboardScreenPreview() {
         )
     )
     val todayClasses = listOf(
-        ClassSessionWithCourse(
+        CourseWithSession(
             session = ClassSession(
                 "12",
                 "id2",
@@ -241,5 +241,4 @@ fun DashboardScreenPreview() {
             todayClasses = todayClasses
         )
     )
-
 }

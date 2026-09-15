@@ -43,14 +43,14 @@ import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.onell.botso.domain.model.TaskWithCourse
+import com.onell.botso.domain.model.CourseWithTask
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TaskCard(
-    taskWithCourse: TaskWithCourse,
+    taskWithCourse: CourseWithTask,
     onClick: () -> Unit,
     onDelete: () -> Unit,
     onEdit: () -> Unit

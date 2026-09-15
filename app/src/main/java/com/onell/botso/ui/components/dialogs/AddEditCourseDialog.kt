@@ -30,10 +30,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.onell.botso.domain.model.ClassSession
-import com.onell.botso.domain.model.ClassSessionWithCourse
+import com.onell.botso.domain.model.CourseWithSession
 import com.onell.botso.domain.model.Course
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,18 +43,18 @@ fun AddEditCourseDialog(
     semesterId: String = "",
     onDismiss: () -> Unit,
     onConfirm: (Course, ClassSession) -> Unit,
-    sessionWithCourse: ClassSessionWithCourse? = null
+    courseWithSession: CourseWithSession? = null
 ) {
-    var courseId by remember(sessionWithCourse) { mutableStateOf(sessionWithCourse?.course?.id ?: "") }
-    var sessionId by remember(sessionWithCourse) { mutableStateOf(sessionWithCourse?.session?.id ?: "") }
-    var currentSemesterId by remember(sessionWithCourse) { mutableStateOf(sessionWithCourse?.course?.semesterId?.takeIf { it.isNotBlank() } ?: semesterId) }
-    var name by remember(sessionWithCourse) { mutableStateOf(sessionWithCourse?.course?.name ?: "") }
-    var dayOfWeek by remember(sessionWithCourse) { mutableIntStateOf(sessionWithCourse?.session?.dayOfWeek ?: 1) }
-    var startTime by remember(sessionWithCourse) { mutableStateOf(sessionWithCourse?.session?.startTime ?: LocalTime.of(8, 0)) }
-    var endTime by remember(sessionWithCourse) { mutableStateOf(sessionWithCourse?.session?.endTime ?: LocalTime.of(10, 0)) }
-    var professor by remember(sessionWithCourse) { mutableStateOf(sessionWithCourse?.course?.professor ?: "") }
-    var location by remember(sessionWithCourse) { mutableStateOf(sessionWithCourse?.session?.room ?: "") }
-    var isRemote by remember(sessionWithCourse) { mutableStateOf(sessionWithCourse?.session?.isRemote ?: false) }
+    var courseId by remember(courseWithSession) { mutableStateOf(courseWithSession?.course?.id?.takeIf { it.isNotBlank() } ?: UUID.randomUUID().toString()) }
+    var sessionId by remember(courseWithSession) { mutableStateOf(courseWithSession?.session?.id?.takeIf { it.isNotBlank() } ?: courseId) }
+    var currentSemesterId by remember(courseWithSession) { mutableStateOf(courseWithSession?.course?.semesterId?.takeIf { it.isNotBlank() } ?: semesterId) }
+    var name by remember(courseWithSession) { mutableStateOf(courseWithSession?.course?.name ?: "") }
+    var dayOfWeek by remember(courseWithSession) { mutableIntStateOf(courseWithSession?.session?.dayOfWeek ?: 1) }
+    var startTime by remember(courseWithSession) { mutableStateOf(courseWithSession?.session?.startTime ?: LocalTime.of(8, 0)) }
+    var endTime by remember(courseWithSession) { mutableStateOf(courseWithSession?.session?.endTime ?: LocalTime.of(10, 0)) }
+    var professor by remember(courseWithSession) { mutableStateOf(courseWithSession?.course?.professor ?: "") }
+    var location by remember(courseWithSession) { mutableStateOf(courseWithSession?.session?.room ?: "") }
+    var isRemote by remember(courseWithSession) { mutableStateOf(courseWithSession?.session?.isRemote ?: false) }
 
     var showStartTimePicker by remember { mutableStateOf(false) }
     var showEndTimePicker by remember { mutableStateOf(false) }
@@ -65,7 +66,7 @@ fun AddEditCourseDialog(
         onDismissRequest = onDismiss,
         modifier = modifier,
         shape = RoundedCornerShape(24.dp),
-        title = { Text(if (sessionWithCourse?.course == null) "Nuevo Curso" else "Editar Curso") },
+        title = { Text(if (courseWithSession?.course == null) "Nuevo Curso" else "Editar Curso") },
         text = {
             Column(
                 modifier = Modifier.verticalScroll(rememberScrollState()),
@@ -74,7 +75,7 @@ fun AddEditCourseDialog(
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
-                    label = { Text("Nombre del Curso") },
+                    label = { Text("Nombre de la materia") },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(24.dp)
                 )
@@ -144,7 +145,7 @@ fun AddEditCourseDialog(
                 OutlinedTextField(
                     value = location,
                     onValueChange = { location = it },
-                    label = { Text("Ubicación / Link") },
+                    label = { Text("Ubicación") },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(24.dp)
                 )
@@ -192,7 +193,7 @@ fun AddEditCourseDialog(
                 enabled = name.isNotBlank(),
                 shape = RoundedCornerShape(24.dp)
             ) {
-                Text(if (sessionWithCourse?.course == null) "Añadir" else "Guardar")
+                Text(if (courseWithSession?.course == null) "Añadir" else "Guardar")
             }
         },
         dismissButton = {

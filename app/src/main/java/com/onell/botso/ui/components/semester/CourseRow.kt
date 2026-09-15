@@ -29,13 +29,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.onell.botso.domain.model.ClassSessionWithCourse
+import com.onell.botso.domain.model.CourseWithSession
 import com.onell.botso.domain.model.Course
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CourseRow(
-    course: Course,
+    courseWithSession: CourseWithSession,
     onClick: () -> Unit,
     onEdit: () -> Unit,
     onDelete: () -> Unit
@@ -62,7 +62,7 @@ fun CourseRow(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = course.name,
+                    text = courseWithSession.course.name,
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

@@ -35,7 +35,7 @@ import androidx.compose.runtime.LaunchedEffect
 import java.io.File
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.onell.botso.domain.model.ClassSessionWithCourse
+import com.onell.botso.domain.model.CourseWithSession
 import com.onell.botso.domain.model.Course
 import com.onell.botso.domain.model.Semester
 import com.onell.botso.ui.components.dialogs.AddEditCourseDialog
@@ -71,7 +71,7 @@ fun SemesterContent(
     var showAddCourseDialogForSemesterId by remember { mutableStateOf<String?>(null) }
 
     var semesterToEdit by remember { mutableStateOf<Semester?>(null) }
-    var sessionWithCourseToEdit by remember { mutableStateOf<ClassSessionWithCourse?>(null) }
+    var courseWithSessionToEdit by remember { mutableStateOf<CourseWithSession?>(null) }
     var courseToDelete by remember { mutableStateOf<Course?>(null) }
     var semesterToDelete by remember { mutableStateOf<Semester?>(null) }
 
@@ -150,7 +150,7 @@ fun SemesterContent(
                                 showAddCourseDialogForSemesterId = semesterData.semester.id
                             },
                             onEditSemester = { semesterToEdit = it },
-                            onEditCourse = { sessionWithCourseToEdit = it },
+                            onEditCourse = { courseWithSessionToEdit = it },
                             onDeleteCourse = { courseToDelete = it },
                             onDeleteSemester = { semesterToDelete = it },
                             onExportPdf = { viewModel.exportSemesterToPdf(it) }
@@ -192,13 +192,13 @@ fun SemesterContent(
             )
         }
 
-        sessionWithCourseToEdit?.let { sessionWithCourse ->
+        courseWithSessionToEdit?.let { courseWithSession ->
             AddEditCourseDialog(
-                sessionWithCourse = sessionWithCourse,
-                onDismiss = { sessionWithCourseToEdit = null },
+                courseWithSession = courseWithSession,
+                onDismiss = { courseWithSessionToEdit = null },
                 onConfirm = { updatedCourse, updatedSession ->
                     viewModel.updateCourse(updatedCourse, updatedSession)
-                    sessionWithCourseToEdit = null
+                    courseWithSessionToEdit = null
                 }
             )
         }
@@ -229,10 +229,9 @@ fun SemesterContent(
     }
 }
 
-@Preview(showBackground = true, device = "spec:width=411dp,height=891dp")
+@Preview(showBackground = true)
 @Composable
 private fun SemestersScreenPreview() {
     BotsoTheme {
-        SemestersScreen()
     }
 }

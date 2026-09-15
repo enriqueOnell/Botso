@@ -3,7 +3,7 @@ package com.onell.botso.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.onell.botso.domain.model.Task
-import com.onell.botso.domain.model.TaskWithCourse
+import com.onell.botso.domain.model.CourseWithTask
 import com.onell.botso.domain.usecase.course.GetAllCoursesUseCase
 import com.onell.botso.domain.usecase.task.DeleteTaskUseCase
 import com.onell.botso.domain.usecase.task.GetAllTasksUseCase
@@ -38,7 +38,7 @@ class TasksViewModel @Inject constructor(
         val tasksWithCourse = allTasks.mapNotNull { task ->
             val courseForTask = courses.firstOrNull { it.id == task.courseId }
             if (courseForTask != null) {
-                TaskWithCourse(task = task, course = courseForTask)
+                CourseWithTask(task = task, course = courseForTask)
             } else null
         }
 

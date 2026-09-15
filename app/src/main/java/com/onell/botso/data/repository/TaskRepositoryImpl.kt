@@ -4,7 +4,7 @@ import com.onell.botso.data.local.dao.TaskDao
 import com.onell.botso.data.mapper.toDomain
 import com.onell.botso.data.mapper.toEntity
 import com.onell.botso.domain.model.Task
-import com.onell.botso.domain.model.TaskWithCourse
+import com.onell.botso.domain.model.CourseWithTask
 import com.onell.botso.domain.repository.TaskRepository
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.Flow
@@ -26,13 +26,18 @@ class TaskRepositoryImpl @Inject constructor(
     override fun getTasksForCourse(courseId: String): Flow<List<Task>> =
         taskDao.getTasksForCourse(courseId).map { list -> list.map { it.toDomain() } }
 
-    override fun getTasksWithCourse(courseId: String): Flow<List<TaskWithCourse>> {
+    override fun getTasksWithCourse(courseId: String): Flow<List<CourseWithTask>> {
         return taskDao.getTasksWithCourse(courseId).map { list ->
-            list.map { entity -> entity.toDomain() }
+            list.flatMap { entity ->
+                entity.tasks.map { taskEntity ->
+                    CourseWithTask(
+                        course = entity.course.toDomain(),
+                        task = taskEntity.toDomain()
+                    )
+                }
+            }
         }
     }
-
-
 
     override suspend fun insertTask(task: Task) = taskDao.insertTask(task.toEntity())
 
