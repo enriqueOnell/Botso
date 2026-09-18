@@ -12,12 +12,21 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun GradeInputField(label: String, value: String, onValueChange: (String) -> Unit) {
+fun GradeInputField(
+    label: String,
+    value: String,
+    onValueChange: (String) -> Unit
+) {
     Column {
-        Text(text = label, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
         Spacer(modifier = Modifier.height(8.dp))
         OutlinedTextField(
             value = value,
@@ -29,4 +38,14 @@ fun GradeInputField(label: String, value: String, onValueChange: (String) -> Uni
             placeholder = { Text("0.0") }
         )
     }
+}
+
+@Preview
+@Composable
+fun GradeInputFieldPreview() {
+    GradeInputField(
+        label = "Corte 1",
+        value = "1",
+        onValueChange = {}
+    )
 }

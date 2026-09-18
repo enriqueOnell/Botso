@@ -43,7 +43,7 @@ class DashboardViewModel @Inject constructor(
 
                     DashboardUiState.Success(
                         todayClasses = sessionsForDay,
-                        pendingTasksCount = pendingTasks.count { it.status != "DONE" },
+                        pendingTasksCount = pendingTasks.count { it.status.label != "DONE" },
                         priorityTasks = priorityTasks,
                         coursesWithGrades = coursesWithGrades
                     )

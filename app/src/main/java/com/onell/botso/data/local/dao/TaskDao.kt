@@ -11,8 +11,8 @@ interface TaskDao {
     fun getTasksForCourse(courseId: String): Flow<List<TaskEntity>>
 
     @Transaction
-    @Query("SELECT DISTINCT c.* FROM courses c INNER JOIN tasks t ON c.id = t.course_id WHERE t.course_id = :courseId")
-    fun getTasksWithCourse(courseId: String): Flow<List<CourseWithTaskEntity>>
+    @Query("SELECT * FROM courses")
+    fun getAllTasksWithCourse(): Flow<List<CourseWithTaskEntity>>
 
     @Query("SELECT * FROM tasks WHERE status != 'DONE'")
     fun getPendingTasks(): Flow<List<TaskEntity>>

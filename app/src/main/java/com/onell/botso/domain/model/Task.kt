@@ -9,7 +9,7 @@ data class Task(
     val dueDate: LocalDate,
     val isPriority: Boolean = false,
     val hasAttachment: Boolean = false,
-    val status: String = "TODO",
+    val status: TaskStatus,
     val week: Int = 1,
     val description: String = ""
 )

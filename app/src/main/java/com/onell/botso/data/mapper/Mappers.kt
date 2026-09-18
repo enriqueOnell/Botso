@@ -18,6 +18,7 @@ import com.onell.botso.domain.model.Grade
 import com.onell.botso.domain.model.Semester
 import com.onell.botso.domain.model.SemesterWithCourse
 import com.onell.botso.domain.model.Task
+import com.onell.botso.domain.model.TaskStatus
 import java.time.LocalDate
 import java.time.LocalTime
 import java.util.UUID
@@ -112,7 +113,7 @@ fun TaskEntity.toDomain(): Task{
         dueDate = LocalDate.parse(this.dueDate),
         isPriority = this.isPriority,
         hasAttachment = this.hasAttachment,
-        status = this.status,
+        status = TaskStatus.entries.find { it.key == this.status } ?: TaskStatus.TODO,
         week = this.week,
         description = this.description
     )
@@ -126,7 +127,7 @@ fun Task.toEntity(): TaskEntity{
         dueDate = this.dueDate.toString(),
         isPriority = this.isPriority,
         hasAttachment = this.hasAttachment,
-        status = this.status,
+        status = this.status.key,
         week = this.week,
         description = this.description
     )

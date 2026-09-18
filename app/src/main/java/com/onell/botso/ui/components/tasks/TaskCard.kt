@@ -42,8 +42,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.onell.botso.domain.model.Course
 import com.onell.botso.domain.model.CourseWithTask
+import com.onell.botso.domain.model.Task
+import com.onell.botso.domain.model.TaskStatus
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -69,7 +73,7 @@ fun TaskCard(
             ),
         shape = RoundedCornerShape(24.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
     ) {
         Box {
             Column(modifier = Modifier.padding(16.dp)) {
@@ -79,6 +83,21 @@ fun TaskCard(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
+
+                        Surface(
+                            Modifier.padding(8.dp),
+                            color = MaterialTheme.colorScheme.secondaryContainer,
+                            shape = CircleShape
+                        ) {
+                            Text(
+                                text = "S${task.week}",
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSecondaryContainer
+                            )
+                        }
+
                         Icon(
                             Icons.Rounded.Book,
                             contentDescription = null,
@@ -102,7 +121,7 @@ fun TaskCard(
                         shape = CircleShape
                     ) {
                         Text(
-                            text = "S${task.week}",
+                            text = task.status.label,
                             modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
                             style = MaterialTheme.typography.labelSmall,
                             fontWeight = FontWeight.Bold,
@@ -149,7 +168,12 @@ fun TaskCard(
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
                             text = task.dueDate
-                                .format(DateTimeFormatter.ofPattern("dd MMM, yyyy", LocalLocale.current.platformLocale)),
+                                .format(
+                                    DateTimeFormatter.ofPattern(
+                                        "dd MMM, yyyy",
+                                        LocalLocale.current.platformLocale
+                                    )
+                                ),
                             style = MaterialTheme.typography.bodySmall,
                             fontWeight = if (isDueToday) FontWeight.Bold else FontWeight.Normal,
                             color = if (isDueToday) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant
@@ -202,4 +226,33 @@ fun TaskCard(
             }
         }
     }
+}
+
+@Preview
+@Composable
+fun TaskCardPreview() {
+    TaskCard(
+        taskWithCourse = CourseWithTask(
+            task = Task(
+                id = "id",
+                courseId = "courseId",
+                title = "title",
+                dueDate = LocalDate.now(),
+                isPriority = true,
+                hasAttachment = true,
+                status = TaskStatus.TODO,
+                week = 3,
+                description = ""
+            ),
+            course = Course(
+                id = "id2",
+                semesterId = "semesterId",
+                name = "name",
+                professor = "professor"
+            )
+        ),
+        onClick = {},
+        onDelete = {},
+        onEdit = {}
+    )
 }

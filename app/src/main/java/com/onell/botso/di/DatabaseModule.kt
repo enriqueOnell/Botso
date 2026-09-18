@@ -17,7 +17,6 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideBotsoDatabase(@ApplicationContext context: Context): BotsoDataBase {
-        // Usamos directamente tu companion object para garantizar una única instancia
         return BotsoDataBase.getDatabase(context)
     }
 

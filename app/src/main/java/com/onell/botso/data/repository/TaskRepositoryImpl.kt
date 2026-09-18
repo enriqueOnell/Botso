@@ -26,8 +26,8 @@ class TaskRepositoryImpl @Inject constructor(
     override fun getTasksForCourse(courseId: String): Flow<List<Task>> =
         taskDao.getTasksForCourse(courseId).map { list -> list.map { it.toDomain() } }
 
-    override fun getTasksWithCourse(courseId: String): Flow<List<CourseWithTask>> {
-        return taskDao.getTasksWithCourse(courseId).map { list ->
+    override fun getAllTasksWithCourse(): Flow<List<CourseWithTask>> {
+        return taskDao.getAllTasksWithCourse().map { list ->
             list.flatMap { entity ->
                 entity.tasks.map { taskEntity ->
                     CourseWithTask(

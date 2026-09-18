@@ -5,7 +5,6 @@ import com.onell.botso.domain.model.SemesterWithCourse
 import kotlinx.coroutines.flow.Flow
 
 interface SemesterRepository {
-    // Semesters
     fun getAllSemesters(): Flow<List<Semester>>
     fun getSemestersWithCourses(): Flow<List<SemesterWithCourse>>
     fun getActiveSemester(): Flow<Semester?>

@@ -7,10 +7,6 @@ data class CourseWithGrades(
     val averageGrade: Double
         get() {
             if (grades.isEmpty()) return 0.0
-            val gradesByTerm = grades.groupBy { it.termId }
-            val termAverages = gradesByTerm.map { (_, termGrades) ->
-                termGrades.sumOf { it.score * it.weight }
-            }
-            return if (termAverages.isNotEmpty()) termAverages.average() else 0.0
+            return grades.sumOf { it.score * it.weight }
         }
 }

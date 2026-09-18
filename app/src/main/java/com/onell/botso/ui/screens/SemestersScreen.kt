@@ -93,11 +93,6 @@ fun SemesterContent(
     }
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Gestión Académica", fontWeight = FontWeight.Bold) }
-            )
-        },
         floatingActionButton = {
             LargeFloatingActionButton(
                 onClick = { showAddSemesterDialog = true },
@@ -142,6 +137,15 @@ fun SemesterContent(
                     contentPadding = PaddingValues(16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
+                    item {
+                        Text(
+                            text = "Semestres",
+                            style = MaterialTheme.typography.headlineLarge,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+                    }
+
                     items(uiState.semesterWithCourses) { semesterData ->
                         SemesterCard(
                             semesterData = semesterData,

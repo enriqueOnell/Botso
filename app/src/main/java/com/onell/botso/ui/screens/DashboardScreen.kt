@@ -29,6 +29,7 @@ import com.onell.botso.domain.model.Course
 import com.onell.botso.domain.model.CourseWithGrades
 import com.onell.botso.domain.model.Grade
 import com.onell.botso.domain.model.Task
+import com.onell.botso.domain.model.TaskStatus
 import com.onell.botso.ui.components.dashboard.ClassCard
 import com.onell.botso.ui.components.dashboard.CourseGradeItem
 import com.onell.botso.ui.components.dashboard.PendingTasksCard
@@ -189,7 +190,7 @@ fun DashboardScreenPreview() {
             dueDate = LocalDate.now(),
             isPriority = true,
             hasAttachment = true,
-            status = "DONE",
+            status = TaskStatus.TODO ,
             week = 3,
             description = ""
         )

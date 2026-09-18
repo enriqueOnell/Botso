@@ -28,9 +28,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.onell.botso.domain.model.CourseWithSession
+import com.onell.botso.domain.model.ClassSession
 import com.onell.botso.domain.model.Course
+import com.onell.botso.domain.model.CourseWithSession
+import java.time.LocalTime
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -67,7 +70,7 @@ fun CourseRow(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
-                    text = "Ver notas >",
+                    text = "Ver notas",
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.SemiBold
@@ -101,4 +104,29 @@ fun CourseRow(
             )
         }
     }
+}
+
+@Preview
+@Composable
+fun CourseRowPreview(){
+    CourseRow(
+       courseWithSession =  CourseWithSession(
+            session = ClassSession(
+                "12",
+                "id2",
+                1,
+                LocalTime.of(10,9),
+                LocalTime.of(20,17),
+                "room",
+                true
+            ),
+            course = Course(
+                id = "id2",
+                semesterId = "semesterId",
+                name = "name",
+                professor = "professor"
+            )
+        ), onEdit = {}, onDelete = {}, onClick = {}
+
+    )
 }

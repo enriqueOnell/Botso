@@ -32,7 +32,7 @@ data class TaskEntity(
     @ColumnInfo(name = "has_attachment")
     val hasAttachment: Boolean = false,
     @ColumnInfo(name = "status")
-    val status: String = "TODO",
+    val status: String,
     @ColumnInfo(name = "week")
     val week: Int = 1,
     @ColumnInfo(name = "description")

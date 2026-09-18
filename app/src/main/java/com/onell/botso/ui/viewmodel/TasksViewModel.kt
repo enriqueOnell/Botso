@@ -3,138 +3,70 @@ package com.onell.botso.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.onell.botso.domain.model.Task
-import com.onell.botso.domain.model.CourseWithTask
 import com.onell.botso.domain.usecase.course.GetAllCoursesUseCase
 import com.onell.botso.domain.usecase.task.DeleteTaskUseCase
-import com.onell.botso.domain.usecase.task.GetAllTasksUseCase
+import com.onell.botso.domain.usecase.task.GetAllTasksWithCourseUseCase
 import com.onell.botso.domain.usecase.task.InsertTaskUseCase
 import com.onell.botso.domain.usecase.task.UpdateTaskUseCase
-import com.onell.botso.ui.uistate.TasksUiEvent
 import com.onell.botso.ui.uistate.TasksUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.time.LocalDate
-import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
 class TasksViewModel @Inject constructor(
-    private val getAllTasksUseCase: GetAllTasksUseCase,
+    private val getAllTasksWithCourseUseCase: GetAllTasksWithCourseUseCase,
     private val getAllCoursesUseCase: GetAllCoursesUseCase,
     private val insertTaskUseCase: InsertTaskUseCase,
     private val updateTaskUseCase: UpdateTaskUseCase,
     private val deleteTaskUseCase: DeleteTaskUseCase
 ) : ViewModel() {
+    private val _uiState = MutableStateFlow<TasksUiState>(TasksUiState.Loading)
+    val uiState: StateFlow<TasksUiState> = _uiState.asStateFlow()
 
-    val uiState: StateFlow<TasksUiState> = combine(
-        getAllTasksUseCase(),
-        getAllCoursesUseCase()
-    ) { allTasks, courses ->
-
-        val tasksWithCourse = allTasks.mapNotNull { task ->
-            val courseForTask = courses.firstOrNull { it.id == task.courseId }
-            if (courseForTask != null) {
-                CourseWithTask(task = task, course = courseForTask)
-            } else null
-        }
-
-        TasksUiState(
-            tasks = tasksWithCourse,
-            courses = courses
-        )
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), TasksUiState())
-
-    fun onEvent(event: TasksUiEvent) {
-        when (event) {
-            is TasksUiEvent.OnAddTask -> addTask(
-                event.courseId,
-                event.title,
-                event.dueDate,
-                event.isPriority,
-                event.week,
-                event.description
-            )
-
-            is TasksUiEvent.OnUpdateTaskStatus -> updateTaskStatus(event.task)
-            is TasksUiEvent.OnDeleteTask -> deleteTask(event.task)
-            is TasksUiEvent.OnUpdateTask -> updateTask(
-                event.task,
-                event.courseId,
-                event.title,
-                event.dueDate,
-                event.isPriority,
-                event.week,
-                event.description
-            )
-        }
+    init {
+        loadAllTasks()
     }
 
-    private fun addTask(
-        courseId: String,
-        title: String,
-        dueDate: LocalDate,
-        isPriority: Boolean,
-        week: Int,
-        description: String
-    ) {
+    private fun loadAllTasks() {
         viewModelScope.launch {
-            insertTaskUseCase(
-                Task(
-                    id = UUID.randomUUID().toString(),
-                    courseId = courseId,
-                    title = title,
-                    dueDate = dueDate,
-                    isPriority = isPriority,
-                    status = "TODO",
-                    week = week,
-                    description = description
-                )
-            )
+            try {
+                combine(
+                    getAllTasksWithCourseUseCase(),
+                    getAllCoursesUseCase()
+                ){ tasks, courses ->
+                    TasksUiState.Success(
+                        tasksWithCourses = tasks,
+                        courses = courses
+                    )
+                }
+                .collect { updateState -> _uiState.value = updateState }
+            } catch (e: Exception){
+                _uiState.value = TasksUiState.Error("Error al cargar las tareas: ${e.message}")
+            }
         }
     }
 
-    private fun updateTask(
-        task: Task,
-        courseId: String,
-        title: String,
-        dueDate: LocalDate,
-        isPriority: Boolean,
-        week: Int,
-        description: String
-    ) {
+    fun insertTask(task: Task) {
         viewModelScope.launch {
-            updateTaskUseCase(
-                task.copy(
-                    courseId = courseId,
-                    title = title,
-                    dueDate = dueDate,
-                    isPriority = isPriority,
-                    week = week,
-                    description = description
-                )
-            )
+            insertTaskUseCase(task)
         }
     }
 
-    private fun updateTaskStatus(task: Task) {
-        val nextStatus = when (task.status) {
-            "TODO" -> "IN_PROGRESS"
-            "IN_PROGRESS" -> "DONE"
-            "DONE" -> "TODO"
-            else -> "TODO"
-        }
+    fun updateTask(task: Task) {
         viewModelScope.launch {
-            updateTaskUseCase(task.copy(status = nextStatus))
+            updateTaskUseCase(task)
         }
     }
 
-    private fun deleteTask(task: Task) {
+    fun deleteTask(task: Task) {
         viewModelScope.launch {
             deleteTaskUseCase(task)
         }
     }
+
 }

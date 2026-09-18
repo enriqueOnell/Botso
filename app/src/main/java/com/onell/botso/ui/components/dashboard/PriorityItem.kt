@@ -25,6 +25,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.onell.botso.domain.model.Task
+import com.onell.botso.domain.model.TaskStatus
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -106,7 +107,7 @@ fun PriorityItemPreview() {
             dueDate = LocalDate.now(),
             isPriority = true,
             hasAttachment = true,
-            status = "DONE",
+            status = TaskStatus.TODO ,
             week = 3,
             description = "MAMAGUEVo"
         )

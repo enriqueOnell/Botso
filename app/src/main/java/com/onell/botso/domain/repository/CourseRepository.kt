@@ -6,7 +6,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface CourseRepository {
 
-    // Courses
     fun getAllCourses(): Flow<List<Course>>
     fun getCoursesForSemester(semesterId: String): Flow<List<Course>>
     fun getCourseById(courseId: String): Flow<Course?>

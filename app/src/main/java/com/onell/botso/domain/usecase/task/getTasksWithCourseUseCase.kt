@@ -5,10 +5,10 @@ import com.onell.botso.domain.repository.TaskRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class GetTasksWithCourseUseCase @Inject constructor(
+class GetAllTasksWithCourseUseCase @Inject constructor(
     private val repository: TaskRepository
 ) {
-    operator fun invoke(courseId: String): Flow<List<CourseWithTask>> {
-        return repository.getTasksWithCourse(courseId)
+    operator fun invoke(): Flow<List<CourseWithTask>> {
+        return repository.getAllTasksWithCourse()
     }
 }

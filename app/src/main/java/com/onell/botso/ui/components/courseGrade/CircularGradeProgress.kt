@@ -20,11 +20,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import java.util.Locale
 
 @Composable
-fun CircularGradeProgress(score: Double, termAverage: Double) {
+fun CircularGradeProgress(
+    score: Double,
+    termAverage: Double
+) {
     val animatedScore by animateFloatAsState(targetValue = score.toFloat(), label = "score")
     val progress = (animatedScore / 5.0f).coerceIn(0f, 1f)
 
@@ -64,4 +68,13 @@ fun CircularGradeProgress(score: Double, termAverage: Double) {
             }
         }
     }
+}
+
+@Preview
+@Composable
+fun CircularGradeProgressPreview(){
+    CircularGradeProgress(
+        score = 4.0,
+        termAverage = 3.5
+    )
 }

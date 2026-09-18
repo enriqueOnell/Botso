@@ -3,6 +3,7 @@ package com.onell.botso.data.repository
 import com.onell.botso.data.local.dao.GradeDao
 import com.onell.botso.data.mapper.toDomain
 import com.onell.botso.data.mapper.toEntity
+import com.onell.botso.domain.model.CourseWithGrades
 import com.onell.botso.domain.model.Grade
 import com.onell.botso.domain.repository.GradeRepository
 import jakarta.inject.Inject
@@ -15,8 +16,8 @@ class GradeRepositoryImpl @Inject constructor(
     override fun getAllGrades(): Flow<List<Grade>> =
         gradeDao.getAllGrades().map { list -> list.map { it.toDomain() } }
 
-    override fun getGradesForCourse(courseId: String): Flow<List<Grade>> =
-        gradeDao.getGradesForCourse(courseId).map { list -> list.map { it.toDomain() } }
+    override fun getGradesForCourse(courseId: String): Flow<CourseWithGrades?> =
+        gradeDao.getGradesForCourse(courseId).map { entity -> entity.toDomain() }
 
     override suspend fun insertGrade(grade: Grade) =
         gradeDao.insertGrade(grade.toEntity())
