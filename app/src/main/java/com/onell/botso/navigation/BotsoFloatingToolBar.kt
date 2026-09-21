@@ -1,0 +1,207 @@
+package com.onell.botso.navigation
+
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.filled.Dashboard
+import androidx.compose.material.icons.filled.Task
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment.Companion.BottomCenter
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.onell.botso.domain.model.Course
+import com.onell.botso.domain.model.CourseWithSession
+import com.onell.botso.domain.model.Semester
+import com.onell.botso.domain.model.Task
+import com.onell.botso.domain.model.TaskStatus
+import com.onell.botso.ui.components.dialogs.*
+import com.onell.botso.ui.screens.*
+import com.onell.botso.ui.uistate.TasksUiState
+import com.onell.botso.ui.viewmodel.SemestersViewModel
+import com.onell.botso.ui.viewmodel.TasksViewModel
+import java.util.UUID
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+fun BotsoFloatingToolBar(
+    taskViewModel: TasksViewModel = hiltViewModel(),
+    semesterViewModel: SemestersViewModel = hiltViewModel()
+) {
+    val taskUiState by taskViewModel.uiState.collectAsStateWithLifecycle()
+    val semesterUiState by semesterViewModel.uiState.collectAsStateWithLifecycle()
+
+    val backStack = remember { mutableStateListOf<Route>(Route.Dashboard) }
+
+    var showTaskDialog by remember { mutableStateOf(false) }
+    var showSemesterDialog by remember { mutableStateOf(false) } // Usado por el FAB para agregar semestre
+    var showAddCourseDialogForSemesterId by remember { mutableStateOf<String?>(null) }
+    var semesterToEdit by remember { mutableStateOf<Semester?>(null) }
+    var courseWithSessionToEdit by remember { mutableStateOf<CourseWithSession?>(null) }
+    var courseToDelete by remember { mutableStateOf<Course?>(null) }
+    var semesterToDelete by remember { mutableStateOf<Semester?>(null) }
+
+    val courses = (taskUiState as? TasksUiState.Success)?.courses ?: emptyList()
+
+    BackHandler(enabled = backStack.size > 1) {
+        backStack.removeAt(backStack.lastIndex)
+    }
+
+    Scaffold(
+        floatingActionButton = {
+            val currentRoute = backStack.last()
+            if (currentRoute is Route.Tasks || currentRoute is Route.Semesters) {
+                FloatingActionButton(
+                    onClick = {
+                        when (currentRoute) {
+                            is Route.Tasks -> showTaskDialog = true
+                            is Route.Semesters -> showSemesterDialog = true
+                            else -> {}
+                        }
+                    },
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    Icon(Icons.Default.Task, contentDescription = "Agregar")
+                }
+            }
+        }
+    ) { paddingValues ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues = paddingValues)
+        ) {
+            when (val currentRoute = backStack.last()) {
+                is Route.Dashboard -> DashboardScreen()
+                is Route.Tasks -> TasksScreen(taskViewModel, taskUiState)
+
+                is Route.Semesters -> SemestersScreen(
+                    viewModel = semesterViewModel,
+                    uiState = semesterUiState,
+                    onNavigateToCourseGrades = { courseId ->
+                        backStack.add(Route.CourseGrades(courseId))
+                    },
+                    onAddCourseClicked = { semesterId -> showAddCourseDialogForSemesterId = semesterId },
+                    onEditSemesterClicked = { semester -> semesterToEdit = semester },
+                    onEditCourseClicked = { courseSession -> courseWithSessionToEdit = courseSession },
+                    onDeleteCourseClicked = { course -> courseToDelete = course },
+                    onDeleteSemesterClicked = { semester -> semesterToDelete = semester }
+                )
+
+                is Route.CourseGrades -> CourseGradesScreen(courseId = currentRoute.courseId)
+            }
+
+            HorizontalFloatingToolbar(
+                modifier = Modifier
+                    .align(BottomCenter)
+                    .padding(bottom = 32.dp, start = 16.dp, end = 16.dp),
+                expanded = true,
+                content = {
+                    IconButton(onClick = { if (backStack.last() !is Route.Dashboard) backStack.add(Route.Dashboard) }) {
+                        Icon(Icons.Default.Dashboard, contentDescription = "Dashboard")
+                    }
+                    IconButton(onClick = { if (backStack.last() !is Route.Tasks) backStack.add(Route.Tasks) }) {
+                        Icon(Icons.Default.Task, contentDescription = "Tasks")
+                    }
+                    IconButton(onClick = { if (backStack.last() !is Route.Semesters) backStack.add(Route.Semesters) }) {
+                        Icon(Icons.AutoMirrored.Filled.List, contentDescription = "Semesters")
+                    }
+                }
+            )
+
+            if (showTaskDialog) {
+                AddEditTaskDialog(
+                    courses = courses,
+                    onDismiss = { showTaskDialog = false },
+                    onConfirm = { courseId, title, dueDate, isPriority, week, description ->
+                        taskViewModel.insertTask(
+                            Task(
+                                id = UUID.randomUUID().toString(),
+                                courseId = courseId,
+                                title = title,
+                                description = description,
+                                dueDate = dueDate,
+                                isPriority = isPriority,
+                                week = week,
+                                status = TaskStatus.TODO
+                            )
+                        )
+                        showTaskDialog = false
+                    }
+                )
+            }
+
+            if (showSemesterDialog) {
+                AddEditSemesterDialog(
+                    onDismiss = { showSemesterDialog = false },
+                    onConfirm = { nuevoSemestre ->
+                        semesterViewModel.addSemester(nuevoSemestre)
+                        showSemesterDialog = false
+                    }
+                )
+            }
+
+            semesterToEdit?.let { semester ->
+                AddEditSemesterDialog(
+                    semester = semester,
+                    onDismiss = { semesterToEdit = null },
+                    onConfirm = { semestreActualizado ->
+                        semesterViewModel.updateSemester(semestreActualizado)
+                        semesterToEdit = null
+                    }
+                )
+            }
+
+            showAddCourseDialogForSemesterId?.let { semesterId ->
+                AddEditCourseDialog(
+                    semesterId = semesterId,
+                    onDismiss = { showAddCourseDialogForSemesterId = null },
+                    onConfirm = { newCourse, newSession ->
+                        semesterViewModel.addCourse(newCourse, newSession)
+                        showAddCourseDialogForSemesterId = null
+                    }
+                )
+            }
+
+            courseWithSessionToEdit?.let { courseWithSession ->
+                AddEditCourseDialog(
+                    courseWithSession = courseWithSession,
+                    onDismiss = { courseWithSessionToEdit = null },
+                    onConfirm = { updatedCourse, updatedSession ->
+                        semesterViewModel.updateCourse(updatedCourse, updatedSession)
+                        courseWithSessionToEdit = null
+                    }
+                )
+            }
+
+            courseToDelete?.let { course ->
+                ConfirmDeleteDialog(
+                    title = "Eliminar Curso",
+                    message = "¿Estás seguro de que deseas eliminar el curso '${course.name}'?",
+                    onConfirm = {
+                        semesterViewModel.deleteCourse(course)
+                        courseToDelete = null
+                    },
+                    onDismiss = { courseToDelete = null }
+                )
+            }
+
+            semesterToDelete?.let { semester ->
+                ConfirmDeleteDialog(
+                    title = "Eliminar Semestre",
+                    message = "¿Estás seguro de que deseas eliminar el semestre '${semester.name}'?",
+                    onConfirm = {
+                        semesterViewModel.deleteSemester(semester)
+                        semesterToDelete = null
+                    },
+                    onDismiss = { semesterToDelete = null }
+                )
+            }
+        }
+    }
+}

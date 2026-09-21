@@ -1,19 +1,15 @@
 package com.onell.botso.ui.screens
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
-import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -25,42 +21,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.onell.botso.domain.model.Course
 import com.onell.botso.domain.model.CourseWithTask
 import com.onell.botso.domain.model.Task
 import com.onell.botso.domain.model.TaskStatus
-import com.onell.botso.ui.components.dialogs.AddEditTaskDialog
 import com.onell.botso.ui.components.tasks.TaskCard
 import com.onell.botso.ui.uistate.TasksUiState
 import com.onell.botso.ui.viewmodel.TasksViewModel
 import java.time.LocalDate
-import java.util.UUID
 
 @Composable
 fun TasksScreen(
-    viewModel: TasksViewModel = hiltViewModel()
+    viewModel: TasksViewModel,
+    uiState: TasksUiState
 ) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    var showAddDialog by remember { mutableStateOf(false) }
     var taskToEdit by remember { mutableStateOf<Task?>(null) }
-
-    val courses = (uiState as? TasksUiState.Success)?.courses ?: emptyList()
-
-    Scaffold(
-        floatingActionButton = {
-            LargeFloatingActionButton(
-                onClick = { showAddDialog = true },
-                shape = RoundedCornerShape(24.dp),
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary
-            ) {
-                Icon(Icons.Rounded.Add, contentDescription = "Añadir Tarea")
-            }
-        }
-    ) { padding ->
 
         TasksContent(
             uiState = uiState,
@@ -74,53 +50,9 @@ fun TasksScreen(
             },
             onDeleteTask = { viewModel.deleteTask(it) },
             onEditTask = { taskToEdit = it },
-            modifier = Modifier.padding(padding)
+            modifier = Modifier.padding(16.dp)
         )
     }
-
-    if (showAddDialog) {
-        AddEditTaskDialog(
-            courses = courses,
-            onDismiss = { showAddDialog = false },
-            onConfirm = { courseId, title, dueDate, isPriority, week, description ->
-                viewModel.insertTask(
-                    Task(
-                        id = UUID.randomUUID().toString(),
-                        courseId = courseId,
-                        title = title,
-                        description = description,
-                        dueDate = dueDate,
-                        isPriority = isPriority,
-                        week = week,
-                        status = TaskStatus.TODO
-                    )
-                )
-                showAddDialog = false
-            }
-        )
-    }
-
-    taskToEdit?.let { task ->
-        AddEditTaskDialog(
-            courses = courses,
-            task = task,
-            onDismiss = { taskToEdit = null },
-            onConfirm = { courseId, title, dueDate, isPriority, week, description ->
-                viewModel.updateTask(
-                    task.copy(
-                        courseId = courseId,
-                        title = title,
-                        dueDate = dueDate,
-                        isPriority = isPriority,
-                        week = week,
-                        description = description
-                    )
-                )
-                taskToEdit = null
-            }
-        )
-    }
-}
 
 @Composable
 fun TasksContent(
@@ -147,7 +79,9 @@ fun TasksContent(
         }
         is TasksUiState.Success -> {
             LazyColumn(
-                modifier = Modifier.padding(16.dp) // Un pequeño margen para que respire
+                modifier = Modifier.fillMaxSize().padding(16.dp),
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 item {
                     Text(
