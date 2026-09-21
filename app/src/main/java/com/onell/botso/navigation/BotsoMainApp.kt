@@ -2,18 +2,21 @@ package com.onell.botso.navigation
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.Task
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.BottomCenter
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.onell.botso.domain.model.Course
 import com.onell.botso.domain.model.CourseWithSession
@@ -29,7 +32,7 @@ import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun BotsoFloatingToolBar(
+fun BotsoMainApp(
     taskViewModel: TasksViewModel = hiltViewModel(),
     semesterViewModel: SemestersViewModel = hiltViewModel()
 ) {
@@ -48,71 +51,130 @@ fun BotsoFloatingToolBar(
 
     val courses = (taskUiState as? TasksUiState.Success)?.courses ?: emptyList()
 
-    BackHandler(enabled = backStack.size > 1) {
+    BackHandler(enabled = backStack.size > 1 ) {
         backStack.removeAt(backStack.lastIndex)
     }
 
-    Scaffold(
-        floatingActionButton = {
-            val currentRoute = backStack.last()
-            if (currentRoute is Route.Tasks || currentRoute is Route.Semesters) {
-                FloatingActionButton(
-                    onClick = {
-                        when (currentRoute) {
-                            is Route.Tasks -> showTaskDialog = true
-                            is Route.Semesters -> showSemesterDialog = true
-                            else -> {}
-                        }
-                    },
-                    modifier = Modifier.padding(16.dp)
-                ) {
-                    Icon(Icons.Default.Task, contentDescription = "Agregar")
-                }
-            }
-        }
-    ) { paddingValues ->
+    Scaffold { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues = paddingValues)
+                .padding(paddingValues = paddingValues),
+            contentAlignment = Alignment.Center
         ) {
-            when (val currentRoute = backStack.last()) {
+            val currentRoute = backStack.last()
+
+            when (currentRoute) {
                 is Route.Dashboard -> DashboardScreen()
                 is Route.Tasks -> TasksScreen(taskViewModel, taskUiState)
-
                 is Route.Semesters -> SemestersScreen(
                     viewModel = semesterViewModel,
                     uiState = semesterUiState,
                     onNavigateToCourseGrades = { courseId ->
                         backStack.add(Route.CourseGrades(courseId))
                     },
-                    onAddCourseClicked = { semesterId -> showAddCourseDialogForSemesterId = semesterId },
+                    onAddCourseClicked = { semesterId ->
+                        showAddCourseDialogForSemesterId = semesterId
+                    },
                     onEditSemesterClicked = { semester -> semesterToEdit = semester },
-                    onEditCourseClicked = { courseSession -> courseWithSessionToEdit = courseSession },
+                    onEditCourseClicked = { courseSession ->
+                        courseWithSessionToEdit = courseSession
+                    },
                     onDeleteCourseClicked = { course -> courseToDelete = course },
                     onDeleteSemesterClicked = { semester -> semesterToDelete = semester }
                 )
-
                 is Route.CourseGrades -> CourseGradesScreen(courseId = currentRoute.courseId)
             }
 
-            HorizontalFloatingToolbar(
-                modifier = Modifier
-                    .align(BottomCenter)
-                    .padding(bottom = 32.dp, start = 16.dp, end = 16.dp),
-                expanded = true,
-                content = {
-                    IconButton(onClick = { if (backStack.last() !is Route.Dashboard) backStack.add(Route.Dashboard) }) {
-                        Icon(Icons.Default.Dashboard, contentDescription = "Dashboard")
+            if (currentRoute !is Route.CourseGrades) {
+
+                HorizontalFloatingToolbar(
+                    modifier = Modifier
+                        .align(BottomCenter)
+                        .padding(bottom = 8.dp),
+                    expanded = true,
+
+                    floatingActionButton = {
+                        if (currentRoute is Route.Tasks || currentRoute is Route.Semesters) {
+                            FloatingActionButton(
+                                onClick = {
+                                    when (currentRoute) {
+                                        is Route.Tasks -> showTaskDialog = true
+                                        is Route.Semesters -> showSemesterDialog = true
+                                    }
+                                }
+                            ) {
+                                Icon(Icons.Default.Add, contentDescription = "Agregar")
+                            }
+                        }
+                    },
+
+                    content = {
+                        val isDashboardSelected = currentRoute is Route.Dashboard
+                        val isTasksSelected = currentRoute is Route.Tasks
+                        val isSemestersSelected = currentRoute is Route.Semesters
+
+                        TextButton(
+                            onClick = { if (!isDashboardSelected) backStack.add(Route.Dashboard) },
+                            colors = ButtonDefaults.textButtonColors(
+                                containerColor = if (isDashboardSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainer,
+                                contentColor = if (isDashboardSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface
+                            ),
+                            contentPadding = if (isDashboardSelected) ButtonDefaults.TextButtonContentPadding else PaddingValues(0.dp),
+                            modifier = Modifier.padding(horizontal = 4.dp)
+                        ) {
+                            Icon(Icons.Default.Dashboard, contentDescription = "Dashboard")
+                            if (isDashboardSelected) {
+                                Text(
+                                    text = "Botso",
+                                    modifier = Modifier.padding(start = 8.dp),
+                                    style = MaterialTheme.typography.labelLarge
+                                )
+                            }
+                        }
+
+                        TextButton(
+                            onClick = { if (!isTasksSelected) backStack.add(Route.Tasks) },
+                            colors = ButtonDefaults.textButtonColors(
+                                containerColor = if (isTasksSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainer,
+                                contentColor = if (isTasksSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface
+                            ),
+                            contentPadding = if (isTasksSelected) ButtonDefaults.TextButtonContentPadding else PaddingValues(0.dp),
+                            modifier = Modifier.padding(horizontal = 4.dp)
+                        ) {
+                            Icon(Icons.Default.Task, contentDescription = "Tasks")
+                            if (isTasksSelected) {
+                                Text(
+                                    text = "Tareas",
+                                    modifier = Modifier.padding(start = 8.dp),
+                                    style = MaterialTheme.typography.labelLarge
+                                )
+                            }
+                        }
+
+                        TextButton(
+                            onClick = { if (!isSemestersSelected) backStack.add(Route.Semesters) },
+                            colors = ButtonDefaults.textButtonColors(
+                                containerColor = if (isSemestersSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainer,
+                                contentColor = if (isSemestersSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface
+                            ),
+                            contentPadding = if (isSemestersSelected) ButtonDefaults.TextButtonContentPadding else PaddingValues(0.dp),
+                            modifier = Modifier.padding(horizontal = 4.dp)
+                        ) {
+                            Icon(Icons.AutoMirrored.Filled.List, contentDescription = "Semesters")
+                            if (isSemestersSelected) {
+                                Text(
+                                    text = "Semestres",
+                                    modifier = Modifier.padding(start = 8.dp),
+                                    style = MaterialTheme.typography.labelLarge
+                                )
+                            }
+                        }
                     }
-                    IconButton(onClick = { if (backStack.last() !is Route.Tasks) backStack.add(Route.Tasks) }) {
-                        Icon(Icons.Default.Task, contentDescription = "Tasks")
-                    }
-                    IconButton(onClick = { if (backStack.last() !is Route.Semesters) backStack.add(Route.Semesters) }) {
-                        Icon(Icons.AutoMirrored.Filled.List, contentDescription = "Semesters")
-                    }
-                }
-            )
+                )
+            }
+
+
 
             if (showTaskDialog) {
                 AddEditTaskDialog(

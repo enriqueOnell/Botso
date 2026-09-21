@@ -83,15 +83,6 @@ fun TasksContent(
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                item {
-                    Text(
-                        text = "Tareas",
-                        style = MaterialTheme.typography.headlineLarge,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-                }
-
                 items(uiState.tasksWithCourses) { curso ->
                     Spacer(modifier = Modifier.padding(8.dp))
                     TaskCard(

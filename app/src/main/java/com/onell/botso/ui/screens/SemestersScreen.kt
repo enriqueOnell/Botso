@@ -76,15 +76,6 @@ fun SemestersScreen(
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                item {
-                    Text(
-                        text = "Semestres",
-                        style = MaterialTheme.typography.headlineLarge,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-                }
-
                 items(uiState.semesterWithCourses) { semesterData ->
                     SemesterCard(
                         semesterData = semesterData,

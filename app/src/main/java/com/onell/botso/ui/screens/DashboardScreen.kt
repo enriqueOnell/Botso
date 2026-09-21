@@ -90,15 +90,6 @@ fun DashboardContent(
             ) {
                 item {
                     Text(
-                        text = "Resumen del Día",
-                        style = MaterialTheme.typography.headlineLarge,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-                }
-
-                item {
-                    Text(
                         text = "Clases de Hoy",
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.SemiBold
