@@ -18,7 +18,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.onell.botso.domain.model.Course
@@ -86,7 +85,7 @@ fun TasksContent(
                 items(uiState.tasksWithCourses) { curso ->
                     Spacer(modifier = Modifier.padding(8.dp))
                     TaskCard(
-                        taskWithCourse = curso,
+                        courseWithTask = curso,
                         onClick = { onTaskClick(curso.task) },
                         onDelete = { onDeleteTask(curso.task) },
                         onEdit = { onEditTask(curso.task) }
