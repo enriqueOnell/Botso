@@ -43,20 +43,15 @@ import com.onell.botso.ui.viewmodel.CourseGradesViewModel
 fun CourseGradesScreen(
     courseId: String,
     viewModel: CourseGradesViewModel = hiltViewModel(),
-    onBack: () -> Unit = {}
 ) {
-    // Disparamos la carga inicial llamando directo a la función
     LaunchedEffect(courseId) {
         viewModel.loadCourseData(courseId)
     }
 
-    // Observamos el estado reactivo
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    // Le pasamos el estado puro al "Pintor" y mapeamos las acciones a funciones directas
     CourseGradesContent(
         uiState = uiState,
-        onBack = onBack,
         onTermSelected = viewModel::setTermId,
         onFormativaChange = viewModel::updateStagedFormativa,
         onCognitivaChange = viewModel::updateStagedCognitiva,
@@ -68,7 +63,6 @@ fun CourseGradesScreen(
 @Composable
 fun CourseGradesContent(
     uiState: CourseGradesUiState,
-    onBack: () -> Unit,
     onTermSelected: (Int) -> Unit,
     onFormativaChange: (String) -> Unit,
     onCognitivaChange: (String) -> Unit,
@@ -80,7 +74,7 @@ fun CourseGradesContent(
     Row(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         when (uiState) {
@@ -159,7 +153,6 @@ private fun CourseGradesScreenPreview() {
                 stagedCognitiva = "3.8",
                 currentTermAverage = 4.15
             ),
-            onBack = {},
             onTermSelected = {},
             onFormativaChange = {},
             onCognitivaChange = {},

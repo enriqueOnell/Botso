@@ -7,11 +7,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Dashboard
-import androidx.compose.material.icons.filled.Task
+import androidx.compose.material.icons.filled.School
+import androidx.compose.material.icons.filled.TaskAlt
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -20,8 +22,6 @@ import androidx.compose.material3.HorizontalFloatingToolbar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -114,8 +114,9 @@ fun BotsoMainApp(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceEvenly,
                                 verticalAlignment = Alignment.CenterVertically
-                            ){
-                                TextButton(
+                            ) {
+                                // Botón Dashboard
+                                Button(
                                     onClick = {
                                         if (!isDashboard) {
                                             navController.navigate(Route.Dashboard) {
@@ -125,26 +126,22 @@ fun BotsoMainApp(
                                             }
                                         }
                                     },
-                                    colors = ButtonDefaults.textButtonColors(
+                                    colors = ButtonDefaults.buttonColors(
                                         containerColor = if (isDashboard) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainer,
                                         contentColor = if (isDashboard) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface
                                     ),
-                                    contentPadding = if (isDashboard) ButtonDefaults.TextButtonContentPadding else PaddingValues(
-                                        0.dp
-                                    ),
+                                    contentPadding = PaddingValues(12.dp),
                                     modifier = Modifier.padding(horizontal = 4.dp)
                                 ) {
-                                    Icon(Icons.Default.Dashboard, contentDescription = "Dashboard")
-                                    if (isDashboard) {
-                                        Text(
-                                            text = "Botso",
-                                            modifier = Modifier.padding(start = 8.dp),
-                                            style = MaterialTheme.typography.labelLarge
-                                        )
-                                    }
+                                    Icon(
+                                        imageVector = Icons.Default.Dashboard,
+                                        contentDescription = "Dashboard",
+                                        modifier = Modifier.size(26.dp)
+                                    )
                                 }
 
-                                TextButton(
+                                // Botón Tareas
+                                Button(
                                     onClick = {
                                         if (!isTasks) {
                                             navController.navigate(Route.Tasks) {
@@ -154,26 +151,22 @@ fun BotsoMainApp(
                                             }
                                         }
                                     },
-                                    colors = ButtonDefaults.textButtonColors(
+                                    colors = ButtonDefaults.buttonColors(
                                         containerColor = if (isTasks) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainer,
                                         contentColor = if (isTasks) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface
                                     ),
-                                    contentPadding = if (isTasks) ButtonDefaults.TextButtonContentPadding else PaddingValues(
-                                        0.dp
-                                    ),
+                                    contentPadding = PaddingValues(12.dp),
                                     modifier = Modifier.padding(horizontal = 4.dp)
                                 ) {
-                                    Icon(Icons.Default.Task, contentDescription = "Tasks")
-                                    if (isTasks) {
-                                        Text(
-                                            text = "Tareas",
-                                            modifier = Modifier.padding(start = 8.dp),
-                                            style = MaterialTheme.typography.labelLarge
-                                        )
-                                    }
+                                    Icon(
+                                        imageVector = Icons.Default.TaskAlt,
+                                        contentDescription = "Tareas",
+                                        modifier = Modifier.size(26.dp)
+                                    )
                                 }
 
-                                TextButton(
+                                // Botón Semestres
+                                Button(
                                     onClick = {
                                         if (!isSemesters) {
                                             navController.navigate(Route.Semesters) {
@@ -183,29 +176,20 @@ fun BotsoMainApp(
                                             }
                                         }
                                     },
-                                    colors = ButtonDefaults.textButtonColors(
+                                    colors = ButtonDefaults.buttonColors(
                                         containerColor = if (isSemesters) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainer,
                                         contentColor = if (isSemesters) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface
                                     ),
-                                    contentPadding = if (isSemesters) ButtonDefaults.TextButtonContentPadding else PaddingValues(
-                                        0.dp
-                                    ),
+                                    contentPadding = PaddingValues(12.dp),
                                     modifier = Modifier.padding(horizontal = 4.dp)
                                 ) {
                                     Icon(
-                                        Icons.AutoMirrored.Filled.List,
-                                        contentDescription = "Semesters"
+                                        imageVector = Icons.Default.School,
+                                        contentDescription = "Semestres",
+                                        modifier = Modifier.size(26.dp)
                                     )
-                                    if (isSemesters) {
-                                        Text(
-                                            text = "Semestres",
-                                            modifier = Modifier.padding(start = 8.dp),
-                                            style = MaterialTheme.typography.labelLarge
-                                        )
-                                    }
                                 }
                             }
-
                         }
                     )
                 }
@@ -229,7 +213,7 @@ fun BotsoMainApp(
                 TasksScreen(taskViewModel, taskUiState)
             }
 
-            composable< Route.Semesters> {
+            composable<Route.Semesters> {
                 SemestersScreen(
                     viewModel = semesterViewModel,
                     uiState = semesterUiState,
@@ -253,8 +237,6 @@ fun BotsoMainApp(
                 CourseGradesScreen(courseId = routeArgs.courseId)
             }
         }
-
-
 
         if (showTaskDialog) {
             AddEditTaskDialog(

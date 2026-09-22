@@ -72,7 +72,7 @@ fun SemestersScreen(
         }
         is SemestersUiState.Success -> {
             LazyColumn(
-                modifier = Modifier.fillMaxSize().padding(16.dp),
+                modifier = Modifier.fillMaxSize().padding(4.dp),
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
