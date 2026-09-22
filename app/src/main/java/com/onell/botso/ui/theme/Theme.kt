@@ -52,7 +52,7 @@ private val LightColorScheme = lightColorScheme(
 @Composable
 fun BotsoTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = false, // Set to false to prefer our Academic Organic theme
+    dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
