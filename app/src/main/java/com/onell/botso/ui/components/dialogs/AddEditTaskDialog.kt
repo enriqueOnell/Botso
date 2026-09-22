@@ -81,7 +81,8 @@ fun AddEditTaskDialog(
         onDismissRequest = onDismiss,
         modifier = modifier,
         shape = RoundedCornerShape(24.dp),
-        title = { Text(if (task == null) "Nueva Tarea" else "Editar Tarea") },
+        title = { Text(text = if (task == null) "Nueva Tarea" else "Editar Tarea",
+            style = MaterialTheme.typography.titleLarge) },
         text = {
             Column(
                 modifier = Modifier.verticalScroll(rememberScrollState()),
@@ -101,10 +102,10 @@ fun AddEditTaskDialog(
                 ) {
                     OutlinedTextField(
                         value = courses.find { it.id == selectedCourseId }?.name
-                            ?: "Seleccionar Curso",
+                            ?: "Seleccionar Materia",
                         onValueChange = {},
                         readOnly = true,
-                        label = { Text("Curso") },
+                        label = { Text("Materia") },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedCourse) },
                         modifier = Modifier
                             .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable, true)
@@ -128,7 +129,7 @@ fun AddEditTaskDialog(
                 }
                 if (courses.isEmpty()) {
                     Text(
-                        text = "⚠️ No hay cursos disponibles. Debes crear un curso primero.",
+                        text = "No hay Materias disponibles.",
                         color = MaterialTheme.colorScheme.error,
                         style = MaterialTheme.typography.bodySmall
                     )
@@ -179,7 +180,7 @@ fun AddEditTaskDialog(
                         ) {
                             (1..16).forEach { w ->
                                 DropdownMenuItem(
-                                    text = { Text("Semana $w") },
+                                    text = { Text("S$w") },
                                     onClick = {
                                         week = w
                                         expandedWeek = false
@@ -201,7 +202,8 @@ fun AddEditTaskDialog(
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Checkbox(checked = isPriority, onCheckedChange = { isPriority = it })
-                    Text("Marcar como prioridad")
+                    Text(text ="Marcar como prioridad",
+                        style = MaterialTheme.typography.labelSmall)
                 }
             }
         },

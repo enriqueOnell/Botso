@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,8 +26,6 @@ import com.onell.botso.ui.components.semester.SemesterCard
 import com.onell.botso.ui.uistate.SemestersUiState
 import com.onell.botso.ui.viewmodel.SemestersViewModel
 import java.io.File
-
-@OptIn(ExperimentalMaterial3Api::class)
 
 @Composable
 fun SemestersScreen(
@@ -58,6 +55,29 @@ fun SemestersScreen(
         }
     }
 
+    SemestersContent(
+        uiState = uiState,
+        onNavigateToCourseGrades = onNavigateToCourseGrades,
+        onAddCourseClicked = onAddCourseClicked,
+        onEditSemesterClicked = onEditSemesterClicked,
+        onEditCourseClicked = onEditCourseClicked,
+        onDeleteCourseClicked = onDeleteCourseClicked,
+        onDeleteSemesterClicked = onDeleteSemesterClicked,
+        onExportPdf = { viewModel.exportSemesterToPdf(it) }
+    )
+}
+
+@Composable
+fun SemestersContent(
+    uiState: SemestersUiState,
+    onNavigateToCourseGrades: (String) -> Unit,
+    onAddCourseClicked: (String) -> Unit,
+    onEditSemesterClicked: (Semester) -> Unit,
+    onEditCourseClicked: (CourseWithSession) -> Unit,
+    onDeleteCourseClicked: (Course) -> Unit,
+    onDeleteSemesterClicked: (Semester) -> Unit,
+    onExportPdf: (Semester) -> Unit
+) {
     when (uiState) {
         is SemestersUiState.Loading -> {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -71,7 +91,7 @@ fun SemestersScreen(
         }
         is SemestersUiState.Success -> {
             LazyColumn(
-                modifier = Modifier.fillMaxSize().padding(4.dp),
+                modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
@@ -84,7 +104,7 @@ fun SemestersScreen(
                         onEditCourse = onEditCourseClicked,
                         onDeleteCourse = onDeleteCourseClicked,
                         onDeleteSemester = onDeleteSemesterClicked,
-                        onExportPdf = { viewModel.exportSemesterToPdf(it) }
+                        onExportPdf = onExportPdf
                     )
                 }
             }
@@ -95,5 +115,14 @@ fun SemestersScreen(
 @Preview(showBackground = true)
 @Composable
 private fun SemestersScreenPreview() {
-
+    SemestersContent(
+        uiState = SemestersUiState.Success(emptyList()),
+        onNavigateToCourseGrades = {},
+        onAddCourseClicked = {},
+        onEditSemesterClicked = {},
+        onEditCourseClicked = {},
+        onDeleteCourseClicked = {},
+        onDeleteSemesterClicked = {},
+        onExportPdf = {}
+    )
 }

@@ -11,12 +11,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuDefaults
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -25,15 +26,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.onell.botso.domain.model.ClassSession
-import com.onell.botso.domain.model.Course
 import com.onell.botso.domain.model.CourseWithSession
-import java.time.LocalTime
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -45,35 +40,39 @@ fun CourseRow(
 ) {
     var showMenu by remember { mutableStateOf(false) }
 
-    Box {
-        Surface(
+    Box(modifier = Modifier.fillMaxWidth()) {
+        // Usamos Card para crear el efecto de "isla" flotante
+        Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(24.dp))
                 .combinedClickable(
                     onClick = onClick,
                     onLongClick = { showMenu = true }
                 ),
-            color = Color.Transparent,
-            shape = RoundedCornerShape(24.dp)
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surface
+            ),
+            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
         ) {
             Row(
                 modifier = Modifier
-                    .padding(vertical = 12.dp, horizontal = 12.dp)
+                    .padding(vertical = 16.dp, horizontal = 16.dp)
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = courseWithSession.course.name,
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontWeight = FontWeight.SemiBold
                 )
                 Text(
                     text = "Ver notas",
-                    style = MaterialTheme.typography.labelLarge,
+                    style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.SemiBold
+                    fontWeight = FontWeight.Bold
                 )
             }
         }
@@ -104,29 +103,4 @@ fun CourseRow(
             )
         }
     }
-}
-
-@Preview
-@Composable
-fun CourseRowPreview(){
-    CourseRow(
-       courseWithSession =  CourseWithSession(
-            session = ClassSession(
-                "12",
-                "id2",
-                1,
-                LocalTime.of(10,9),
-                LocalTime.of(20,17),
-                "room",
-                true
-            ),
-            course = Course(
-                id = "id2",
-                semesterId = "semesterId",
-                name = "name",
-                professor = "professor"
-            )
-        ), onEdit = {}, onDelete = {}, onClick = {}
-
-    )
 }

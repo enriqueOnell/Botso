@@ -1,7 +1,7 @@
 package com.onell.botso.ui.components.semester
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,9 +20,9 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Text
@@ -33,19 +33,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.onell.botso.domain.model.ClassSession
-import com.onell.botso.domain.model.CourseWithSession
 import com.onell.botso.domain.model.Course
+import com.onell.botso.domain.model.CourseWithSession
 import com.onell.botso.domain.model.Semester
 import com.onell.botso.domain.model.SemesterWithCourse
-import java.time.LocalDate
-import java.time.LocalTime
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SemesterCard(
     semesterData: SemesterWithCourse,
@@ -57,34 +54,50 @@ fun SemesterCard(
     onDeleteSemester: (Semester) -> Unit,
     onExportPdf: (Semester) -> Unit = {}
 ) {
-    var expanded by remember { mutableStateOf(false) }
     var showSemesterMenu by remember { mutableStateOf(false) }
+
+    val dateFormatter = remember { DateTimeFormatter.ofPattern("dd MMM yyyy", Locale.getDefault()) }
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .pointerInput(Unit) {
-                detectTapGestures(
-                    onTap = { expanded = !expanded },
-                    onLongPress = { showSemesterMenu = true }
-                )
-            },
+            .combinedClickable(
+                onClick = {},
+                onLongClick = { showSemesterMenu = true }
+            ),
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
     ) {
-        Column(
-            modifier = Modifier.padding(20.dp)
-        ) {
+        Column(modifier = Modifier.padding(20.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = semesterData.semester.name,
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.ExtraBold
-                )
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = semesterData.semester.name,
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.ExtraBold
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "${semesterData.semester.startDate.format(dateFormatter)} - ${semesterData.semester.endDate.format(dateFormatter)}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+
+                IconButton(
+                    onClick = onAddCourse,
+                    colors = IconButtonDefaults.iconButtonColors(contentColor = MaterialTheme.colorScheme.primary)
+                ) {
+                    Icon(
+                        Icons.Default.Add,
+                        contentDescription = "Añadir Materia",
+                        modifier = Modifier.size(28.dp)
+                    )
+                }
 
                 DropdownMenu(
                     expanded = showSemesterMenu,
@@ -104,12 +117,7 @@ fun SemesterCard(
                             onExportPdf(semesterData.semester)
                             showSemesterMenu = false
                         },
-                        leadingIcon = {
-                            Icon(
-                                Icons.Rounded.PictureAsPdf,
-                                contentDescription = null
-                            )
-                        }
+                        leadingIcon = { Icon(Icons.Rounded.PictureAsPdf, contentDescription = null) }
                     )
                     DropdownMenuItem(
                         text = { Text("Eliminar Semestre") },
@@ -126,81 +134,28 @@ fun SemesterCard(
                 }
             }
 
+            Spacer(modifier = Modifier.height(16.dp))
 
-            if (expanded) {
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-
+            if (semesterData.courses.isEmpty()) {
+                Text(
+                    text = "Aún no hay materias registradas",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                )
+            } else {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    Text(
-                        text = "Materias",
-                        style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.Bold
-                    )
-                    IconButton(onClick = onAddCourse) {
-                        Icon(
-                            Icons.Default.Add,
-                            contentDescription = "Añadir Materia",
-                            modifier = Modifier.size(20.dp)
+                    semesterData.courses.forEach { courseWithSession ->
+                        CourseRow(
+                            courseWithSession = courseWithSession,
+                            onClick = { onCourseClick(courseWithSession.course.id) },
+                            onEdit = { onEditCourse(courseWithSession) },
+                            onDelete = { onDeleteCourse(courseWithSession.course) }
                         )
                     }
-                }
-
-                semesterData.courses.forEach { courseWithSession ->
-                    CourseRow(
-                        courseWithSession = courseWithSession,
-                        onClick = { onCourseClick(courseWithSession.course.id) },
-                        onEdit = {
-                            onEditCourse(courseWithSession)
-                        },
-                        onDelete = { onDeleteCourse(courseWithSession.course) }
-                    )
                 }
             }
         }
     }
-}
-
-@Preview
-@Composable
-fun SemesterCardPreview() {
-    SemesterCard(
-        semesterData = SemesterWithCourse(
-            semester = Semester(
-                id = "1",
-                name = "Semester 1",
-                startDate = LocalDate.of(2002, 11, 2),
-                endDate = LocalDate.of(2002, 11, 28)
-            ),
-            courses = listOf(
-                CourseWithSession(
-                    session = ClassSession(
-                        "12",
-                        "id2",
-                        1,
-                        LocalTime.of(10, 9),
-                        LocalTime.of(20, 17),
-                        "room",
-                        true
-                    ),
-                    course = Course(
-                        id = "id2",
-                        semesterId = "semesterId",
-                        name = "name",
-                        professor = "professor"
-                    )
-                )
-            )
-        ),
-        onCourseClick = {},
-        onAddCourse = {},
-        onEditSemester = {},
-        onEditCourse = {},
-        onDeleteCourse = {},
-        onDeleteSemester = {}
-    )
 }

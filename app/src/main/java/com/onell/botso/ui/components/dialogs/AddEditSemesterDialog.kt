@@ -13,6 +13,7 @@ import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -53,13 +54,14 @@ fun AddEditSemesterDialog(
         onDismissRequest = onDismiss,
         modifier = modifier,
         shape = RoundedCornerShape(24.dp),
-        title = { Text(if (semester == null) "Nuevo Semestre" else "Editar Semestre") },
+        title = { Text(text = if (semester == null) "Nuevo Semestre" else "Editar Semestre",
+            style = MaterialTheme.typography.titleLarge) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
-                    label = { Text("Nombre del Semestre (ej. 2026-II)") },
+                    label = { Text("Nombre del Semestre") },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(24.dp)
                 )
