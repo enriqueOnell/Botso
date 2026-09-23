@@ -17,7 +17,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -32,11 +31,16 @@ fun CircularGradeProgress(
     val animatedScore by animateFloatAsState(targetValue = score.toFloat(), label = "score")
     val progress = (animatedScore / 5.0f).coerceIn(0f, 1f)
 
+    val isPassing = score >= 3.0
+    val progressColor = if (isPassing) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
+    val chipContainerColor = if (isPassing) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.errorContainer
+    val chipTextColor = if (isPassing) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onErrorContainer
+
     Box(contentAlignment = Alignment.Center, modifier = Modifier.size(200.dp)) {
         CircularProgressIndicator(
             progress = { progress },
             modifier = Modifier.fillMaxSize(),
-            color = if (score >= 3.0) Color(0xFFA0F399) else MaterialTheme.colorScheme.error,
+            color = progressColor,
             strokeWidth = 12.dp,
             trackColor = MaterialTheme.colorScheme.surfaceVariant,
             strokeCap = StrokeCap.Round
@@ -55,7 +59,7 @@ fun CircularGradeProgress(
             )
             Spacer(modifier = Modifier.height(8.dp))
             Surface(
-                color = if (score >= 3.0) Color(0xFFA0F399).copy(alpha = 0.2f) else MaterialTheme.colorScheme.errorContainer,
+                color = chipContainerColor,
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Text(
@@ -63,7 +67,7 @@ fun CircularGradeProgress(
                     modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.Bold,
-                    color = if (score >= 3.0) Color(0xFF002106) else MaterialTheme.colorScheme.error
+                    color = chipTextColor
                 )
             }
         }

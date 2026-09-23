@@ -22,13 +22,8 @@ class CourseGradesViewModel @Inject constructor(
     private val insertGradeUseCase: InsertGradeUseCase,
     private val updateGradeUseCase: UpdateGradeUseCase
 ) : ViewModel() {
-    // Tu estructura preferida para el estado
     private val _uiState = MutableStateFlow<CourseGradesUiState>(CourseGradesUiState.Loading)
     val uiState: StateFlow<CourseGradesUiState> = _uiState.asStateFlow()
-
-    // =========================================================================
-    // INICIALIZACIÓN
-    // =========================================================================
 
     fun loadCourseData(courseId: String) {
         viewModelScope.launch {
@@ -36,14 +31,12 @@ class CourseGradesViewModel @Inject constructor(
                 getGradesForCourseUseCase(courseId).collect { courseData ->
                     if (courseData != null) {
                         _uiState.update { currentState ->
-                            // Rescatamos el corte actual si ya existía un Success, sino usamos el Corte 1
                             val termId = (currentState as? CourseGradesUiState.Success)?.currentTermId ?: 1
 
                             val termGrades = courseData.grades.filter { it.termId == termId }
                             val formativa = termGrades.find { it.name.contains("Formativa") }?.score?.let { if (it == 0.0) "" else it.toString() } ?: ""
                             val cognitiva = termGrades.find { it.name.contains("Cognitiva") }?.score?.let { if (it == 0.0) "" else it.toString() } ?: ""
 
-                            // Emitimos el éxito absoluto
                             CourseGradesUiState.Success(
                                 courseData = courseData,
                                 currentTermId = termId,
@@ -61,10 +54,6 @@ class CourseGradesViewModel @Inject constructor(
             }
         }
     }
-
-    // =========================================================================
-    // ACCIONES DIRECTAS DE LA UI
-    // =========================================================================
 
     fun setTermId(termId: Int) {
         _uiState.update { currentState ->
@@ -139,11 +128,6 @@ class CourseGradesViewModel @Inject constructor(
             )
         }
     }
-
-    // =========================================================================
-    // UTILIDADES DE UI
-    // =========================================================================
-
     private fun calculateTermAverage(formativa: String, cognitiva: String): Double {
         val f = formativa.toDoubleOrNull() ?: 0.0
         val c = cognitiva.toDoubleOrNull() ?: 0.0

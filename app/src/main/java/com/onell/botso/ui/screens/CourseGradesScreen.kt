@@ -2,7 +2,6 @@ package com.onell.botso.ui.screens
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -10,7 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -18,6 +17,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -43,6 +43,7 @@ import com.onell.botso.ui.viewmodel.CourseGradesViewModel
 fun CourseGradesScreen(
     courseId: String,
     viewModel: CourseGradesViewModel = hiltViewModel(),
+    onNavigateBack: () -> Unit = {}
 ) {
     LaunchedEffect(courseId) {
         viewModel.loadCourseData(courseId)
@@ -55,7 +56,8 @@ fun CourseGradesScreen(
         onTermSelected = viewModel::setTermId,
         onFormativaChange = viewModel::updateStagedFormativa,
         onCognitivaChange = viewModel::updateStagedCognitiva,
-        onSave = viewModel::saveGrades
+        onSave = viewModel::saveGrades,
+        onNavigateBack = onNavigateBack
     )
 }
 
@@ -66,75 +68,102 @@ fun CourseGradesContent(
     onTermSelected: (Int) -> Unit,
     onFormativaChange: (String) -> Unit,
     onCognitivaChange: (String) -> Unit,
-    onSave: () -> Unit
+    onSave: () -> Unit,
+    onNavigateBack: () -> Unit = {}
 ) {
     val tabs = listOf("Corte 1", "Corte 2", "Corte 3")
 
-
-    Row(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(4.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        when (uiState) {
-            is CourseGradesUiState.Loading -> {
-                CircularProgressIndicator()
-            }
-
-            is CourseGradesUiState.Error -> {
-                Text(
-                    text = uiState.message,
-                    color = MaterialTheme.colorScheme.error,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(16.dp)
-                )
-            }
-
-            is CourseGradesUiState.Success -> {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(rememberScrollState()),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Spacer(modifier = Modifier.height(24.dp))
-
-                    val totalAverage = uiState.courseData?.averageGrade ?: 0.0
-
-                    CircularGradeProgress(
-                        score = totalAverage,
-                        termAverage = uiState.currentTermAverage
-                    )
-
-                    Spacer(modifier = Modifier.height(32.dp))
-
-                    PrimaryTabRow(
-                        selectedTabIndex = uiState.currentTermId - 1,
-                        containerColor = Color.Transparent,
-                        divider = {}
-                    ) {
-                        tabs.forEachIndexed { index, title ->
-                            Tab(
-                                selected = uiState.currentTermId == index + 1,
-                                onClick = { onTermSelected(index + 1) }, // Acción directa
-                                text = { Text(title) }
-                            )
-                        }
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    val courseName = (uiState as? CourseGradesUiState.Success)?.courseData?.course?.name ?: "Notas de la Materia"
+                    Text(text = courseName, fontWeight = FontWeight.Bold)
+                },
+                navigationIcon = {
+                    IconButton(onClick = onNavigateBack) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver")
                     }
+                }
+            )
+        }
+    ) { padding ->
+        Surface(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            when (uiState) {
+                is CourseGradesUiState.Loading -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                }
 
-                    Spacer(modifier = Modifier.height(24.dp))
+                is CourseGradesUiState.Error -> {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = uiState.message,
+                            color = MaterialTheme.colorScheme.error,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
 
-                    GradeInputSection(
-                        termId = uiState.currentTermId,
-                        formativa = uiState.stagedFormativa,
-                        cognitiva = uiState.stagedCognitiva,
-                        onFormativaChange = onFormativaChange,
-                        onCognitivaChange = onCognitivaChange,
-                        onSave = onSave
-                    )
+                is CourseGradesUiState.Success -> {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState()),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Spacer(modifier = Modifier.height(16.dp))
 
-                    Spacer(modifier = Modifier.height(24.dp))
+                        val totalAverage = uiState.courseData?.averageGrade ?: 0.0
+
+                        CircularGradeProgress(
+                            score = totalAverage,
+                            termAverage = uiState.currentTermAverage
+                        )
+
+                        Spacer(modifier = Modifier.height(24.dp))
+
+                        PrimaryTabRow(
+                            selectedTabIndex = uiState.currentTermId - 1,
+                            containerColor = Color.Transparent,
+                            divider = {}
+                        ) {
+                            tabs.forEachIndexed { index, title ->
+                                Tab(
+                                    selected = uiState.currentTermId == index + 1,
+                                    onClick = { onTermSelected(index + 1) },
+                                    text = { Text(title) }
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(24.dp))
+
+                        GradeInputSection(
+                            termId = uiState.currentTermId,
+                            formativa = uiState.stagedFormativa,
+                            cognitiva = uiState.stagedCognitiva,
+                            onFormativaChange = onFormativaChange,
+                            onCognitivaChange = onCognitivaChange,
+                            onSave = onSave
+                        )
+
+                        Spacer(modifier = Modifier.height(24.dp))
+                    }
                 }
             }
         }

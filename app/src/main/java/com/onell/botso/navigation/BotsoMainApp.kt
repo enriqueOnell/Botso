@@ -234,7 +234,10 @@ fun BotsoMainApp(
 
             composable<Route.CourseGrades> { backStackEntry ->
                 val routeArgs = backStackEntry.toRoute<Route.CourseGrades>()
-                CourseGradesScreen(courseId = routeArgs.courseId)
+                CourseGradesScreen(
+                    courseId = routeArgs.courseId,
+                    onNavigateBack = { navController.popBackStack() }
+                )
             }
         }
 

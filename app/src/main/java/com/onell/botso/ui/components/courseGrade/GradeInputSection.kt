@@ -35,13 +35,14 @@ fun GradeInputSection(
     ) {
         Column(modifier = Modifier.padding(24.dp)) {
             GradeInputField(
-                label = "Nota Formativa ($percentage)",
+                label = "Formativa ($percentage)",
                 value = formativa,
-                onValueChange = onFormativaChange
+                onValueChange = onFormativaChange,
+
             )
             Spacer(modifier = Modifier.height(16.dp))
             GradeInputField(
-                label = "Nota Cognitiva ($percentage)",
+                label = "Cognitiva ($percentage)",
                 value = cognitiva,
                 onValueChange = onCognitivaChange
             )

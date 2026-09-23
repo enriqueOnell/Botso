@@ -164,7 +164,7 @@ fun AddEditTaskDialog(
                         modifier = Modifier.weight(1f)
                     ) {
                         OutlinedTextField(
-                            value = "Semana $week",
+                            value = "S$week",
                             onValueChange = {},
                             readOnly = true,
                             label = { Text("Semana") },

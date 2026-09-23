@@ -17,10 +17,29 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Color(0xFFD0BCFF), // Placeholder for dark primary
+    primary = Color(0xFFD0BCFF),
+    onPrimary = Color(0xFF381E72),
+    primaryContainer = Color(0xFF4F378A),
+    onPrimaryContainer = Color(0xFFE9DDFF),
     secondary = Color(0xFFCCC2DC),
+    onSecondary = Color(0xFF332D41),
+    secondaryContainer = Color(0xFF2E4D2A),
+    onSecondaryContainer = Color(0xFFA0F399),
     tertiary = Color(0xFFEFB8C8),
-    secondaryContainer = Color(0xFF2E4D2A) // Derived dark secondary container
+    onTertiary = Color(0xFF492532),
+    tertiaryContainer = Color(0xFF633B48),
+    onTertiaryContainer = Color(0xFFFFD9E3),
+    background = Color(0xFF1C1B1E),
+    onBackground = Color(0xFFE6E1E5),
+    surface = Color(0xFF1C1B1E),
+    onSurface = Color(0xFFE6E1E5),
+    surfaceVariant = Color(0xFF49454E),
+    onSurfaceVariant = Color(0xFFCAC4D0),
+    outline = Color(0xFF938F99),
+    error = Color(0xFFF2B8B5),
+    onError = Color(0xFF601410),
+    errorContainer = Color(0xFF8C1D18),
+    onErrorContainer = Color(0xFFF9DEDC)
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -80,8 +99,3 @@ fun BotsoTheme(
         content = content
     )
 }
-
-// Re-defining dark colors for completeness based on Primary #4f378a
-// Primary: #D0BCFF, OnPrimary: #381E72, PrimaryContainer: #4F378A, OnPrimaryContainer: #E9DDFF
-// Secondary: #CCC2DC, OnSecondary: #332D41, SecondaryContainer: #4A4458, OnSecondaryContainer: #E8DEF8
-// But I'll use simple ones for now as I don't have the full palette for dark.

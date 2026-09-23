@@ -24,6 +24,7 @@ import com.onell.botso.domain.model.Course
 import com.onell.botso.domain.model.CourseWithTask
 import com.onell.botso.domain.model.Task
 import com.onell.botso.domain.model.TaskStatus
+import com.onell.botso.ui.components.dialogs.AddEditTaskDialog
 import com.onell.botso.ui.components.tasks.TaskCard
 import com.onell.botso.ui.uistate.TasksUiState
 import com.onell.botso.ui.viewmodel.TasksViewModel
@@ -34,24 +35,45 @@ fun TasksScreen(
     viewModel: TasksViewModel,
     uiState: TasksUiState
 ) {
-
     var taskToEdit by remember { mutableStateOf<Task?>(null) }
+    val courses = (uiState as? TasksUiState.Success)?.courses ?: emptyList()
 
-        TasksContent(
-            uiState = uiState,
-            onTaskClick = { task ->
-                val nextStatus = when (task.status) {
-                    TaskStatus.TODO -> TaskStatus.IN_PROGRESS
-                    TaskStatus.IN_PROGRESS -> TaskStatus.DONE
-                    TaskStatus.DONE -> TaskStatus.TODO
-                }
-                viewModel.updateTask(task.copy(status = nextStatus))
-            },
-            onDeleteTask = { viewModel.deleteTask(it) },
-            onEditTask = { taskToEdit = it },
-            modifier = Modifier.padding(16.dp)
+    TasksContent(
+        uiState = uiState,
+        onTaskClick = { task ->
+            val nextStatus = when (task.status) {
+                TaskStatus.TODO -> TaskStatus.IN_PROGRESS
+                TaskStatus.IN_PROGRESS -> TaskStatus.DONE
+                TaskStatus.DONE -> TaskStatus.TODO
+            }
+            viewModel.updateTask(task.copy(status = nextStatus))
+        },
+        onDeleteTask = { viewModel.deleteTask(it) },
+        onEditTask = { taskToEdit = it },
+        modifier = Modifier.padding(16.dp)
+    )
+
+    taskToEdit?.let { task ->
+        AddEditTaskDialog(
+            courses = courses,
+            task = task,
+            onDismiss = { taskToEdit = null },
+            onConfirm = { courseId, title, dueDate, isPriority, week, description ->
+                viewModel.updateTask(
+                    task.copy(
+                        courseId = courseId,
+                        title = title,
+                        dueDate = dueDate,
+                        isPriority = isPriority,
+                        week = week,
+                        description = description
+                    )
+                )
+                taskToEdit = null
+            }
         )
     }
+}
 
 @Composable
 fun TasksContent(
@@ -100,27 +122,27 @@ fun TasksContent(
 @Composable
 fun TasksContentPreview() {
     TasksContent(
-
         uiState = TasksUiState.Success(
-            listOf(CourseWithTask(
-                task = Task(
-                    id = "id",
-                    courseId = "courseId",
-                    title = "title",
-                    dueDate = LocalDate.now(),
-                    isPriority = true,
-                    hasAttachment = true,
-                    status = TaskStatus.TODO,
-                    week = 3,
-                    description = ""
+            listOf(
+                CourseWithTask(
+                    task = Task(
+                        id = "id",
+                        courseId = "courseId",
+                        title = "title",
+                        dueDate = LocalDate.now(),
+                        isPriority = true,
+                        hasAttachment = true,
+                        status = TaskStatus.TODO,
+                        week = 3,
+                        description = ""
+                    ),
+                    course = Course(
+                        id = "id2",
+                        semesterId = "semesterId",
+                        name = "name",
+                        professor = "professor"
+                    )
                 ),
-                course = Course(
-                    id = "id2",
-                    semesterId = "semesterId",
-                    name = "name",
-                    professor = "professor"
-                )
-            ),
                 CourseWithTask(
                     task = Task(
                         id = "id",
@@ -158,7 +180,8 @@ fun TasksContentPreview() {
                         name = "name",
                         professor = "professor"
                     )
-                ))
+                )
+            )
         ),
         onTaskClick = {},
         onDeleteTask = {},
