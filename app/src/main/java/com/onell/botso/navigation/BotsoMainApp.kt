@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.School
@@ -24,15 +25,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -75,6 +75,8 @@ fun BotsoMainApp(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 
+    var currentCourseName by remember { mutableStateOf("") }
+
     var showTaskDialog by remember { mutableStateOf(false) }
     var showSemesterDialog by remember { mutableStateOf(false) }
     var showAddCourseDialogForSemesterId by remember { mutableStateOf<String?>(null) }
@@ -89,6 +91,12 @@ fun BotsoMainApp(
     val isTasks = currentDestination?.hasRoute<Route.Tasks>() == true
     val isSemesters = currentDestination?.hasRoute<Route.Semesters>() == true
     val isCourseGrades = currentDestination?.hasRoute<Route.CourseGrades>() == true
+
+    LaunchedEffect(currentDestination) {
+        if (!isCourseGrades) {
+            currentCourseName = ""
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -111,37 +119,50 @@ fun BotsoMainApp(
             )
         },
         bottomBar = {
-
-            val showBottomBar = isDashboard || isTasks || isSemesters
-
-            if (showBottomBar) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 32.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    HorizontalFloatingToolbar(
-                        expanded = true,
-                        floatingActionButton = {
-                            if (isTasks || isSemesters) {
-                                FloatingActionButton(
-                                    onClick = {
-                                        if (isTasks) showTaskDialog = true
-                                        if (isSemesters) showSemesterDialog = true
-                                    }
-                                ) {
-                                    Icon(Icons.Default.Add, contentDescription = "Agregar")
-                                }
-                            }
-                        },
-                        content = {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceEvenly,
-                                verticalAlignment = Alignment.CenterVertically
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 32.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                HorizontalFloatingToolbar(
+                    expanded = true,
+                    floatingActionButton = {
+                        if (isCourseGrades) {
+                            FloatingActionButton(
+                                onClick = { navController.popBackStack() },
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary
                             ) {
-                                // Botón Dashboard
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                    contentDescription = "Volver"
+                                )
+                            }
+                        } else if (isTasks || isSemesters) {
+                            FloatingActionButton(
+                                onClick = {
+                                    if (isTasks) showTaskDialog = true
+                                    if (isSemesters) showSemesterDialog = true
+                                }
+                            ) {
+                                Icon(Icons.Default.Add, contentDescription = "Agregar")
+                            }
+                        }
+                    },
+                    content = {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceEvenly,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            if (isCourseGrades) {
+                                Text(
+                                    modifier = Modifier.padding(horizontal =  32.dp),
+                                    text = currentCourseName.ifEmpty { "..." },
+                                    fontWeight = FontWeight.Bold
+                                )
+                            } else {
                                 Button(
                                     onClick = {
                                         if (!isDashboard) {
@@ -166,7 +187,6 @@ fun BotsoMainApp(
                                     )
                                 }
 
-                                // Botón Tareas
                                 Button(
                                     onClick = {
                                         if (!isTasks) {
@@ -191,7 +211,6 @@ fun BotsoMainApp(
                                     )
                                 }
 
-                                // Botón Semestres
                                 Button(
                                     onClick = {
                                         if (!isSemesters) {
@@ -216,9 +235,10 @@ fun BotsoMainApp(
                                     )
                                 }
                             }
+
                         }
-                    )
-                }
+                    }
+                )
             }
         }
     ) { paddingValues ->
@@ -262,7 +282,10 @@ fun BotsoMainApp(
                 val routeArgs = backStackEntry.toRoute<Route.CourseGrades>()
                 CourseGradesScreen(
                     courseId = routeArgs.courseId,
-                    onNavigateBack = { navController.popBackStack() }
+                    onNavigateBack = { navController.popBackStack() },
+                    onCourseLoaded = { name ->
+                        currentCourseName = name
+                    }
                 )
             }
         }

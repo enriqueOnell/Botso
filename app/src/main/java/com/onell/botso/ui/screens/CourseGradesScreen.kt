@@ -2,22 +2,14 @@ package com.onell.botso.ui.screens
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryTabRow
@@ -29,7 +21,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -45,6 +36,7 @@ import com.onell.botso.ui.viewmodel.CourseGradesViewModel
 fun CourseGradesScreen(
     courseId: String,
     viewModel: CourseGradesViewModel = hiltViewModel(),
+    onCourseLoaded: (String) -> Unit = {},
     onNavigateBack: () -> Unit = {}
 ) {
     LaunchedEffect(courseId) {
@@ -52,6 +44,15 @@ fun CourseGradesScreen(
     }
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(uiState) {
+        if (uiState is CourseGradesUiState.Success) {
+            val courseName = (uiState as CourseGradesUiState.Success).courseData?.course?.name
+            if (!courseName.isNullOrEmpty()) {
+                onCourseLoaded(courseName)
+            }
+        }
+    }
 
     CourseGradesContent(
         uiState = uiState,
@@ -71,14 +72,16 @@ fun CourseGradesContent(
     onFormativaChange: (String) -> Unit,
     onCognitivaChange: (String) -> Unit,
     onSave: () -> Unit,
-    onNavigateBack: () -> Unit = {}
+    onNavigateBack: () -> Unit
 ) {
     val tabs = listOf("Corte 1", "Corte 2", "Corte 3")
 
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        Box(modifier = Modifier.fillMaxSize().weight(1f)) {
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .weight(1f)) {
             when (uiState) {
                 is CourseGradesUiState.Loading -> {
                     Box(
@@ -170,7 +173,8 @@ private fun CourseGradesScreenPreview() {
             onTermSelected = {},
             onFormativaChange = {},
             onCognitivaChange = {},
-            onSave = {}
+            onSave = {},
+            onNavigateBack = {}
         )
     }
 }
