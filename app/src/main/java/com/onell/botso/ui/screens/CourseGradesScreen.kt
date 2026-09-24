@@ -2,25 +2,27 @@ package com.onell.botso.ui.screens
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryTabRow
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -61,7 +63,7 @@ fun CourseGradesScreen(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun CourseGradesContent(
     uiState: CourseGradesUiState,
@@ -73,34 +75,17 @@ fun CourseGradesContent(
 ) {
     val tabs = listOf("Corte 1", "Corte 2", "Corte 3")
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    val courseName = (uiState as? CourseGradesUiState.Success)?.courseData?.course?.name ?: "Notas de la Materia"
-                    Text(text = courseName, fontWeight = FontWeight.Bold)
-                },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver")
-                    }
-                }
-            )
-        }
-    ) { padding ->
-        Surface(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding),
-            color = MaterialTheme.colorScheme.background
-        ) {
+    Column(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        Box(modifier = Modifier.fillMaxSize().weight(1f)) {
             when (uiState) {
                 is CourseGradesUiState.Loading -> {
                     Box(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
-                        CircularProgressIndicator()
+                        LoadingIndicator()
                     }
                 }
 
