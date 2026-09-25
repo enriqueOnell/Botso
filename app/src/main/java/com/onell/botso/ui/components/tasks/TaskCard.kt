@@ -165,19 +165,7 @@ fun TaskCard(
                                 modifier = Modifier.widthIn(max = 200.dp)
                             )
                         }
-
-                        Surface(
-                            color = MaterialTheme.colorScheme.secondaryContainer,
-                            shape = CircleShape
-                        ) {
-                            Text(
-                                text = task.status.label,
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
-                                style = MaterialTheme.typography.labelSmall,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSecondaryContainer
-                            )
-                        }
+                        StatusChip(task)
                     }
 
                     Spacer(modifier = Modifier.height(10.dp))
@@ -198,15 +186,6 @@ fun TaskCard(
                             overflow = TextOverflow.Ellipsis,
                             modifier = Modifier.padding(top = 4.dp)
                         )
-                    }
-
-                    Spacer(modifier = Modifier.height(14.dp))
-
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-
                     }
                 }
 

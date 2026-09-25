@@ -16,8 +16,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.onell.botso.domain.model.Course
 import com.onell.botso.domain.model.CourseWithGrades
+import com.onell.botso.domain.model.Grade
 import java.lang.String.format
 import java.util.Locale
 
@@ -63,4 +66,29 @@ fun CourseGradeItem(courseWithGrades: CourseWithGrades) {
             }
         }
     }
+}
+
+@Preview
+@Composable
+fun CourseGradeItemPreview() {
+    CourseGradeItem(
+        courseWithGrades =  CourseWithGrades(
+            course = Course(
+                id = "id2",
+                semesterId = "semesterId",
+                name = "name",
+                professor = "professor"
+            ),
+            grades = listOf(
+                Grade(
+                    id = "g1",
+                    courseId = "id2",
+                    name = "Formativa",
+                    score = 4.0,
+                    weight = 0.5,
+                    termId = 1
+                )
+            )
+        )
+    )
 }
