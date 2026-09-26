@@ -40,7 +40,6 @@ class DashboardViewModel @Inject constructor(
                     getAllPriorityTasksUseCase(),
                     getCoursesWithGradesUseCase()
                 ) { sessionsForDay, pendingTasks, priorityTasks, coursesWithGrades ->
-
                     DashboardUiState.Success(
                         todayClasses = sessionsForDay,
                         pendingTasksCount = pendingTasks.count { it.status.label != "DONE" },

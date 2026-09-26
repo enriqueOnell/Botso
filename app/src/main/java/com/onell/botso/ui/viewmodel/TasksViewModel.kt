@@ -7,6 +7,7 @@ import com.onell.botso.domain.usecase.course.GetAllCoursesUseCase
 import com.onell.botso.domain.usecase.task.DeleteTaskUseCase
 import com.onell.botso.domain.usecase.task.GetAllTasksWithCourseUseCase
 import com.onell.botso.domain.usecase.task.InsertTaskUseCase
+import com.onell.botso.domain.usecase.task.UpdatePendingTasksUseCase
 import com.onell.botso.domain.usecase.task.UpdateTaskUseCase
 import com.onell.botso.ui.uistate.TasksUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,6 +24,7 @@ class TasksViewModel @Inject constructor(
     private val getAllCoursesUseCase: GetAllCoursesUseCase,
     private val insertTaskUseCase: InsertTaskUseCase,
     private val updateTaskUseCase: UpdateTaskUseCase,
+    private val updatePendingTasksUseCase: UpdatePendingTasksUseCase,
     private val deleteTaskUseCase: DeleteTaskUseCase
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<TasksUiState>(TasksUiState.Loading)
@@ -30,6 +32,7 @@ class TasksViewModel @Inject constructor(
 
     init {
         loadAllTasks()
+
     }
 
     private fun loadAllTasks() {
@@ -37,8 +40,9 @@ class TasksViewModel @Inject constructor(
             try {
                 combine(
                     getAllTasksWithCourseUseCase(),
-                    getAllCoursesUseCase()
+                    getAllCoursesUseCase(),
                 ){ tasks, courses ->
+                    updatePendingTasksUseCase(tasks.map { it.task })
                     TasksUiState.Success(
                         tasksWithCourses = tasks,
                         courses = courses

@@ -43,6 +43,7 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -71,7 +72,9 @@ fun AddEditTaskDialog(
     var expandedCourse by remember { mutableStateOf(false) }
     var expandedWeek by remember { mutableStateOf(false) }
 
-    val initialDateMillis = task?.dueDate?.atStartOfDay(ZoneId.of("UTC"))?.toInstant()?.toEpochMilli() ?: System.currentTimeMillis()
+    val initialDateMillis =
+        task?.dueDate?.atStartOfDay(ZoneId.of("UTC"))?.toInstant()?.toEpochMilli()
+            ?: System.currentTimeMillis()
     val datePickerState = rememberDatePickerState(
         initialSelectedDateMillis = initialDateMillis
     )
@@ -81,8 +84,12 @@ fun AddEditTaskDialog(
         onDismissRequest = onDismiss,
         modifier = modifier,
         shape = RoundedCornerShape(24.dp),
-        title = { Text(text = if (task == null) "Nueva Tarea" else "Editar Tarea",
-            style = MaterialTheme.typography.titleLarge) },
+        title = {
+            Text(
+                text = if (task == null) "Nueva Tarea" else "Editar Tarea",
+                style = MaterialTheme.typography.titleLarge
+            )
+        },
         text = {
             Column(
                 modifier = Modifier.verticalScroll(rememberScrollState()),
@@ -200,10 +207,18 @@ fun AddEditTaskDialog(
                     shape = RoundedCornerShape(24.dp)
                 )
 
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Checkbox(checked = isPriority, onCheckedChange = { isPriority = it })
-                    Text(text ="Marcar como prioridad",
-                        style = MaterialTheme.typography.labelSmall)
+                Row(verticalAlignment = Alignment.CenterVertically) {val selectedDateMillis = datePickerState.selectedDateMillis ?: System.currentTimeMillis()
+                    val selectedLocalDate = Instant.ofEpochMilli(selectedDateMillis)
+                        .atZone(ZoneId.of("UTC"))
+                        .toLocalDate()
+
+                    val daysDifference = ChronoUnit.DAYS.between(LocalDate.now(), selectedLocalDate)
+                    val isCheckboxEnabled = daysDifference > 3
+                    Checkbox(checked = !isCheckboxEnabled || isPriority, onCheckedChange = { isPriority = it }, enabled = isCheckboxEnabled)
+                    Text(
+                        text = "Marcar como prioridad",
+                        style = MaterialTheme.typography.labelMedium
+                    )
                 }
             }
         },
@@ -211,8 +226,10 @@ fun AddEditTaskDialog(
             Button(
                 onClick = {
                     if (title.isNotBlank() && selectedCourseId.isNotBlank()) {
-                        val dueDateMillis = datePickerState.selectedDateMillis ?: System.currentTimeMillis()
-                        val dueDate = Instant.ofEpochMilli(dueDateMillis).atZone(ZoneId.of("UTC")).toLocalDate()
+                        val dueDateMillis =
+                            datePickerState.selectedDateMillis ?: System.currentTimeMillis()
+                        val dueDate = Instant.ofEpochMilli(dueDateMillis).atZone(ZoneId.of("UTC"))
+                            .toLocalDate()
                         onConfirm(
                             selectedCourseId,
                             title,
