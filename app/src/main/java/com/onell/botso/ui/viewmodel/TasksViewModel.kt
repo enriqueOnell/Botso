@@ -44,7 +44,7 @@ class TasksViewModel @Inject constructor(
                 ){ tasks, courses ->
                     updatePendingTasksUseCase(tasks.map { it.task })
                     TasksUiState.Success(
-                        tasksWithCourses = tasks,
+                        tasksWithCourses = tasks.sortedBy { it.task.dueDate },
                         courses = courses
                     )
                 }
@@ -54,7 +54,6 @@ class TasksViewModel @Inject constructor(
             }
         }
     }
-
     fun insertTask(task: Task) {
         viewModelScope.launch {
             insertTaskUseCase(task)
