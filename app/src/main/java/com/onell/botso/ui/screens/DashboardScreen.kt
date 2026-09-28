@@ -1,8 +1,11 @@
 package com.onell.botso.ui.screens
 
+import android.R
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -20,6 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -35,6 +39,7 @@ import com.onell.botso.domain.model.TaskStatus
 import com.onell.botso.ui.components.dashboard.ClassCard
 import com.onell.botso.ui.components.dashboard.CourseGradeItem
 import com.onell.botso.ui.components.dashboard.PendingTasksCard
+import com.onell.botso.ui.components.dashboard.PlatformCard
 import com.onell.botso.ui.components.dashboard.PriorityItem
 import com.onell.botso.ui.uistate.DashboardUiState
 import com.onell.botso.ui.viewmodel.DashboardViewModel
@@ -60,6 +65,9 @@ fun DashboardContent(
     uiState: DashboardUiState,
     modifier: Modifier = Modifier
 ) {
+
+    val eva = "https://evapresencial.americana.edu.co"
+    val sinu = "https://aplicaciones.americana.edu.co:8443/sgacampus/#notr62"
     when (uiState) {
         is DashboardUiState.Loading -> {
             Box(
@@ -87,10 +95,35 @@ fun DashboardContent(
 
         is DashboardUiState.Success -> {
             LazyColumn(
-                modifier = Modifier.fillMaxSize().padding(4.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(4.dp),
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
+                item {
+                    Text(
+                        text = "Plataformas",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+                item {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        PlatformCard(
+                            text = "EVA",
+
+                            url = eva
+                        )
+                        PlatformCard(
+                            text = "SINU",
+                            url = sinu
+                        )
+                    }
+                }
                 item {
                     Text(
                         text = "Clases de Hoy",
@@ -184,7 +217,7 @@ fun DashboardScreenPreview() {
             dueDate = LocalDate.now(),
             isPriority = true,
             hasAttachment = true,
-            status = TaskStatus.TODO ,
+            status = TaskStatus.TODO,
             week = 3,
             description = ""
         )
@@ -215,8 +248,8 @@ fun DashboardScreenPreview() {
                 "12",
                 "id2",
                 1,
-                LocalTime.of(10,9),
-                LocalTime.of(20,17),
+                LocalTime.of(10, 9),
+                LocalTime.of(20, 17),
                 "room",
                 true
             ),

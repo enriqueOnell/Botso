@@ -158,7 +158,7 @@ fun BotsoMainApp(
                         ) {
                             if (isCourseGrades) {
                                 Text(
-                                    modifier = Modifier.padding(horizontal =  32.dp),
+                                    modifier = Modifier.padding(horizontal = 32.dp),
                                     text = currentCourseName.ifEmpty { "..." },
                                     fontWeight = FontWeight.Bold
                                 )
