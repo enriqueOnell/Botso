@@ -1,11 +1,9 @@
 package com.onell.botso.ui.screens
 
-import android.R
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -14,25 +12,25 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.carousel.HorizontalUncontainedCarousel
+import androidx.compose.material3.carousel.rememberCarouselState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.onell.botso.domain.model.ClassSession
-import com.onell.botso.domain.model.CourseWithSession
 import com.onell.botso.domain.model.Course
 import com.onell.botso.domain.model.CourseWithGrades
+import com.onell.botso.domain.model.CourseWithSession
 import com.onell.botso.domain.model.Grade
 import com.onell.botso.domain.model.Task
 import com.onell.botso.domain.model.TaskStatus
@@ -68,6 +66,7 @@ fun DashboardContent(
 
     val eva = "https://evapresencial.americana.edu.co"
     val sinu = "https://aplicaciones.americana.edu.co:8443/sgacampus/#notr62"
+
     when (uiState) {
         is DashboardUiState.Loading -> {
             Box(
@@ -109,19 +108,34 @@ fun DashboardContent(
                     )
                 }
                 item {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly
-                    ) {
-                        PlatformCard(
-                            text = "EVA",
-
-                            url = eva
-                        )
-                        PlatformCard(
-                            text = "SINU",
-                            url = sinu
-                        )
+                    HorizontalUncontainedCarousel(
+                        state = rememberCarouselState { 2 }, // Le decimos que son exactamente 2 elementos
+                        itemWidth = 300.dp,
+                        itemSpacing = 12.dp,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ) { index ->
+                        // Evaluamos según el índice directamente
+                        when (index) {
+                            0 -> {
+                                PlatformCard(
+                                    text = "EVA",
+                                    url = eva,
+                                    modifier = Modifier
+                                        .fillMaxHeight()
+                                        .maskClip(MaterialTheme.shapes.extraLarge)
+                                )
+                            }
+                            1 -> {
+                                PlatformCard(
+                                    text = "SINU",
+                                    url = sinu,
+                                    modifier = Modifier
+                                        .fillMaxHeight()
+                                        .maskClip(MaterialTheme.shapes.extraLarge)
+                                )
+                            }
+                        }
                     }
                 }
                 item {
@@ -174,14 +188,32 @@ fun DashboardContent(
                     )
                 }
 
-                items(
-                    items = uiState.priorityTasks,
-                    key = { it.id }
-                ) { task ->
-                    PriorityItem(
-                        task = task,
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                if (uiState.priorityTasks.isEmpty()) {
+                    item {
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(24.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceVariant
+                            )
+                        ) {
+                            Text(
+                                text = "No hay tareas prioritarias",
+                                modifier = Modifier.padding(16.dp),
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                    }
+                } else {
+                    items(
+                        items = uiState.priorityTasks,
+                        key = { it.id }
+                    ) { task ->
+                        PriorityItem(
+                            task = task,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
                 }
 
                 item {
@@ -193,13 +225,31 @@ fun DashboardContent(
                     )
                 }
 
-                items(
-                    items = uiState.coursesWithGrades,
-                    key = { "All ${it.course.id}" }
-                ) { courseWithGrades ->
-                    CourseGradeItem(
-                        courseWithGrades = courseWithGrades,
-                    )
+                if (uiState.coursesWithGrades.isEmpty()) {
+                    item {
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(24.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceVariant
+                            )
+                        ) {
+                            Text(
+                                text = "No hay materias registradas",
+                                modifier = Modifier.padding(16.dp),
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                    }
+                } else {
+                    items(
+                        items = uiState.coursesWithGrades,
+                        key = { "All ${it.course.id}" }
+                    ) { courseWithGrades ->
+                        CourseGradeItem(
+                            courseWithGrades = courseWithGrades,
+                        )
+                    }
                 }
             }
         }

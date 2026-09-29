@@ -137,11 +137,19 @@ fun SemesterCard(
             Spacer(modifier = Modifier.height(16.dp))
 
             if (semesterData.courses.isEmpty()) {
-                Text(
-                    text = "Aún no hay materias registradas",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
-                )
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(24.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surface
+                    )
+                ) {
+                    Text(
+                        text = "Este semestre aún no tiene materias registradas",
+                        modifier = Modifier.padding(16.dp),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
             } else {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(10.dp)

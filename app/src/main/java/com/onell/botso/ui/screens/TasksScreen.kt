@@ -5,9 +5,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
@@ -101,19 +105,40 @@ fun TasksContent(
             }
         }
         is TasksUiState.Success -> {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize().padding(4.dp),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                items(uiState.tasksWithCourses) { curso ->
-                    Spacer(modifier = Modifier.padding(8.dp))
-                    TaskCard(
-                        courseWithTask = curso,
-                        onClick = { onTaskClick(curso.task) },
-                        onDelete = { onDeleteTask(curso.task) },
-                        onEdit = { onEditTask(curso.task) }
-                    )
+            if (uiState.tasksWithCourses.isEmpty()) {
+                Box(
+                    modifier = Modifier.fillMaxSize().padding(16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(24.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant
+                        )
+                    ) {
+                        Text(
+                            text = "No hay tareas pendientes",
+                            modifier = Modifier.padding(16.dp),
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize().padding(4.dp),
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    items(uiState.tasksWithCourses) { curso ->
+                        Spacer(modifier = Modifier.padding(8.dp))
+                        TaskCard(
+                            courseWithTask = curso,
+                            onClick = { onTaskClick(curso.task) },
+                            onDelete = { onDeleteTask(curso.task) },
+                            onEdit = { onEditTask(curso.task) }
+                        )
+                    }
                 }
             }
         }
