@@ -31,19 +31,22 @@ class CourseGradesViewModel @Inject constructor(
                 getGradesForCourseUseCase(courseId).collect { courseData ->
                     if (courseData != null) {
                         _uiState.update { currentState ->
-                            val termId = (currentState as? CourseGradesUiState.Success)?.currentTermId ?: 1
+                            if (currentState !is CourseGradesUiState.Success) {
+                                val termId = 1
+                                val termGrades = courseData.grades.filter { it.termId == termId }
+                                val formativa = termGrades.find { it.name.contains("Formativa") }?.score?.let { if (it == 0.0) "" else it.toString() } ?: ""
+                                val cognitiva = termGrades.find { it.name.contains("Cognitiva") }?.score?.let { if (it == 0.0) "" else it.toString() } ?: ""
 
-                            val termGrades = courseData.grades.filter { it.termId == termId }
-                            val formativa = termGrades.find { it.name.contains("Formativa") }?.score?.let { if (it == 0.0) "" else it.toString() } ?: ""
-                            val cognitiva = termGrades.find { it.name.contains("Cognitiva") }?.score?.let { if (it == 0.0) "" else it.toString() } ?: ""
-
-                            CourseGradesUiState.Success(
-                                courseData = courseData,
-                                currentTermId = termId,
-                                stagedFormativa = formativa,
-                                stagedCognitiva = cognitiva,
-                                currentTermAverage = calculateTermAverage(formativa, cognitiva)
-                            )
+                                CourseGradesUiState.Success(
+                                    courseData = courseData,
+                                    currentTermId = termId,
+                                    stagedFormativa = formativa,
+                                    stagedCognitiva = cognitiva,
+                                    currentTermAverage = calculateTermAverage(formativa, cognitiva)
+                                )
+                            } else {
+                                currentState.copy(courseData = courseData)
+                            }
                         }
                     } else {
                         _uiState.value = CourseGradesUiState.Error("No se encontró la información de la materia.")

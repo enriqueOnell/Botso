@@ -11,7 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.CalendarToday
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Switch
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenuItem
@@ -207,17 +207,27 @@ fun AddEditTaskDialog(
                     shape = RoundedCornerShape(24.dp)
                 )
 
-                Row(verticalAlignment = Alignment.CenterVertically) {val selectedDateMillis = datePickerState.selectedDateMillis ?: System.currentTimeMillis()
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    val selectedDateMillis = datePickerState.selectedDateMillis ?: System.currentTimeMillis()
                     val selectedLocalDate = Instant.ofEpochMilli(selectedDateMillis)
                         .atZone(ZoneId.of("UTC"))
                         .toLocalDate()
 
                     val daysDifference = ChronoUnit.DAYS.between(LocalDate.now(), selectedLocalDate)
-                    val isCheckboxEnabled = daysDifference > 3
-                    Checkbox(checked = !isCheckboxEnabled || isPriority, onCheckedChange = { isPriority = it }, enabled = isCheckboxEnabled)
+                    val isSwitchEnabled = daysDifference > 3
+
                     Text(
                         text = "Marcar como prioridad",
                         style = MaterialTheme.typography.labelMedium
+                    )
+                    Switch(
+                        checked = !isSwitchEnabled || isPriority,
+                        onCheckedChange = { isPriority = it },
+                        enabled = isSwitchEnabled
                     )
                 }
             }

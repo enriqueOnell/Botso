@@ -115,7 +115,6 @@ fun DashboardContent(
                         modifier = Modifier
                             .fillMaxWidth()
                     ) { index ->
-                        // Evaluamos según el índice directamente
                         when (index) {
                             0 -> {
                                 PlatformCard(
@@ -126,6 +125,7 @@ fun DashboardContent(
                                         .maskClip(MaterialTheme.shapes.extraLarge)
                                 )
                             }
+
                             1 -> {
                                 PlatformCard(
                                     text = "SINU",
@@ -317,6 +317,18 @@ fun DashboardScreenPreview() {
             priorityTasks = tasks,
             coursesWithGrades = courses,
             todayClasses = todayClasses
+        )
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun DashboardScreenPreview2() {
+    DashboardContent(
+        uiState = DashboardUiState.Success(
+            priorityTasks = emptyList(),
+            coursesWithGrades = emptyList(),
+            todayClasses = emptyList()
         )
     )
 }
