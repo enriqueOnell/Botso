@@ -30,7 +30,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class SemestersViewModel @Inject constructor(
     private val getAllSemestersUseCase: GetAllSemestersUseCase,

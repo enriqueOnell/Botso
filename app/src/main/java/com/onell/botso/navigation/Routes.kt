@@ -6,6 +6,7 @@ sealed interface Route {
     @Serializable
     data object Dashboard : Route
 
+
     @Serializable
     data object Tasks : Route
 
@@ -14,4 +15,7 @@ sealed interface Route {
 
     @Serializable
     data class CourseGrades(val courseId: String) : Route
+
+    @Serializable
+    data object Settings : Route
 }
