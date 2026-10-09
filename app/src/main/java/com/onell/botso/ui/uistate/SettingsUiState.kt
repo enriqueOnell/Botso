@@ -1,5 +1,5 @@
 package com.onell.botso.ui.uistate
 
-data class SettingsViewState(
+data class SettingsUiState(
     val isDynamicColorEnabled: Boolean = true
 )

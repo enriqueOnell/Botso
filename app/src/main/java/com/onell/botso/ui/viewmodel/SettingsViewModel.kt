@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.onell.botso.domain.usecase.settigns.GetDynamicColorThemeUseCase
 import com.onell.botso.domain.usecase.settigns.ToggleDynamicColorThemeUseCase
-import com.onell.botso.ui.uistate.SettingsViewState
+import com.onell.botso.ui.uistate.SettingsUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,8 +17,8 @@ class SettingsViewModel @Inject constructor(
     private val getDynamicColorThemeUseCase: GetDynamicColorThemeUseCase,
     private val toggleDynamicColorThemeUseCase: ToggleDynamicColorThemeUseCase
 ): ViewModel() {
-    private val _uiState = MutableStateFlow(SettingsViewState())
-    val uiState: StateFlow<SettingsViewState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(SettingsUiState())
+    val uiState: StateFlow<SettingsUiState> = _uiState.asStateFlow()
 
     init{
         loadSettings()
