@@ -144,8 +144,9 @@ fun AddEditCourseDialog(
                 }
 
                 OutlinedTextField(
-                    value = location,
+                    value = if (isRemote) " " else location,
                     onValueChange = { location = it },
+                    enabled = !isRemote,
                     label = { Text("Ubicación") },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(24.dp)

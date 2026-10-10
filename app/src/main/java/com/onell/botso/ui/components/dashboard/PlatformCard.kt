@@ -1,5 +1,6 @@
 package com.onell.botso.ui.components.dashboard
 
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,9 +18,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 
 @Composable
 fun PlatformCard(
@@ -27,11 +29,22 @@ fun PlatformCard(
     text: String,
     url: String
 ) {
+
+    /*
+    Para abrir directamente en el navegador
     val uriHandler = LocalUriHandler.current
+    */
+
+    val context = LocalContext.current
+
     Card(
-        modifier = modifier.clickable {
-            uriHandler.openUri(url)
-        }.fillMaxWidth(),
+        modifier = modifier
+            .clickable {
+                val customTabsIntent = CustomTabsIntent.Builder().build()
+                customTabsIntent.launchUrl(context, url.toUri())
+                //uriHandler.openUri(url)
+            }
+            .fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
     ) {
