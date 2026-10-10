@@ -8,11 +8,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryTabRow
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,7 +39,6 @@ fun CourseGradesScreen(
     courseId: String,
     viewModel: CourseGradesViewModel = hiltViewModel(),
     onCourseLoaded: (String) -> Unit = {},
-    onNavigateBack: () -> Unit = {}
 ) {
     LaunchedEffect(courseId) {
         viewModel.loadCourseData(courseId)
@@ -60,11 +61,10 @@ fun CourseGradesScreen(
         onFormativaChange = viewModel::updateStagedFormativa,
         onCognitivaChange = viewModel::updateStagedCognitiva,
         onSave = viewModel::saveGrades,
-        onNavigateBack = onNavigateBack
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun CourseGradesContent(
     uiState: CourseGradesUiState,
@@ -72,16 +72,17 @@ fun CourseGradesContent(
     onFormativaChange: (String) -> Unit,
     onCognitivaChange: (String) -> Unit,
     onSave: () -> Unit,
-    onNavigateBack: () -> Unit
 ) {
     val tabs = listOf("Corte 1", "Corte 2", "Corte 3")
 
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .weight(1f)) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .weight(1f)
+        ) {
             when (uiState) {
                 is CourseGradesUiState.Loading -> {
                     Box(
@@ -125,16 +126,17 @@ fun CourseGradesContent(
 
                         Spacer(modifier = Modifier.height(24.dp))
 
-                        PrimaryTabRow(
-                            selectedTabIndex = uiState.currentTermId - 1,
-                            containerColor = Color.Transparent,
-                            divider = {}
-                        ) {
+                        SingleChoiceSegmentedButtonRow {
                             tabs.forEachIndexed { index, title ->
-                                Tab(
-                                    selected = uiState.currentTermId == index + 1,
+                                SegmentedButton(
+                                    shape = SegmentedButtonDefaults.itemShape(
+                                        index = index,
+                                        count = tabs.size
+                                    ),
+
                                     onClick = { onTermSelected(index + 1) },
-                                    text = { Text(title) }
+                                    selected = uiState.currentTermId == index + 1,
+                                    label = { Text(title) }
                                 )
                             }
                         }
@@ -174,7 +176,6 @@ private fun CourseGradesScreenPreview() {
             onFormativaChange = {},
             onCognitivaChange = {},
             onSave = {},
-            onNavigateBack = {}
         )
     }
 }
