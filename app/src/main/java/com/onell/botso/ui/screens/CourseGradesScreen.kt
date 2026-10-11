@@ -133,7 +133,6 @@ fun CourseGradesContent(
                                         index = index,
                                         count = tabs.size
                                     ),
-
                                     onClick = { onTermSelected(index + 1) },
                                     selected = uiState.currentTermId == index + 1,
                                     label = { Text(title) }

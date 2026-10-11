@@ -32,7 +32,6 @@ class TasksViewModel @Inject constructor(
 
     init {
         loadAllTasks()
-
     }
 
     private fun loadAllTasks() {

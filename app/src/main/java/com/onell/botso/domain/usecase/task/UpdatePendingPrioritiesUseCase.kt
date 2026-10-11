@@ -20,6 +20,5 @@ class UpdatePendingTasksUseCase @Inject constructor(
 
             repository.updateTask(updateTask)
         }
-
     }
 }

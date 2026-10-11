@@ -2,22 +2,27 @@ package com.onell.botso.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -89,12 +94,16 @@ fun TasksContent(
     onEditTask: (Task) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val tabs = listOf("Por Hacer", "En Progreso", "Hecha")
+    var selectedIndex by remember { mutableIntStateOf(0) }
+
     when (uiState) {
         is TasksUiState.Loading -> {
             Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 LoadingIndicator()
             }
         }
+
         is TasksUiState.Error -> {
             Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text(
@@ -104,40 +113,82 @@ fun TasksContent(
                 )
             }
         }
+
         is TasksUiState.Success -> {
-            if (uiState.tasksWithCourses.isEmpty()) {
-                Box(
-                    modifier = Modifier.fillMaxSize().padding(16.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(24.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceVariant
-                        )
-                    ) {
-                        Text(
-                            text = "No hay tareas pendientes",
-                            modifier = Modifier.padding(16.dp),
-                            style = MaterialTheme.typography.bodyMedium
+            val targetStatus = when (selectedIndex) {
+                0 -> TaskStatus.TODO
+                1 -> TaskStatus.IN_PROGRESS
+                2 -> TaskStatus.DONE
+                else -> TaskStatus.TODO
+            }
+
+            val filteredTasks = remember(uiState.tasksWithCourses, selectedIndex) {
+                uiState.tasksWithCourses.filter { it.task.status == targetStatus }
+            }
+
+            val emptyMessage = when (selectedIndex) {
+                0 -> "No hay tareas por hacer"
+                1 -> "No hay tareas en progreso"
+                2 -> "No hay tareas completadas"
+                else -> "No hay tareas"
+            }
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(4.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                SingleChoiceSegmentedButtonRow {
+                    tabs.forEachIndexed { index, title ->
+                        SegmentedButton(
+                            shape = SegmentedButtonDefaults.itemShape(
+                                index = index,
+                                count = tabs.size
+                            ),
+                            onClick = { selectedIndex = index },
+                            selected = index == selectedIndex,
+                            label = { Text(title) }
+
                         )
                     }
                 }
-            } else {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize().padding(4.dp),
-                    contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    items(uiState.tasksWithCourses) { curso ->
-                        Spacer(modifier = Modifier.padding(8.dp))
-                        TaskCard(
-                            courseWithTask = curso,
-                            onClick = { onTaskClick(curso.task) },
-                            onDelete = { onDeleteTask(curso.task) },
-                            onEdit = { onEditTask(curso.task) }
-                        )
+
+                if (filteredTasks.isEmpty()) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(24.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceVariant
+                            )
+                        ) {
+                            Text(
+                                text = emptyMessage,
+                                modifier = Modifier.padding(16.dp),
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                    }
+                } else {
+                    LazyColumn(
+                        contentPadding = PaddingValues(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        items(filteredTasks) { curso ->
+                            Spacer(modifier = Modifier.padding(8.dp))
+                            TaskCard(
+                                courseWithTask = curso,
+                                onClick = { onTaskClick(curso.task) },
+                                onDelete = { onDeleteTask(curso.task) },
+                                onEdit = { onEditTask(curso.task) }
+                            )
+                        }
                     }
                 }
             }
