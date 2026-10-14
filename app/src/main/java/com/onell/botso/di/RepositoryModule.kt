@@ -1,6 +1,7 @@
 package com.onell.botso.di
 
 import com.onell.botso.data.repository.*
+import com.onell.botso.data.service.NotificationServiceImpl
 import com.onell.botso.domain.repository.*
 import dagger.Binds
 import dagger.Module
@@ -35,4 +36,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindSettingsRepository(impl: SettingsRepositoryImpl): SettingsRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindNotificationService(notificationServiceImpl: NotificationServiceImpl): NotificationService
 }

@@ -1,5 +1,9 @@
 package com.onell.botso.ui.screens
 
+import android.Manifest
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -8,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -31,69 +36,96 @@ fun SettingsScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            viewModel.triggerTestNotification()
+        }
+    }
+
     SettingsContent(
         uiState = uiState,
-        onDynamicColor = { isChecked -> viewModel.onDynamicColorToggled(isChecked) }
+        onDynamicColor = { isChecked -> viewModel.onDynamicColorToggled(isChecked) },
+        onTestNotification = {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            } else {
+                viewModel.triggerTestNotification()
+            }
+        }
     )
 }
 
 @Composable
 fun SettingsContent(
     uiState: SettingsUiState,
-    onDynamicColor: (Boolean) -> Unit
+    onDynamicColor: (Boolean) -> Unit,
+    onTestNotification: () -> Unit
 ) {
-    Row(
+    LazyColumn(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+            .fillMaxSize()
+            .padding(4.dp),
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(4.dp),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            item {
-                Text(
-                    text = "Apariencia",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.SemiBold
-                )
-            }
-            item {
-                SettingsCard(
-                    name = "Color Dinámico",
-                    onCheckedChange = onDynamicColor,
-                    isActive = uiState.isDynamicColorEnabled
-                )
-            }
-            item {
-                Text(
-                    text = "Acerca de",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.SemiBold
-                )
-            }
-            item {
-                Card(modifier = Modifier
-                    .fillMaxWidth(),
-                    shape = RoundedCornerShape(24.dp)
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(text = "Botso",
-                            fontWeight = FontWeight.SemiBold)
-                        AppVersionText()
-                    }
+        item {
+            Text(
+                text = "Apariencia",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.SemiBold
+            )
+        }
+        item {
+            SettingsCard(
+                name = "Color Dinámico",
+                onCheckedChange = onDynamicColor,
+                isActive = uiState.isDynamicColorEnabled
+            )
+        }
 
+        item {
+            Text(
+                text = "Notificaciones",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.SemiBold
+            )
+        }
+
+        item {
+            Button(
+                onClick = onTestNotification
+            ) {
+                Text("Probar Notificación")
+            }
+        }
+
+        item {
+            Text(
+                text = "Acerca de",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.SemiBold
+            )
+        }
+
+        item {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(24.dp)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Botso",
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    AppVersionText()
                 }
             }
         }
@@ -105,7 +137,7 @@ fun SettingsContent(
 fun SettingsContentPreview() {
     SettingsContent(
         uiState = SettingsUiState(),
-        onDynamicColor = {}
+        onDynamicColor = {},
+        onTestNotification = {}
     )
 }
-

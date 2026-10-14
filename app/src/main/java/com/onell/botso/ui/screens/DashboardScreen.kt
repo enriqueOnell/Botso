@@ -65,7 +65,7 @@ fun DashboardContent(
 ) {
 
     val eva = "https://evapresencial.americana.edu.co"
-    val sinu = "https://aplicaciones.americana.edu.co:8443/sgacampus/#notr62"
+    val sinu = "https://campus.americana.edu.co/cua/sgacampus/#notr62"
 
     when (uiState) {
         is DashboardUiState.Loading -> {
