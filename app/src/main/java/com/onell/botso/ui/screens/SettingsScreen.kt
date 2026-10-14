@@ -47,6 +47,8 @@ fun SettingsScreen(
     SettingsContent(
         uiState = uiState,
         onDynamicColor = { isChecked -> viewModel.onDynamicColorToggled(isChecked) },
+        onTaskNotifications = { viewModel.onTaskNotificationsToggled(it) },
+        onClassNotifications = { viewModel.onClassNotificationsToggled(it) },
         onTestNotification = {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
@@ -61,6 +63,8 @@ fun SettingsScreen(
 fun SettingsContent(
     uiState: SettingsUiState,
     onDynamicColor: (Boolean) -> Unit,
+    onTaskNotifications: (Boolean) -> Unit,
+    onClassNotifications: (Boolean) -> Unit,
     onTestNotification: () -> Unit
 ) {
     LazyColumn(
@@ -90,6 +94,22 @@ fun SettingsContent(
                 text = "Notificaciones",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.SemiBold
+            )
+        }
+
+        item {
+            SettingsCard(
+                name = "Notificaciones de Tareas",
+                onCheckedChange = onTaskNotifications,
+                isActive = uiState.isTaskNotificationsEnabled
+            )
+        }
+
+        item {
+            SettingsCard(
+                name = "Notificaciones de Clases",
+                onCheckedChange = onClassNotifications,
+                isActive = uiState.isClassNotificationsEnabled
             )
         }
 
@@ -138,6 +158,8 @@ fun SettingsContentPreview() {
     SettingsContent(
         uiState = SettingsUiState(),
         onDynamicColor = {},
+        onTaskNotifications = {},
+        onClassNotifications = {},
         onTestNotification = {}
     )
 }

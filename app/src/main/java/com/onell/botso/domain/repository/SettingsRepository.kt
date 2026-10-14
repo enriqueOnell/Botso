@@ -4,6 +4,11 @@ import kotlinx.coroutines.flow.Flow
 
 interface SettingsRepository  {
     val isDynamicColorEnabled: Flow<Boolean>
+    suspend fun toggleDynamicColor(isEnabled: Boolean)
 
-    suspend fun toggleDynamicColor(enable: Boolean)
+    val isTaskNotificationsEnabled: Flow<Boolean>
+    suspend fun toggleTaskNotifications(isEnabled: Boolean)
+
+    val isClassNotificationsEnabled: Flow<Boolean>
+    suspend fun toggleClassNotifications(isEnabled: Boolean)
 }
