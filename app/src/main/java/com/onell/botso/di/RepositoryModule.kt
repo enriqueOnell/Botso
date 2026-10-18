@@ -2,6 +2,7 @@ package com.onell.botso.di
 
 import com.onell.botso.data.repository.*
 import com.onell.botso.data.service.NotificationServiceImpl
+import com.onell.botso.data.worker.TaskNotificationSchedulerImpl
 import com.onell.botso.domain.repository.*
 import dagger.Binds
 import dagger.Module
@@ -39,5 +40,9 @@ abstract class RepositoryModule {
 
     @Binds
     @Singleton
-    abstract fun bindNotificationService(notificationServiceImpl: NotificationServiceImpl): NotificationService
+    abstract fun bindNotificationService(impl: NotificationServiceImpl): NotificationService
+
+    @Binds
+    @Singleton
+    abstract fun bindTaskNotificationScheduler(impl: TaskNotificationSchedulerImpl): TaskNotificationScheduler
 }

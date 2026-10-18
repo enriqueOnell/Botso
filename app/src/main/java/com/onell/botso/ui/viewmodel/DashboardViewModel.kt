@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.onell.botso.domain.usecase.course.GetCoursesWithGradesUseCase
 import com.onell.botso.domain.usecase.session.GetSessionsForDayUseCase
 import com.onell.botso.domain.usecase.task.GetAllPriorityTasksUseCase
-import com.onell.botso.domain.usecase.task.GetAllTasksUseCase
+import com.onell.botso.domain.usecase.task.GetPendingTasksCountUseCase
 import com.onell.botso.ui.uistate.DashboardUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,7 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
     private val getSessionsForDayUseCase: GetSessionsForDayUseCase,
-    private val getAllTasksUseCase: GetAllTasksUseCase,
+    private val getPendingTasksCount: GetPendingTasksCountUseCase,
     private val getAllPriorityTasksUseCase: GetAllPriorityTasksUseCase,
     private val getCoursesWithGradesUseCase: GetCoursesWithGradesUseCase
 ) : ViewModel() {
@@ -36,13 +36,13 @@ class DashboardViewModel @Inject constructor(
             try {
                 combine(
                     getSessionsForDayUseCase(LocalDate.now().dayOfWeek.value),
-                    getAllTasksUseCase(),
+                    getPendingTasksCount(),
                     getAllPriorityTasksUseCase(),
                     getCoursesWithGradesUseCase()
-                ) { sessionsForDay, pendingTasks, priorityTasks, coursesWithGrades ->
+                ) { sessionsForDay, pendingTasksCount, priorityTasks, coursesWithGrades ->
                     DashboardUiState.Success(
                         todayClasses = sessionsForDay,
-                        pendingTasksCount = pendingTasks.count { it.status.label != "DONE" },
+                        pendingTasksCount = pendingTasksCount,
                         priorityTasks = priorityTasks,
                         coursesWithGrades = coursesWithGrades
                     )

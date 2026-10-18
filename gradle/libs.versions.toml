@@ -18,11 +18,13 @@ hiltNavigationCompose = "1.4.0"
 kotlinxCoroutinesAndroid = "1.11.0"
 kotlinxCoroutinesCore = "1.11.0"
 material = "1.14.0"
-material3Version = "1.5.0-alpha29"
+material3Version = "1.5.0-beta01"
 room = "2.8.5"
 ksp = "2.3.10"
 dataStore  = "1.2.1"
 androidxBrowser = "1.10.0"
+workRuntimeKtx = "2.12.0"
+hiltWork = "1.2.0"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -50,6 +52,9 @@ androidx-datastore-preferences = { group = "androidx.datastore", name = "datasto
 
 androidx-browser = {group = "androidx.browser", name = "browser", version.ref = "androidxBrowser"}
 
+androidx-hilt-work = { group = "androidx.hilt", name = "hilt-work", version.ref = "hiltWork" }
+androidx-hilt-compiler = { group = "androidx.hilt", name = "hilt-compiler", version.ref = "hiltWork" }
+
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
 material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3Version" }
 androidx-compose-material-icons-core = { group = "androidx.compose.material", name = "material-icons-core" }
@@ -60,6 +65,7 @@ material = { group = "com.google.android.material", name = "material", version.r
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
 androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
+androidx-work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "workRuntimeKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

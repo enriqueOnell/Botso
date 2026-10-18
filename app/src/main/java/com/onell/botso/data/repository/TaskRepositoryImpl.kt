@@ -23,6 +23,10 @@ class TaskRepositoryImpl @Inject constructor(
         }
     }
 
+    override fun getPendingTasksCount(): Flow<Int> {
+        return taskDao.getPendingTasksCount()
+    }
+
     override fun getTasksForCourse(courseId: String): Flow<List<Task>> =
         taskDao.getTasksForCourse(courseId).map { list -> list.map { it.toDomain() } }
 
