@@ -1,5 +1,6 @@
 package com.onell.botso.di
 
+import com.onell.botso.data.receiver.ClassAlarmSchedulerImpl
 import com.onell.botso.data.repository.*
 import com.onell.botso.data.service.NotificationServiceImpl
 import com.onell.botso.data.worker.TaskNotificationSchedulerImpl
@@ -45,4 +46,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindTaskNotificationScheduler(impl: TaskNotificationSchedulerImpl): TaskNotificationScheduler
+
+    @Binds
+    @Singleton
+    abstract fun bindClassAlarmScheduler(impl: ClassAlarmSchedulerImpl): ClassAlarmScheduler
 }
