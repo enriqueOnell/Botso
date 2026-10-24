@@ -113,6 +113,7 @@ fun SettingsContent(
             )
         }
 
+        /*
         item {
             Button(
                 onClick = onTestNotification
@@ -120,6 +121,7 @@ fun SettingsContent(
                 Text("Probar Notificación")
             }
         }
+         */
 
         item {
             Text(
