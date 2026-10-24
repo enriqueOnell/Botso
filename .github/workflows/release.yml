@@ -1,4 +1,4 @@
-name: Generar y Publicar APK (Debug)
+name: Generar y Publicar APK (Release)
 
 on:
   push:
@@ -10,7 +10,6 @@ jobs:
     name: Ensamblar APK
     runs-on: ubuntu-latest
 
-    # Le damos permiso al bot para crear la Release en tu repositorio
     permissions:
       contents: write
 
@@ -27,14 +26,29 @@ jobs:
       - name: Dar permisos de ejecución a Gradle
         run: chmod +x gradlew
 
-      - name: Ensamblar APK de prueba (Debug)
-        run: ./gradlew assembleDebug
+      # 1. Compilamos la versión de Producción (Saldrá "sin firmar")
+      - name: Ensamblar APK (Release)
+        run: ./gradlew assembleRelease
 
-      # Paso 4: Crear la Release y subir el archivo
+      # 2. El robot que sella la app usando tus secretos de GitHub
+      - name: Firmar APK
+        uses: r0adkll/sign-android-release@v1
+        id: sign_app # Le ponemos un ID para referenciarlo en el siguiente paso
+        with:
+          releaseDirectory: app/build/outputs/apk/release
+          signingKeyBase64: ${{ secrets.KEYSTORE_BASE64 }}
+          alias: ${{ secrets.KEY_ALIAS }}
+          keyStorePassword: ${{ secrets.STORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEY_PASSWORD }}
+        env:
+          BUILD_TOOLS_VERSION: "34.0.0" # Usa las herramientas modernas de Android
+
+      # 3. Publicar la Release con el APK ya firmado
       - name: Publicar Release
         uses: softprops/action-gh-release@v2
         with:
-          name: Botso ${{ github.ref_name }} # El título será "Botso vX.X.X"
-          files: app/build/outputs/apk/debug/app-debug.apk # La ruta donde está el APK
+          name: Botso ${{ github.ref_name }}
+          # Usamos la ruta que escupió el robot firmador en el paso anterior
+          files: ${{steps.sign_app.outputs.signedReleaseFile}}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
