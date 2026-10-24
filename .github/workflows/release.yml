@@ -43,6 +43,10 @@ jobs:
         env:
           BUILD_TOOLS_VERSION: "34.0.0" # Usa las herramientas modernas de Android
 
+      # NUEVO PASO: Renombrar el archivo feo por uno bonito
+      - name: Renombrar APK
+        run: mv ${{steps.sign_app.outputs.signedReleaseFile}} Botso-${{ github.ref_name }}.apk
+
       # 3. Publicar la Release con el APK ya firmado
       - name: Publicar Release
         uses: softprops/action-gh-release@v2
