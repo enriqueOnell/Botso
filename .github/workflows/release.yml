@@ -52,7 +52,6 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           name: Botso ${{ github.ref_name }}
-          # Usamos la ruta que escupió el robot firmador en el paso anterior
-          files: ${{steps.sign_app.outputs.signedReleaseFile}}
+          files: Botso-${{ github.ref_name }}.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
