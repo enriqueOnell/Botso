@@ -1,0 +1,40 @@
+name: Generar y Publicar APK (Debug)
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    name: Ensamblar APK
+    runs-on: ubuntu-latest
+
+    # Le damos permiso al bot para crear la Release en tu repositorio
+    permissions:
+      contents: write
+
+    steps:
+      - name: Clonar el repositorio de Botso
+        uses: actions/checkout@v4
+
+      - name: Configurar Java 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Dar permisos de ejecución a Gradle
+        run: chmod +x gradlew
+
+      - name: Ensamblar APK de prueba (Debug)
+        run: ./gradlew assembleDebug
+
+      # Paso 4: Crear la Release y subir el archivo
+      - name: Publicar Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Botso ${{ github.ref_name }} # El título será "Botso vX.X.X"
+          files: app/build/outputs/apk/debug/app-debug.apk # La ruta donde está el APK
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
