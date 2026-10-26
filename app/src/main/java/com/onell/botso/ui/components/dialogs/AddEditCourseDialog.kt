@@ -31,13 +31,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.onell.botso.domain.model.ClassSession
-import com.onell.botso.domain.model.CourseWithSession
 import com.onell.botso.domain.model.Course
+import com.onell.botso.domain.model.CourseWithSession
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.util.UUID
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditCourseDialog(
     modifier: Modifier = Modifier,
