@@ -6,10 +6,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -17,15 +17,20 @@ import androidx.compose.material3.ExposedDropdownMenu
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,7 +41,9 @@ import com.onell.botso.domain.model.CourseWithSession
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.util.UUID
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditCourseDialog(
     modifier: Modifier = Modifier,
@@ -62,147 +69,173 @@ fun AddEditCourseDialog(
     var expandedDay by remember { mutableStateOf(false) }
     val days = listOf("Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo")
 
-    AlertDialog(
+    val sheetState = rememberBottomSheetState(
+        initialValue = SheetValue.Hidden,
+        enabledValues = setOf(SheetValue.Hidden, SheetValue.Expanded)
+    )
+    val scope = rememberCoroutineScope()
+
+    ModalBottomSheet(
         onDismissRequest = onDismiss,
+        sheetState = sheetState,
         modifier = modifier,
-        shape = RoundedCornerShape(24.dp),
-        title = { Text(if (courseWithSession?.course == null) "Nuevo Curso" else "Editar Curso") },
-        text = {
-            Column(
-                modifier = Modifier.verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+        shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 24.dp)
+                .padding(top = 8.dp, bottom = 24.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Text(
+                text = if (courseWithSession?.course == null) "Nuevo Curso" else "Editar Curso",
+                style = MaterialTheme.typography.titleLarge
+            )
+
+            OutlinedTextField(
+                value = name,
+                onValueChange = { name = it },
+                label = { Text("Nombre de la materia") },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(24.dp)
+            )
+
+            ExposedDropdownMenuBox(
+                expanded = expandedDay,
+                onExpandedChange = { expandedDay = !expandedDay }
             ) {
                 OutlinedTextField(
-                    value = name,
-                    onValueChange = { name = it },
-                    label = { Text("Nombre de la materia") },
-                    modifier = Modifier.fillMaxWidth(),
+                    value = days[dayOfWeek - 1],
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("Día de Clase") },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedDay) },
+                    modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable, true).fillMaxWidth(),
                     shape = RoundedCornerShape(24.dp)
                 )
-
-                ExposedDropdownMenuBox(
+                ExposedDropdownMenu(
                     expanded = expandedDay,
-                    onExpandedChange = { expandedDay = !expandedDay }
+                    onDismissRequest = { expandedDay = false }
                 ) {
+                    days.forEachIndexed { index, day ->
+                        DropdownMenuItem(
+                            text = { Text(day) },
+                            onClick = {
+                                dayOfWeek = index + 1
+                                expandedDay = false
+                            }
+                        )
+                    }
+                }
+            }
+
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Box(modifier = Modifier.weight(1f)) {
                     OutlinedTextField(
-                        value = days[dayOfWeek - 1],
+                        value = startTime.format(DateTimeFormatter.ofPattern("HH:mm")),
                         onValueChange = {},
                         readOnly = true,
-                        label = { Text("Día de Clase") },
-                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedDay) },
-                        modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable, true).fillMaxWidth(),
+                        label = { Text("Inicio") },
+                        modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(24.dp)
                     )
-                    ExposedDropdownMenu(
-                        expanded = expandedDay,
-                        onDismissRequest = { expandedDay = false }
-                    ) {
-                        days.forEachIndexed { index, day ->
-                            DropdownMenuItem(
-                                text = { Text(day) },
-                                onClick = {
-                                    dayOfWeek = index + 1
-                                    expandedDay = false
-                                }
-                            )
-                        }
-                    }
+                    Box(
+                        modifier = Modifier
+                            .matchParentSize()
+                            .clickable { showStartTimePicker = true }
+                    )
                 }
-
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Box(modifier = Modifier.weight(1f)) {
-                        OutlinedTextField(
-                            value = startTime.format(DateTimeFormatter.ofPattern("HH:mm")),
-                            onValueChange = {},
-                            readOnly = true,
-                            label = { Text("Inicio") },
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(24.dp)
-                        )
-                        Box(
-                            modifier = Modifier
-                                .matchParentSize()
-                                .clickable { showStartTimePicker = true }
-                        )
-                    }
-                    Box(modifier = Modifier.weight(1f)) {
-                        OutlinedTextField(
-                            value = endTime.format(DateTimeFormatter.ofPattern("HH:mm")),
-                            onValueChange = {},
-                            readOnly = true,
-                            label = { Text("Fin") },
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(24.dp)
-                        )
-                        Box(
-                            modifier = Modifier
-                                .matchParentSize()
-                                .clickable { showEndTimePicker = true }
-                        )
-                    }
+                Box(modifier = Modifier.weight(1f)) {
+                    OutlinedTextField(
+                        value = endTime.format(DateTimeFormatter.ofPattern("HH:mm")),
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Fin") },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(24.dp)
+                    )
+                    Box(
+                        modifier = Modifier
+                            .matchParentSize()
+                            .clickable { showEndTimePicker = true }
+                    )
                 }
-
-                OutlinedTextField(
-                    value = if (isRemote) " " else location,
-                    onValueChange = { location = it },
-                    enabled = !isRemote,
-                    label = { Text("Ubicación") },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(24.dp)
-                )
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text("Clase Remota")
-                    Switch(checked = isRemote, onCheckedChange = { isRemote = it })
-                }
-
-                OutlinedTextField(
-                    value = professor,
-                    onValueChange = { professor = it },
-                    label = { Text("Profesor") },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(24.dp)
-                )
             }
-        },
-        confirmButton = {
-            Button(
-                onClick = {
-                    if (name.isNotBlank()) {
-                        val newCourse = Course(
-                            id = courseId,
-                            semesterId = currentSemesterId,
-                            name = name,
-                            professor = professor
-                        )
-                        val newSession = ClassSession(
-                            id = sessionId,
-                            courseId = courseId,
-                            dayOfWeek = dayOfWeek,
-                            startTime = startTime,
-                            endTime = endTime,
-                            room = location,
-                            isRemote = isRemote
-                        )
-                        onConfirm(newCourse, newSession)
-                    }
-                },
-                enabled = name.isNotBlank(),
+
+            OutlinedTextField(
+                value = if (isRemote) " " else location,
+                onValueChange = { location = it },
+                enabled = !isRemote,
+                label = { Text("Ubicación") },
+                modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(24.dp)
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(if (courseWithSession?.course == null) "Añadir" else "Guardar")
+                Text("Clase Remota")
+                Switch(checked = isRemote, onCheckedChange = { isRemote = it })
             }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss, shape = RoundedCornerShape(24.dp)) {
-                Text("Cancelar")
+
+            OutlinedTextField(
+                value = professor,
+                onValueChange = { professor = it },
+                label = { Text("Profesor") },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(24.dp)
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                TextButton(
+                    onClick = {
+                        scope.launch { sheetState.hide() }.invokeOnCompletion {
+                            if (!sheetState.isVisible) onDismiss()
+                        }
+                    },
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(24.dp)
+                ) {
+                    Text("Cancelar")
+                }
+
+                Button(
+                    onClick = {
+                        if (name.isNotBlank()) {
+                            val newCourse = Course(
+                                id = courseId,
+                                semesterId = currentSemesterId,
+                                name = name,
+                                professor = professor
+                            )
+                            val newSession = ClassSession(
+                                id = sessionId,
+                                courseId = courseId,
+                                dayOfWeek = dayOfWeek,
+                                startTime = startTime,
+                                endTime = endTime,
+                                room = location,
+                                isRemote = isRemote
+                            )
+                            onConfirm(newCourse, newSession)
+                        }
+                    },
+                    enabled = name.isNotBlank(),
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(24.dp)
+                ) {
+                    Text(if (courseWithSession?.course == null) "Añadir" else "Guardar")
+                }
             }
         }
-    )
+    }
 
     if (showStartTimePicker) {
         BotsoTimePickerDialog(
