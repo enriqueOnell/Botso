@@ -9,6 +9,7 @@ import com.onell.botso.domain.usecase.settigns.GetTaskNotificationsUseCase
 import com.onell.botso.domain.usecase.settigns.ToggleClassNotificationsUseCase
 import com.onell.botso.domain.usecase.settigns.ToggleDynamicColorThemeUseCase
 import com.onell.botso.domain.usecase.settigns.ToggleTaskNotificationsUseCase
+import com.onell.botso.ui.uistate.NotificationToggle
 import com.onell.botso.ui.uistate.SettingsUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -65,13 +66,25 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    fun onTaskNotificationsToggled(isEnabled: Boolean) {
-        viewModelScope.launch { toggleTaskNotificationsUseCase(isEnabled) }
+    fun onNotificationToggled(target: NotificationToggle, isEnabled: Boolean) {
+        viewModelScope.launch {
+            when (target) {
+                NotificationToggle.TASKS -> toggleTaskNotificationsUseCase(isEnabled)
+                NotificationToggle.CLASSES -> toggleClassNotificationsUseCase(isEnabled)
+            }
+        }
     }
 
-    fun onClassNotificationsToggled(isEnabled: Boolean) {
-        viewModelScope.launch { toggleClassNotificationsUseCase(isEnabled) }
+    /**
+     * Recibe el resultado de POST_NOTIFICATIONS resuelto por la capa de UI.
+     * Si se deniega, la preferencia se persiste como desactivada para que los
+     * switches y la programación de recordatorios sigan siendo coherentes con
+     * el estado real del permiso del sistema.
+     */
+    fun onNotificationPermissionResult(target: NotificationToggle, isGranted: Boolean) {
+        onNotificationToggled(target, isGranted)
     }
+
     fun triggerTestNotification() {
         sendNotificationUseCase(
             title = "¡Hola desde Botso!",
