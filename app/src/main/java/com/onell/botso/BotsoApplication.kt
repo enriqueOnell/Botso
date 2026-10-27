@@ -3,7 +3,6 @@ package com.onell.botso
 import android.app.Application
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
-import com.onell.botso.domain.repository.TaskNotificationScheduler
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 

@@ -2,43 +2,56 @@ package com.onell.botso.domain.usecase.settigns
 
 import com.onell.botso.domain.repository.ClassAlarmScheduler
 import com.onell.botso.domain.repository.SettingsRepository
-import com.onell.botso.domain.usecase.session.GetSessionsForDayUseCase
+import com.onell.botso.domain.usecase.semester.GetSemestersWithCoursesUseCase
 import kotlinx.coroutines.flow.first
 import java.time.LocalDate
 import java.time.ZoneId
+import java.time.temporal.TemporalAdjusters
 import javax.inject.Inject
 
 class ToggleClassNotificationsUseCase @Inject constructor(
     private val repository: SettingsRepository,
     private val alarmScheduler: ClassAlarmScheduler,
-    private val getSessionsForDayUseCase: GetSessionsForDayUseCase
+    private val getSemestersWithCoursesUseCase: GetSemestersWithCoursesUseCase
 ) {
     suspend operator fun invoke(isEnabled: Boolean) {
         repository.toggleClassNotifications(isEnabled)
 
+        val semesters = getSemestersWithCoursesUseCase().first()
+        val allCoursesWithSessions = semesters.flatMap { it.courses }
+
+        val currentTimeMillis = System.currentTimeMillis()
         val today = LocalDate.now()
-        val clases = getSessionsForDayUseCase(today.dayOfWeek.value).first()
 
         if (isEnabled) {
-            val currentTimeMillis = System.currentTimeMillis()
+            allCoursesWithSessions.forEach { clase ->
+                val targetDayOfWeek = java.time.DayOfWeek.of(clase.session.dayOfWeek)
+                val targetDate = today.with(TemporalAdjusters.nextOrSame(targetDayOfWeek))
 
-            clases.forEach { clase ->
-                val triggerTimeInMillis = today
+                val triggerTimeInMillis = targetDate
                     .atTime(clase.session.startTime)
                     .atZone(ZoneId.systemDefault())
                     .toInstant()
                     .toEpochMilli()
 
-                if (triggerTimeInMillis > currentTimeMillis) {
-                    alarmScheduler.scheduleClassReminder(
-                        classId = clase.course.id,
-                        className = clase.course.name,
-                        triggerTimeInMillis = triggerTimeInMillis
-                    )
+                val finalTriggerTime = if (triggerTimeInMillis <= currentTimeMillis) {
+                    targetDate.plusWeeks(1)
+                        .atTime(clase.session.startTime)
+                        .atZone(ZoneId.systemDefault())
+                        .toInstant()
+                        .toEpochMilli()
+                } else {
+                    triggerTimeInMillis
                 }
+
+                alarmScheduler.scheduleClassReminder(
+                    classId = clase.course.id,
+                    className = clase.course.name,
+                    triggerTimeInMillis = finalTriggerTime
+                )
             }
         } else {
-            clases.forEach { clase ->
+            allCoursesWithSessions.forEach { clase ->
                 alarmScheduler.cancelClassReminder(clase.course.id)
             }
         }
