@@ -4,14 +4,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.CalendarToday
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.Switch
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenuItem
@@ -23,9 +23,13 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SheetValue
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -33,6 +37,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,6 +49,7 @@ import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -80,188 +86,224 @@ fun AddEditTaskDialog(
     )
     var showDatePicker by remember { mutableStateOf(false) }
 
-    AlertDialog(
+    val sheetState = rememberBottomSheetState(
+        initialValue = SheetValue.Hidden,
+        enabledValues = setOf(SheetValue.Hidden, SheetValue.Expanded)
+    )
+    val scope = rememberCoroutineScope()
+    var isClosing by remember { mutableStateOf(false) }
+
+    val closeSheet: (() -> Unit) -> Unit = { afterHide ->
+        if (!isClosing) {
+            isClosing = true
+            scope.launch { sheetState.hide() }.invokeOnCompletion {
+                if (sheetState.isVisible) {
+                    isClosing = false
+                } else {
+                    afterHide()
+                }
+            }
+        }
+    }
+
+    ModalBottomSheet(
         onDismissRequest = onDismiss,
+        sheetState = sheetState,
         modifier = modifier,
-        shape = RoundedCornerShape(24.dp),
-        title = {
+        shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .imePadding()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 24.dp)
+                .padding(top = 8.dp, bottom = 24.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
             Text(
                 text = if (task == null) "Nueva Tarea" else "Editar Tarea",
                 style = MaterialTheme.typography.titleLarge
             )
-        },
-        text = {
-            Column(
-                modifier = Modifier.verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+
+            OutlinedTextField(
+                value = title,
+                onValueChange = { title = it },
+                label = { Text("Título de la tarea") },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(24.dp)
+            )
+
+            ExposedDropdownMenuBox(
+                expanded = expandedCourse,
+                onExpandedChange = { expandedCourse = !expandedCourse }
             ) {
                 OutlinedTextField(
-                    value = title,
-                    onValueChange = { title = it },
-                    label = { Text("Título de la tarea") },
-                    modifier = Modifier.fillMaxWidth(),
+                    value = courses.find { it.id == selectedCourseId }?.name
+                        ?: "Seleccionar Materia",
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("Materia") },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedCourse) },
+                    modifier = Modifier
+                        .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable, true)
+                        .fillMaxWidth(),
+                    shape = RoundedCornerShape(24.dp)
+                )
+                ExposedDropdownMenu(
+                    expanded = expandedCourse,
+                    onDismissRequest = { expandedCourse = false }
+                ) {
+                    courses.forEach { course ->
+                        DropdownMenuItem(
+                            text = { Text(course.name) },
+                            onClick = {
+                                selectedCourseId = course.id
+                                expandedCourse = false
+                            }
+                        )
+                    }
+                }
+            }
+            if (courses.isEmpty()) {
+                Text(
+                    text = "No hay Materias disponibles.",
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                OutlinedTextField(
+                    value = datePickerState.selectedDateMillis?.let { millis ->
+                        Instant.ofEpochMilli(millis)
+                            .atZone(ZoneId.of("UTC"))
+                            .toLocalDate()
+                            .format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                    } ?: "",
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("Fecha") },
+                    trailingIcon = {
+                        IconButton(onClick = { showDatePicker = true }) {
+                            Icon(
+                                Icons.Rounded.CalendarToday,
+                                contentDescription = "Seleccionar fecha"
+                            )
+                        }
+                    },
+                    modifier = Modifier.weight(1.5f),
                     shape = RoundedCornerShape(24.dp)
                 )
 
                 ExposedDropdownMenuBox(
-                    expanded = expandedCourse,
-                    onExpandedChange = { expandedCourse = !expandedCourse }
+                    expanded = expandedWeek,
+                    onExpandedChange = { expandedWeek = !expandedWeek },
+                    modifier = Modifier.weight(1f)
                 ) {
                     OutlinedTextField(
-                        value = courses.find { it.id == selectedCourseId }?.name
-                            ?: "Seleccionar Materia",
+                        value = "S$week",
                         onValueChange = {},
                         readOnly = true,
-                        label = { Text("Materia") },
-                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedCourse) },
+                        label = { Text("Semana") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedWeek) },
                         modifier = Modifier
                             .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable, true)
                             .fillMaxWidth(),
                         shape = RoundedCornerShape(24.dp)
                     )
                     ExposedDropdownMenu(
-                        expanded = expandedCourse,
-                        onDismissRequest = { expandedCourse = false }
+                        expanded = expandedWeek,
+                        onDismissRequest = { expandedWeek = false }
                     ) {
-                        courses.forEach { course ->
+                        (1..16).forEach { w ->
                             DropdownMenuItem(
-                                text = { Text(course.name) },
+                                text = { Text("S$w") },
                                 onClick = {
-                                    selectedCourseId = course.id
-                                    expandedCourse = false
+                                    week = w
+                                    expandedWeek = false
                                 }
                             )
                         }
                     }
                 }
-                if (courses.isEmpty()) {
-                    Text(
-                        text = "No hay Materias disponibles.",
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.bodySmall
-                    )
+            }
+
+            OutlinedTextField(
+                value = description,
+                onValueChange = { description = it },
+                label = { Text("Descripción") },
+                modifier = Modifier.fillMaxWidth(),
+                minLines = 3,
+                shape = RoundedCornerShape(24.dp)
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                val selectedDateMillis = datePickerState.selectedDateMillis ?: System.currentTimeMillis()
+                val selectedLocalDate = Instant.ofEpochMilli(selectedDateMillis)
+                    .atZone(ZoneId.of("UTC"))
+                    .toLocalDate()
+
+                val daysDifference = ChronoUnit.DAYS.between(LocalDate.now(), selectedLocalDate)
+                val isSwitchEnabled = daysDifference > 3
+
+                Text(
+                    text = "Marcar como prioridad",
+                    style = MaterialTheme.typography.labelMedium
+                )
+                Switch(
+                    checked = !isSwitchEnabled || isPriority,
+                    onCheckedChange = { isPriority = it },
+                    enabled = isSwitchEnabled
+                )
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                TextButton(
+                    onClick = { closeSheet(onDismiss) },
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(24.dp)
+                ) {
+                    Text("Cancelar")
                 }
 
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    OutlinedTextField(
-                        value = datePickerState.selectedDateMillis?.let { millis ->
-                            Instant.ofEpochMilli(millis)
+                Button(
+                    onClick = {
+                        if (title.isNotBlank() && selectedCourseId.isNotBlank()) {
+                            val dueDateMillis =
+                                datePickerState.selectedDateMillis ?: System.currentTimeMillis()
+                            val dueDate = Instant.ofEpochMilli(dueDateMillis)
                                 .atZone(ZoneId.of("UTC"))
                                 .toLocalDate()
-                                .format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
-                        } ?: "",
-                        onValueChange = {},
-                        readOnly = true,
-                        label = { Text("Fecha") },
-                        trailingIcon = {
-                            IconButton(onClick = { showDatePicker = true }) {
-                                Icon(
-                                    Icons.Rounded.CalendarToday,
-                                    contentDescription = "Seleccionar fecha"
-                                )
-                            }
-                        },
-                        modifier = Modifier.weight(1.5f),
-                        shape = RoundedCornerShape(24.dp)
-                    )
-
-                    ExposedDropdownMenuBox(
-                        expanded = expandedWeek,
-                        onExpandedChange = { expandedWeek = !expandedWeek },
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        OutlinedTextField(
-                            value = "S$week",
-                            onValueChange = {},
-                            readOnly = true,
-                            label = { Text("Semana") },
-                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedWeek) },
-                            modifier = Modifier
-                                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable, true)
-                                .fillMaxWidth(),
-                            shape = RoundedCornerShape(24.dp)
-                        )
-                        ExposedDropdownMenu(
-                            expanded = expandedWeek,
-                            onDismissRequest = { expandedWeek = false }
-                        ) {
-                            (1..16).forEach { w ->
-                                DropdownMenuItem(
-                                    text = { Text("S$w") },
-                                    onClick = {
-                                        week = w
-                                        expandedWeek = false
-                                    }
+                            closeSheet {
+                                onConfirm(
+                                    selectedCourseId,
+                                    title,
+                                    dueDate,
+                                    isPriority,
+                                    week,
+                                    description
                                 )
                             }
                         }
-                    }
-                }
-
-                OutlinedTextField(
-                    value = description,
-                    onValueChange = { description = it },
-                    label = { Text("Descripción") },
-                    modifier = Modifier.fillMaxWidth(),
-                    minLines = 3,
+                    },
+                    enabled = title.isNotBlank() && selectedCourseId.isNotBlank() &&
+                        courses.isNotEmpty() && !isClosing,
+                    modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(24.dp)
-                )
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    val selectedDateMillis = datePickerState.selectedDateMillis ?: System.currentTimeMillis()
-                    val selectedLocalDate = Instant.ofEpochMilli(selectedDateMillis)
-                        .atZone(ZoneId.of("UTC"))
-                        .toLocalDate()
-
-                    val daysDifference = ChronoUnit.DAYS.between(LocalDate.now(), selectedLocalDate)
-                    val isSwitchEnabled = daysDifference > 3
-
-                    Text(
-                        text = "Marcar como prioridad",
-                        style = MaterialTheme.typography.labelMedium
-                    )
-                    Switch(
-                        checked = !isSwitchEnabled || isPriority,
-                        onCheckedChange = { isPriority = it },
-                        enabled = isSwitchEnabled
-                    )
+                    Text(if (task == null) "Añadir" else "Guardar")
                 }
-            }
-        },
-        confirmButton = {
-            Button(
-                onClick = {
-                    if (title.isNotBlank() && selectedCourseId.isNotBlank()) {
-                        val dueDateMillis =
-                            datePickerState.selectedDateMillis ?: System.currentTimeMillis()
-                        val dueDate = Instant.ofEpochMilli(dueDateMillis).atZone(ZoneId.of("UTC"))
-                            .toLocalDate()
-                        onConfirm(
-                            selectedCourseId,
-                            title,
-                            dueDate,
-                            isPriority,
-                            week,
-                            description
-                        )
-                    }
-                },
-                enabled = title.isNotBlank() && selectedCourseId.isNotBlank() && courses.isNotEmpty(),
-                shape = RoundedCornerShape(24.dp)
-            ) {
-                Text(if (task == null) "Añadir" else "Guardar")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss, shape = RoundedCornerShape(24.dp)) {
-                Text("Cancelar")
             }
         }
-    )
+    }
 
     if (showDatePicker) {
         DatePickerDialog(
