@@ -5,11 +5,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
-/**
- * Escala expresiva: Display Large/Medium para números clave.
- * Si usas Figtree (como en el diseño), cárgala con ui-text-google-fonts
- * y pásala como fontFamily a cada estilo.
- */
 val BotsoTypography = Typography(
     displayLarge = TextStyle(
         fontWeight = FontWeight.ExtraBold,
