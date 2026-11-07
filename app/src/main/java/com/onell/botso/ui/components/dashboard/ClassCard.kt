@@ -1,5 +1,7 @@
 package com.onell.botso.ui.components.dashboard
 
+import android.R
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -72,18 +74,17 @@ fun ClassCard(sessionWithCourse: CourseWithSession) {
                             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                         )
                     }
-                    if (sessionWithCourse.session.isRemote) {
-                        Surface(
-                            color = MaterialTheme.colorScheme.primaryContainer,
-                            shape = RoundedCornerShape(24.dp)
-                        ) {
-                            Text(
-                                text = "Remota",
-                                style = MaterialTheme.typography.labelLarge,
-                                color = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                            )
-                        }
+                    Surface(
+                        color = MaterialTheme.colorScheme.primaryContainer,
+                        shape = RoundedCornerShape(24.dp),
+                        border = BorderStroke(2.dp, color = MaterialTheme.colorScheme.primary)
+                    ) {
+                        Text(
+                            text = if (sessionWithCourse.session.isRemote) "Remota" else sessionWithCourse.session.room,
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                        )
                     }
                 }
                 Spacer(modifier = Modifier.height(8.dp))
@@ -94,24 +95,6 @@ fun ClassCard(sessionWithCourse: CourseWithSession) {
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
-
-                    if (sessionWithCourse.session.room == " ") {
-                        Icon(
-                            Icons.Rounded.Book,
-                            contentDescription = null,
-                            modifier = Modifier.size(16.dp),
-                            tint = MaterialTheme.colorScheme.onPrimaryContainer
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = sessionWithCourse.session.room,
-                            style = MaterialTheme.typography.bodyMedium,
-                            maxLines = 1,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer
-                        )
-                        Spacer(modifier = Modifier.width(16.dp))
-                    }
-
                     Icon(
                         Icons.Rounded.Person,
                         contentDescription = null,
@@ -133,7 +116,7 @@ fun ClassCard(sessionWithCourse: CourseWithSession) {
 
 @Preview
 @Composable
-fun ClassCardPreview() {
+fun ClassCardRemotePreview() {
     val todayClasses = CourseWithSession(
         session = ClassSession(
             "12",
@@ -143,6 +126,30 @@ fun ClassCardPreview() {
             LocalTime.of(20, 17),
             "room",
             true
+        ),
+        course = Course(
+            id = "id2",
+            semesterId = "semesterId",
+            name = "name",
+            professor = "professor"
+        )
+    )
+
+    ClassCard(sessionWithCourse = todayClasses)
+}
+
+@Preview
+@Composable
+fun ClassCardWhitRoomPreview() {
+    val todayClasses = CourseWithSession(
+        session = ClassSession(
+            "12",
+            "id2",
+            1,
+            LocalTime.of(10, 9),
+            LocalTime.of(20, 17),
+            "salon 404 - 20 de julio",
+            false
         ),
         course = Course(
             id = "id2",
