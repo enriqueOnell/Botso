@@ -45,7 +45,6 @@ fun ClassCard(sessionWithCourse: CourseWithSession) {
         shape = MaterialTheme.shapes.extraLarge,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
     ) {
-        // 1. Envolvemos todo en un Box para permitir superposición de capas
         Box(modifier = Modifier.fillMaxWidth()) {
 
             Box(
@@ -54,7 +53,7 @@ fun ClassCard(sessionWithCourse: CourseWithSession) {
                     .offset(x = 16.dp, y = (-46).dp)
                     .size(150.dp)
                     .clip(MaterialShapes.Cookie6Sided.toShape())
-                    .background(MaterialTheme.colorScheme.onPrimaryContainer)
+                    .background(MaterialTheme.colorScheme.primary)
             )
 
             Column(modifier = Modifier.padding(16.dp)) {

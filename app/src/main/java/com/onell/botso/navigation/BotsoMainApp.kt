@@ -57,6 +57,7 @@ import com.onell.botso.ui.screens.DashboardScreen
 import com.onell.botso.ui.screens.SemestersScreen
 import com.onell.botso.ui.screens.SettingsScreen
 import com.onell.botso.ui.screens.TasksScreen
+import com.onell.botso.ui.theme.FabShape
 import com.onell.botso.ui.uistate.TasksUiState
 import com.onell.botso.ui.viewmodel.SemestersViewModel
 import com.onell.botso.ui.viewmodel.TasksViewModel
@@ -130,8 +131,8 @@ fun BotsoMainApp(
                         if (isCourseGrades) {
                             FloatingActionButton(
                                 onClick = { navController.popBackStack() },
-                                containerColor = MaterialTheme.colorScheme.primary,
-                                contentColor = MaterialTheme.colorScheme.onPrimary
+                                shape = FabShape,
+                                containerColor = MaterialTheme.colorScheme.primary
                             ) {
                                 Icon(
                                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -140,6 +141,8 @@ fun BotsoMainApp(
                             }
                         } else if (isTasks || isSemesters) {
                             FloatingActionButton(
+                                shape = FabShape,
+                                containerColor = MaterialTheme.colorScheme.primary,
                                 onClick = {
                                     if (isTasks) showTaskDialog = true
                                     if (isSemesters) showSemesterDialog = true
@@ -149,6 +152,8 @@ fun BotsoMainApp(
                             }
                         } else if (isDashboard) {
                             FloatingActionButton(
+                                shape = FabShape,
+                                containerColor = MaterialTheme.colorScheme.primary,
                                 onClick = {
                                     navController.navigate(Route.Settings) {
                                         popUpTo(Route.Dashboard) { saveState = true }
@@ -159,9 +164,9 @@ fun BotsoMainApp(
                             ) { Icon(Icons.Default.Settings, contentDescription = "Ajustes") }
                         } else if (isSettings) {
                             FloatingActionButton(
+                                shape = FabShape,
                                 onClick = { navController.popBackStack() },
-                                containerColor = MaterialTheme.colorScheme.primary,
-                                contentColor = MaterialTheme.colorScheme.onPrimary
+                                containerColor = MaterialTheme.colorScheme.primary
                             ) {
                                 Icon(
                                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -195,7 +200,7 @@ fun BotsoMainApp(
                                     },
                                     colors = ButtonDefaults.buttonColors(
                                         containerColor = if (isDashboard) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainer,
-                                        contentColor = if (isDashboard) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface
+                                        contentColor = if (isDashboard) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                                     ),
                                     contentPadding = PaddingValues(12.dp),
                                     modifier = Modifier.padding(horizontal = 4.dp)
@@ -219,7 +224,7 @@ fun BotsoMainApp(
                                     },
                                     colors = ButtonDefaults.buttonColors(
                                         containerColor = if (isTasks) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainer,
-                                        contentColor = if (isTasks) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface
+                                        contentColor = if (isTasks) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                                     ),
                                     contentPadding = PaddingValues(12.dp),
                                     modifier = Modifier.padding(horizontal = 4.dp)
@@ -243,7 +248,7 @@ fun BotsoMainApp(
                                     },
                                     colors = ButtonDefaults.buttonColors(
                                         containerColor = if (isSemesters) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainer,
-                                        contentColor = if (isSemesters) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface
+                                        contentColor = if (isSemesters) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                                     ),
                                     contentPadding = PaddingValues(12.dp),
                                     modifier = Modifier.padding(horizontal = 4.dp)

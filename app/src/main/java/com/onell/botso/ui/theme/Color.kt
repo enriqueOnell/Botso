@@ -7,8 +7,21 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 
 /**
- * Esquemas de alto contraste con tonos de superficie entonados.
- * El primary (#6A3DF0) es el violeta saturado usado en hero y FAB.
+ * Paleta de colores institucional para Botso (Expressive Academic Canvas).
+ * Define esquemas de color claros y oscuros (Light y Dark) ajustados para accesibilidad (WCAG)
+ * y reducción de fatiga visual durante largas sesiones de estudio.
+ *
+ * Casos de uso de los tokens principales en la app:
+ * - `primary` / `onPrimary`: Botones de acción principal, Floating Action Buttons (FAB), bordes activos y estados seleccionados.
+ * - `primaryContainer` / `onPrimaryContainer`: Tarjetas destacadas, pestañas activas (Tabs), chips de selección.
+ * - `secondary` / `onSecondary`: Elementos secundarios, iconos de apoyo y metadatos informativos.
+ * - `secondaryContainer` / `onSecondaryContainer`: Contenedores secundarios y estados en curso.
+ * - `surface` / `onSurface`: Fondo general de pantallas y tipografía principal de lectura.
+ * - `surfaceContainerLowest`: Superficie blanca/oscura pura para tarjetas de contenido elevado (`CourseGradeItem`, `SettingsCard`, inputs activos).
+ * - `surfaceContainerLow`: Fondo tonal bajo para campos de texto (`FilledFormField`) y estados vacíos suaves.
+ * - `surfaceContainerHigh`: Superficie para filas de tareas pendientes, elementos secundarios y botones de cancelar.
+ * - `surfaceContainerHighest`: Círculos contenedores de iconos y elementos desactivados.
+ * - `error` / `onError` / `errorContainer` / `onErrorContainer`: Alertas de eliminación, tareas vencidas y calificaciones reprobatorias (< 3.0).
  */
 val BotsoLightColors = lightColorScheme(
     primary = Color(0xFF6A3DF0),
@@ -50,7 +63,7 @@ val BotsoDarkColors = darkColorScheme(
     surfaceContainerLow = Color(0xFF1C1A23),
     surfaceContainer = Color(0xFF211F28),
     surfaceContainerHigh = Color(0xFF2B2933),
-    surfaceContainerHighest = Color(0xFF36343E),
+    surfaceContainerHighest = Color(0xFF36343B),
     outline = Color(0xFF938F99),
     error = Color(0xFFFFB4AB),
     onError = Color(0xFF690005),
@@ -58,7 +71,11 @@ val BotsoDarkColors = darkColorScheme(
     onErrorContainer = Color(0xFFFFDAD6),
 )
 
-/** Colores semánticos que Material no modela: aprobado vs. reprobado. */
+/**
+ * Colores semánticos específicos de dominio académico que Material Design no modela por defecto:
+ * - `passContainer` / `onPassContainer`: Usado para destacar calificaciones aprobatorias (promedio >= 3.0)
+ *   y estados académicos positivos ("En Curso").
+ */
 @Immutable
 data class BotsoSemanticColors(
     val passContainer: Color,
