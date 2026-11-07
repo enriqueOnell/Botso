@@ -114,6 +114,7 @@ fun BotsoMainApp(
                     Text(
                         text = title,
                         style = MaterialTheme.typography.headlineLarge,
+                        color = MaterialTheme.colorScheme.primary,
                     )
                 },
             )

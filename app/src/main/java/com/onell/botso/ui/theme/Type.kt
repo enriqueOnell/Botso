@@ -5,6 +5,25 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
+/**
+ * Sistema tipográfico de Botso (Expressive Academic Canvas).
+ * Define los estilos de texto (Typography) utilizados en toda la aplicación,
+ * priorizando la jerarquía visual, la legibilidad y el peso tipográfico fuerte (ExtraBold/Bold)
+ * característico de los diseños académicos modernos.
+ *
+ * Casos de uso de cada estilo tipográfico en la app:
+ * - `displayLarge`: Indicadores numéricos gigantes de calificaciones y promedios totales (`CircularGradeProgress`).
+ * - `displayMedium` / `displaySmall`: Encabezados numéricos y métricas principales de impacto visual.
+ * - `headlineLarge`: Títulos principales en tarjetas destacadas de clase (`ClassCard`).
+ * - `headlineMedium`: Títulos de la barra superior de navegación (`CenterAlignedTopAppBar`).
+ * - `headlineSmall`: Cabeceras de hojas inferiores (`SheetHeader`), títulos de diálogos y tarjetas de resumen (`PendingTasksCard`).
+ * - `titleLarge`: Títulos de secciones importantes y nombres principales.
+ * - `titleMedium`: Nombres de materias (`CourseGradeItem`) y subtítulos destacados.
+ * - `bodyLarge`: Texto principal de párrafos y descripciones extensas.
+ * - `bodyMedium`: Texto introducido en campos de formulario (`FilledFormField`), notas y listas.
+ * - `labelLarge`: Texto en botones de acción y botoneras inferiores (`SheetFormButtons`, `DialogActionButton`).
+ * - `labelSmall`: Insignias de porcentaje (`GradeInputField`), chips de estado y metadatos secundarios.
+ */
 val BotsoTypography = Typography(
     displayLarge = TextStyle(
         fontWeight = FontWeight.ExtraBold,

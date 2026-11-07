@@ -63,24 +63,24 @@ fun ClassCard(sessionWithCourse: CourseWithSession) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Surface(
-                        shape = CircleShape, color = MaterialTheme.colorScheme.surface
+                        shape = CircleShape, color = MaterialTheme.colorScheme.primary
                     ) {
                         Text(
                             text = "${sessionWithCourse.session.startTime} - ${sessionWithCourse.session.endTime}",
                             style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            color = MaterialTheme.colorScheme.primaryContainer,
                             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                         )
                     }
                     if (sessionWithCourse.session.isRemote) {
                         Surface(
-                            color = MaterialTheme.colorScheme.surface,
+                            color = MaterialTheme.colorScheme.primaryContainer,
                             shape = RoundedCornerShape(24.dp)
                         ) {
                             Text(
                                 text = "Remota",
                                 style = MaterialTheme.typography.labelLarge,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                color = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                             )
                         }
@@ -131,7 +131,7 @@ fun ClassCard(sessionWithCourse: CourseWithSession) {
     }
 }
 
-@Preview()
+@Preview
 @Composable
 fun ClassCardPreview() {
     val todayClasses = CourseWithSession(
