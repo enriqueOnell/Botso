@@ -33,8 +33,10 @@ import java.util.Locale
 fun CourseGradeItem(courseWithGrades: CourseWithGrades) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+        shape = MaterialTheme.shapes.large,
+        colors = CardDefaults.cardColors(
+            containerColor = if (courseWithGrades.averageGrade >= 3.0) Color(0xFFA0F399) else Color(0xFFFFDAD6),
+        )
     ) {
         Row(
             modifier = Modifier
@@ -46,8 +48,7 @@ fun CourseGradeItem(courseWithGrades: CourseWithGrades) {
             Column {
                 Text(
                     text = courseWithGrades.course.name,
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.Bold
+                    style = MaterialTheme.typography.titleLarge,
                 )
                 if (courseWithGrades.course.professor.isNotBlank()) {
                     Text(
@@ -58,15 +59,19 @@ fun CourseGradeItem(courseWithGrades: CourseWithGrades) {
                 }
             }
             Surface(
-                color = if (courseWithGrades.averageGrade >= 3.0) Color(0xFFA0F399) else Color(0xFFFFDAD6),
+                color = if (courseWithGrades.averageGrade >= 3.0) Color(0xFFA0F399) else Color(
+                    0xFFFFDAD6
+                ),
                 shape = RoundedCornerShape(24.dp)
             ) {
                 Text(
                     text = format(Locale.US, "%.2f", courseWithGrades.averageGrade),
                     modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.displayMedium,
                     fontWeight = FontWeight.ExtraBold,
-                    color = if (courseWithGrades.averageGrade >= 3.0) Color(0xFF002106) else Color(0xFF410002)
+                    color = if (courseWithGrades.averageGrade >= 3.0) Color(0xFF002106) else Color(
+                        0xFF410002
+                    )
                 )
             }
         }
@@ -77,7 +82,7 @@ fun CourseGradeItem(courseWithGrades: CourseWithGrades) {
 @Composable
 fun CourseGradeItemPreview() {
     CourseGradeItem(
-        courseWithGrades =  CourseWithGrades(
+        courseWithGrades = CourseWithGrades(
             course = Course(
                 id = "id2",
                 semesterId = "semesterId",
@@ -89,8 +94,8 @@ fun CourseGradeItemPreview() {
                     id = "g1",
                     courseId = "id2",
                     name = "Formativa",
-                    score = 4.0,
-                    weight = 0.5,
+                    score = 5.0,
+                    weight = 1.0,
                     termId = 1
                 )
             )
