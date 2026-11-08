@@ -12,6 +12,12 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
+/**
+ * Módulo Hilt que provee el `DataStore<Preferences>` de ajustes.
+ *
+ * El archivo `settings_prefs` guarda las preferencias del usuario (tema dinámico
+ * y notificaciones).
+ */
 @Module
 @InstallIn(SingletonComponent::class)
 object DataStoreModule {

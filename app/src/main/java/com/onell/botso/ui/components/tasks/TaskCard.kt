@@ -51,6 +51,13 @@ import com.onell.botso.domain.model.TaskStatus
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
+/**
+ * Tarjeta de una tarea en la lista.
+ *
+ * Muestra semana, fecha (resaltada si vence hoy), prioridad, materia, estado y
+ * descripción. Un toque cambia de estado; la pulsación larga abre el menú de
+ * editar/eliminar.
+ */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TaskCard(

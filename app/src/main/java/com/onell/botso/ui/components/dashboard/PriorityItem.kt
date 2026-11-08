@@ -29,6 +29,11 @@ import com.onell.botso.domain.model.TaskStatus
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
+/**
+ * Fila de una tarea prioritaria en el Dashboard.
+ *
+ * El indicador lateral cambia de color si la tarea vence hoy o antes.
+ */
 @Composable
 fun PriorityItem(
     task: Task,

@@ -4,6 +4,9 @@ import com.onell.botso.domain.model.Course
 import com.onell.botso.domain.model.CourseWithGrades
 import kotlinx.coroutines.flow.Flow
 
+/**
+ * Contrato de acceso a cursos y cursos con notas.
+ */
 interface CourseRepository {
 
     fun getAllCourses(): Flow<List<Course>>

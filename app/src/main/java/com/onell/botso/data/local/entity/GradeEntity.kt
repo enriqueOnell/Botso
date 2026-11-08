@@ -7,6 +7,12 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 import java.util.UUID
 
+/**
+ * Entidad Room de una calificación.
+ *
+ * Cada registro representa una nota con su peso (`weight`) y el corte
+ * (`termId`: 1, 2 o 3). La clave primaria se genera con UUID por defecto.
+ */
 @Entity(
     tableName = "grades",
     foreignKeys = [

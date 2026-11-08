@@ -10,6 +10,12 @@ import jakarta.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
+/**
+ * Implementación de `CourseRepository` sobre Room.
+ *
+ * Traduce `CourseDao` al lenguaje del dominio y expone cursos sueltos o cursos
+ * con sus notas para el Dashboard y la pantalla de calificaciones.
+ */
 class CourseRepositoryImpl @Inject constructor(
     private val courseDao: CourseDao
 ) : CourseRepository {

@@ -5,6 +5,9 @@ import com.onell.botso.domain.repository.SemesterRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
+/**
+ * Caso de uso: observar el semestre activo.
+ */
 class GetActiveSemesterUseCase @Inject constructor(
     private val repository: SemesterRepository
 ) {

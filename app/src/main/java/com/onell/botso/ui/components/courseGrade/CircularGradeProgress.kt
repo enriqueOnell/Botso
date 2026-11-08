@@ -23,6 +23,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import java.util.Locale
 
+/**
+ * Indicador circular animado del promedio de un curso.
+ *
+ * Muestra el promedio total (escala 0-5), la etiqueta "Promedio Total" y el
+ * promedio del corte seleccionado. Cambia a color de error si el promedio es
+ * menor a 3.0.
+ */
 @Composable
 fun CircularGradeProgress(
     score: Double,

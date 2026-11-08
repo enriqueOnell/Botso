@@ -4,6 +4,9 @@ import com.onell.botso.domain.model.Task
 import com.onell.botso.domain.repository.TaskRepository
 import javax.inject.Inject
 
+/**
+ * Caso de uso: actualizar una tarea existente.
+ */
 class UpdateTaskUseCase @Inject constructor(
     private val repository: TaskRepository
 ) {

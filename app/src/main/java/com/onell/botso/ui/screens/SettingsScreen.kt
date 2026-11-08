@@ -53,6 +53,14 @@ import com.onell.botso.ui.uistate.SettingsUiState
 import com.onell.botso.ui.viewmodel.SettingsViewModel
 import kotlinx.coroutines.launch
 
+/**
+ * Pantalla de Ajustes.
+ *
+ * Permite activar/desactivar el color dinámico y las notificaciones. La gestión
+ * del permiso `POST_NOTIFICATIONS` (solicitud, rationale y caso bloqueado) se
+ * resuelve aquí porque depende del sistema; el ViewModel solo persiste el
+ * resultado.
+ */
 private const val NOTIFICATION_PERMISSION = Manifest.permission.POST_NOTIFICATIONS
 
 @Composable

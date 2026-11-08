@@ -11,6 +11,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
+/**
+ * Diálogo de confirmación reutilizable para acciones destructivas.
+ */
 @Composable
 fun ConfirmDeleteDialog(
     title: String,

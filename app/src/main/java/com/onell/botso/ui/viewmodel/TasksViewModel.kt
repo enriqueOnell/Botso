@@ -18,6 +18,13 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * ViewModel de la pantalla de Tareas.
+ *
+ * Expone la lista de tareas con su curso y la lista de cursos (para el formulario
+ * de alta/edición). Antes de publicar el estado recalcula las prioridades de las
+ * tareas próximas a vencer.
+ */
 @HiltViewModel
 class TasksViewModel @Inject constructor(
     private val getAllTasksWithCourseUseCase: GetAllTasksWithCourseUseCase,

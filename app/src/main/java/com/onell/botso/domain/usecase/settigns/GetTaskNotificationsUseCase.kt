@@ -5,6 +5,9 @@ import com.onell.botso.domain.repository.SettingsRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
+/**
+ * Caso de uso: observar la preferencia de notificaciones de tareas.
+ */
 class GetTaskNotificationsUseCase @Inject constructor(
     private val repository: SettingsRepository
 ) {

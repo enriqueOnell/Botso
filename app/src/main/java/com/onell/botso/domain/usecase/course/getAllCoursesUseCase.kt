@@ -5,6 +5,9 @@ import com.onell.botso.domain.repository.CourseRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
+/**
+ * Caso de uso: observar todos los cursos.
+ */
 class GetAllCoursesUseCase @Inject constructor(
     private val repository: CourseRepository
 ) {

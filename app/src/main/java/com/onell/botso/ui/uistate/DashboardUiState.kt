@@ -4,6 +4,9 @@ import com.onell.botso.domain.model.CourseWithSession
 import com.onell.botso.domain.model.CourseWithGrades
 import com.onell.botso.domain.model.Task
 
+/**
+ * Estados posibles del Dashboard: cargando, error o datos listos para pintar.
+ */
 sealed interface DashboardUiState {
     data object Loading : DashboardUiState
 

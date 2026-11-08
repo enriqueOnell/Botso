@@ -10,6 +10,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
+/**
+ * Botón individual del teclado numérico.
+ */
 @Composable
 fun PadButton(
     text: String,

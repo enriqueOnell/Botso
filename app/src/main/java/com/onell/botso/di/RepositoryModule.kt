@@ -11,6 +11,13 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
+/**
+ * Módulo Hilt que enlaza las interfaces de dominio con sus implementaciones.
+ *
+ * Aquí se registran repositorios, el servicio de notificaciones y los
+ * programadores de alarmas/trabajos. Añadir una nueva implementación implica
+ * crear su `@Binds` en este módulo.
+ */
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class RepositoryModule {

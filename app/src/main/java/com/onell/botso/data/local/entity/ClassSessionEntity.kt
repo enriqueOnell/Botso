@@ -6,6 +6,12 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 
+/**
+ * Entidad Room de una sesión/horario de clase.
+ *
+ * Relaciona un curso con un día de la semana y un rango horario. Las horas se
+ * guardan como texto ISO (`HH:mm`) y se convierten a `LocalTime` al mapear.
+ */
 @Entity(
     tableName = "class_sessions",
     foreignKeys = [

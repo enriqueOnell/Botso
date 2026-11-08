@@ -19,6 +19,15 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * ViewModel de Ajustes.
+ *
+ * Combina las preferencias persistidas en DataStore (color dinámico y
+ * notificaciones) y expone acciones para cambiarlas. La UI resuelve el permiso
+ * `POST_NOTIFICATIONS` y devuelve el resultado con
+ * `onNotificationPermissionResult` para mantener preferencia y permiso
+ * coherentes.
+ */
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val getDynamicColorThemeUseCase: GetDynamicColorThemeUseCase,

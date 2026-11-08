@@ -5,6 +5,9 @@ import com.onell.botso.domain.repository.TaskRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
+/**
+ * Caso de uso: observar todas las tareas (usado por la pantalla de tareas).
+ */
 class GetAllTasksUseCase @Inject constructor(
     private val repository: TaskRepository
 ) {

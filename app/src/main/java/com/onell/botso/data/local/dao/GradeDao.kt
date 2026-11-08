@@ -5,6 +5,13 @@ import com.onell.botso.data.local.entity.CourseWithGradesEntity
 import com.onell.botso.data.local.entity.GradeEntity
 import kotlinx.coroutines.flow.Flow
 
+/**
+ * DAO de notas.
+ *
+ * Devuelve las notas de un curso junto con el curso (`CourseWithGradesEntity`) y
+ * ofrece CRUD para las calificaciones individuales (Formativa/Cognitiva por
+ * corte).
+ */
 @Dao
 interface GradeDao {
     @Transaction

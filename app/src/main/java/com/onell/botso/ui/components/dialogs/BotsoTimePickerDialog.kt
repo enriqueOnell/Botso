@@ -14,6 +14,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
+/**
+ * Diálogo de selección de hora basado en `TimePicker` de Material 3.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BotsoTimePickerDialog(

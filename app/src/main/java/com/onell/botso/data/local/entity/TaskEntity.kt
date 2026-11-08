@@ -6,6 +6,12 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 
+/**
+ * Entidad Room de una tarea académica.
+ *
+ * Guarda estado (`TODO`, `IN_PROGRESS`, `DONE` como texto), prioridad, semana,
+ * fecha límite y descripción. La fecha se serializa como texto ISO.
+ */
 @Entity(
     tableName = "tasks",
     foreignKeys = [

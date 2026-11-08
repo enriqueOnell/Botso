@@ -37,6 +37,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.onell.botso.domain.model.CourseWithSession
 
+/**
+ * Fila de una materia dentro de un semestre.
+ *
+ * Un toque navega a las notas; una pulsación larga abre el menú de editar o
+ * eliminar.
+ */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CourseRow(

@@ -9,6 +9,12 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
+/**
+ * Programador del recordatorio periódico de tareas.
+ *
+ * Registra un `PeriodicWorkRequest` único con `ExistingPeriodicWorkPolicy.UPDATE`
+ * para que activar/desactivar el ajuste no duplique el trabajo.
+ */
 class TaskNotificationSchedulerImpl @Inject constructor(
     @ApplicationContext private val context: Context
 ) : TaskNotificationScheduler {

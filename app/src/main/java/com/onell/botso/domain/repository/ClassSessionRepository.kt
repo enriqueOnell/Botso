@@ -4,6 +4,9 @@ import com.onell.botso.domain.model.ClassSession
 import com.onell.botso.domain.model.CourseWithSession
 import kotlinx.coroutines.flow.Flow
 
+/**
+ * Contrato de acceso a horarios de clase.
+ */
 interface ClassSessionRepository {
     fun getAllClassSessions(): Flow<List<ClassSession>>
     fun getSessionsForDay(dayOfWeek: Int): Flow<List<CourseWithSession>>

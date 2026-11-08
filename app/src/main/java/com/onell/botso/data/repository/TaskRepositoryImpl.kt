@@ -10,6 +10,12 @@ import jakarta.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
+/**
+ * Implementación de `TaskRepository` sobre Room.
+ *
+ * Expone tareas sueltas, tareas con su curso, tareas prioritarias y el conteo de
+ * pendientes; todo como `Flow` reactivo.
+ */
 class TaskRepositoryImpl @Inject constructor(
     private val taskDao: TaskDao,
 ) : TaskRepository {

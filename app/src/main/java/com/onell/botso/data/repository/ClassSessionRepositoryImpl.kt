@@ -10,6 +10,13 @@ import jakarta.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
+/**
+ * Implementación de `ClassSessionRepository` sobre Room.
+ *
+ * Resuelve los horarios por curso o por día y los aplana a
+ * `CourseWithSession` para que la UI no tenga que conocer la estructura de la
+ * relación.
+ */
 class ClassSessionRepositoryImpl @Inject constructor(
     private val sessionDao: ClassSessionDao,
 ) : ClassSessionRepository {

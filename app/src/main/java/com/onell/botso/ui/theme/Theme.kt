@@ -10,6 +10,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalContext
 
+/**
+ * Tema Compose de Botso.
+ *
+ * Usa `MaterialExpressiveTheme` con la tipografía, formas y esquema de color
+ * propios. Si el usuario activa el color dinámico y el dispositivo es Android
+ * 12+, se usan los colores del sistema; en caso contrario se aplica la paleta
+ * institucional (`BotsoLightColors` / `BotsoDarkColors`). También publica los
+ * colores semánticos de dominio mediante `LocalBotsoColors`.
+ */
 @Composable
 fun BotsoTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),

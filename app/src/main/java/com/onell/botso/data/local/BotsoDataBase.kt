@@ -7,6 +7,21 @@ import androidx.room.RoomDatabase
 import com.onell.botso.data.local.dao.*
 import com.onell.botso.data.local.entity.*
 
+/**
+ * Base de datos local Room de Botso.
+ *
+ * Agrupa las cinco tablas del dominio académico: semestres, cursos, notas,
+ * tareas y sesiones de clase. Las relaciones se resuelven con claves foráneas
+ * en cascada (al borrar un semestre se borran sus cursos, y con ellos notas,
+ * tareas y horarios).
+ *
+ * `getDatabase()` implementa un singleton thread-safe para evitar abrir varias
+ * instancias de la base de datos.
+ *
+ * IMPORTANTE: la versión actual es 8 y no hay migraciones ni
+ * `fallbackToDestructiveMigration()`. Cualquier incremento de versión debe
+ * acompañarse de una `Migration`, o la app fallará al abrir la BD existente.
+ */
 @Database(
     entities = [
         SemesterEntity::class,

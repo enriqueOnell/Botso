@@ -12,6 +12,13 @@ import kotlinx.coroutines.flow.map
 import java.io.IOException
 import javax.inject.Inject
 
+/**
+ * Implementación de `SettingsRepository` sobre Preferences DataStore.
+ *
+ * Persiste tres preferencias booleanas (color dinámico, notificaciones de tareas
+ * y de clases). Los errores de E/S se degradan a valores por defecto
+ * (`emptyPreferences`) para no romper la UI.
+ */
 class SettingsRepositoryImpl @Inject constructor(
     private val dataStore: DataStore<Preferences>
 ) : SettingsRepository {

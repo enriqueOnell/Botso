@@ -5,6 +5,13 @@ import com.onell.botso.data.local.entity.SemesterEntity
 import com.onell.botso.data.local.entity.SemesterWithCourseEntity
 import kotlinx.coroutines.flow.Flow
 
+/**
+ * DAO de semestres.
+ *
+ * Expone consultas reactivas (`Flow`) para observar semestres, semestres con sus
+ * cursos/horarios y el semestre activo, además de las operaciones CRUD usadas por
+ * `SemesterRepositoryImpl`.
+ */
 @Dao
 interface SemesterDao {
     @Query("SELECT * FROM semesters")

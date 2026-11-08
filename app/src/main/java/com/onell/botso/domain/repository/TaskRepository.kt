@@ -4,6 +4,9 @@ import com.onell.botso.domain.model.CourseWithTask
 import com.onell.botso.domain.model.Task
 import kotlinx.coroutines.flow.Flow
 
+/**
+ * Contrato de acceso a tareas, prioridades y conteo de pendientes.
+ */
 interface TaskRepository {
     fun getAllTasks(): Flow<List<Task>>
     fun getTasksForCourse(courseId: String): Flow<List<Task>>

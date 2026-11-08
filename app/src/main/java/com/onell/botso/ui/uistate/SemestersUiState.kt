@@ -4,6 +4,9 @@ import com.onell.botso.domain.model.CourseWithGrades
 import com.onell.botso.domain.model.Semester
 import com.onell.botso.domain.model.SemesterWithCourse
 
+/**
+ * Estados posibles de la pantalla de Semestres.
+ */
 sealed interface SemestersUiState {
     data object Loading : SemestersUiState
 

@@ -30,6 +30,14 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * ViewModel de Semestres.
+ *
+ * Combina semestres y semestres-con-cursos en un `SemestersUiState.Success` y
+ * ofrece operaciones CRUD de semestres, cursos y horarios. La generación de PDF
+ * se ejecuta en `Dispatchers.IO` y el resultado se comunica por
+ * `pdfGeneratedEvent` para que la UI abra el selector de compartir.
+ */
 @HiltViewModel
 class SemestersViewModel @Inject constructor(
     private val getAllSemestersUseCase: GetAllSemestersUseCase,

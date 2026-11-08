@@ -12,6 +12,13 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * Receiver de arranque del dispositivo.
+ *
+ * Tras un reinicio, Android borra las alarmas programadas. Este receiver lee la
+ * preferencia de notificaciones de clases y, si estaba activa, vuelve a
+ * programarlas usando `ToggleClassNotificationsUseCase`.
+ */
 @AndroidEntryPoint
 class BootReceiver : BroadcastReceiver() {
 

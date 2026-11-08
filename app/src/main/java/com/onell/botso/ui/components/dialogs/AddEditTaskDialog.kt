@@ -51,6 +51,13 @@ import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import kotlinx.coroutines.launch
 
+/**
+ * Hoja inferior para crear o editar una tarea.
+ *
+ * Incluye selector de materia, fecha, semana y prioridad. La prioridad manual
+ * solo se habilita si la tarea vence en más de 3 días (las urgentes se marcan
+ * automáticamente).
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditTaskDialog(

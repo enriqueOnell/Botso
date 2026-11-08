@@ -15,6 +15,9 @@ import com.onell.botso.domain.model.Task
 import com.onell.botso.domain.model.TaskStatus
 import java.time.LocalDate
 
+/**
+ * Chip de color que representa el estado de una tarea.
+ */
 @Composable
 fun StatusChip(task: Task){
     Surface(

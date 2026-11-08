@@ -23,6 +23,16 @@ import java.time.LocalDate
 import java.time.LocalTime
 import java.util.UUID
 
+/**
+ * Mappers entre la capa de persistencia (Room) y el dominio.
+ *
+ * Convierten entidades (`*Entity`, fechas/horas como texto) a modelos de dominio
+ * (`LocalDate`, `LocalTime`, enums) y viceversa. Mantener esta traducción aquí
+ * evita que el dominio conozca detalles de Room.
+ *
+ * Nota: cuando un curso no tiene sesiones registradas se genera una sesión por
+ * defecto (lunes 08:00-10:00) para que la UI siempre tenga algo que mostrar.
+ */
 fun ClassSessionEntity.toDomain(): ClassSession {
     return ClassSession(
         id = this.id,

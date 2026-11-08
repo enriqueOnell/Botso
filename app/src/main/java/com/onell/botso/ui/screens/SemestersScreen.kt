@@ -35,6 +35,13 @@ import com.onell.botso.ui.uistate.SemestersUiState
 import com.onell.botso.ui.viewmodel.SemestersViewModel
 import java.io.File
 
+/**
+ * Pantalla de Semestres.
+ *
+ * Lista los semestres con sus materias y horarios. También escucha
+ * `pdfGeneratedEvent` para compartir el reporte PDF generado mediante
+ * `FileProvider`.
+ */
 @Composable
 fun SemestersScreen(
     viewModel: SemestersViewModel,

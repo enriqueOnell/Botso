@@ -5,6 +5,12 @@ import com.onell.botso.data.local.entity.ClassSessionEntity
 import com.onell.botso.data.local.entity.CourseWithSessionEntity
 import kotlinx.coroutines.flow.Flow
 
+/**
+ * DAO de sesiones de clase (horarios).
+ *
+ * Consulta las sesiones de un curso o de un día de la semana concreto y mantiene
+ * las operaciones de alta, edición y borrado de horarios.
+ */
 @Dao
 interface ClassSessionDao {
     @Transaction

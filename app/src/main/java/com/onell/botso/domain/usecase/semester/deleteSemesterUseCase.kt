@@ -4,6 +4,9 @@ import com.onell.botso.domain.model.Semester
 import com.onell.botso.domain.repository.SemesterRepository
 import javax.inject.Inject
 
+/**
+ * Caso de uso: eliminar un semestre y todo su contenido en cascada.
+ */
 class DeleteSemesterUseCase @Inject constructor(
     private val repository: SemesterRepository
 ) {

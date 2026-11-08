@@ -43,6 +43,12 @@ import java.time.format.DateTimeFormatter
 import java.util.UUID
 import kotlinx.coroutines.launch
 
+/**
+ * Hoja inferior para crear o editar un curso y su horario.
+ *
+ * Valida que el nombre, el profesor y la ubicación (o modalidad remota) estén
+ * presentes antes de habilitar el botón de guardar.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditCourseDialog(

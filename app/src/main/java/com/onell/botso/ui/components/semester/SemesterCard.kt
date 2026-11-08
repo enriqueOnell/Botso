@@ -45,6 +45,12 @@ import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
+/**
+ * Tarjeta de un semestre con la lista de sus materias.
+ *
+ * La pulsación larga abre el menú para editar/exportar/eliminar el semestre; el
+ * botón "+" añade una materia.
+ */
 @Composable
 fun SemesterCard(
     semesterData: SemesterWithCourse,

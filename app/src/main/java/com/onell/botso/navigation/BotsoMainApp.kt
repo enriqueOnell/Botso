@@ -63,6 +63,19 @@ import com.onell.botso.ui.viewmodel.SemestersViewModel
 import com.onell.botso.ui.viewmodel.TasksViewModel
 import java.util.UUID
 
+/**
+ * Contenedor principal de la interfaz y de la navegación de Botso.
+ *
+ * Estructura un `Scaffold` con:
+ * - `CenterAlignedTopAppBar`: título dinámico según la ruta actual.
+ * - Barra flotante inferior (`HorizontalFloatingToolbar`) con accesos a Dashboard,
+ *   Tareas y Semestres, además del FAB contextual de cada pantalla.
+ * - `NavHost` con las rutas type-safe definidas en `Routes.kt`.
+ *
+ * También centraliza el estado de los diálogos de alta/edición/borrado de tareas,
+ * semestres y cursos. Los datos provienen de `TasksViewModel` y
+ * `SemestersViewModel`; la UI solo dispara eventos y refleja el estado.
+ */
 @Composable
 fun BotsoMainApp(
     taskViewModel: TasksViewModel = hiltViewModel(),

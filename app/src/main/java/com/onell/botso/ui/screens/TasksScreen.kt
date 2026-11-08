@@ -40,6 +40,13 @@ import com.onell.botso.ui.uistate.TasksUiState
 import com.onell.botso.ui.viewmodel.TasksViewModel
 import java.time.LocalDate
 
+/**
+ * Pantalla de Tareas.
+ *
+ * Filtra las tareas por estado con botones segmentados (Por Hacer, En Progreso,
+ * Hecha) y permite cambiar de estado con un toque, editar o eliminar. El estado
+ * vive en `TasksViewModel`.
+ */
 @Composable
 fun TasksScreen(
     viewModel: TasksViewModel,

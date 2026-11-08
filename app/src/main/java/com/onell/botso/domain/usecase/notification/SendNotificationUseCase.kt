@@ -3,6 +3,9 @@ package com.onell.botso.domain.usecase.notification
 import com.onell.botso.domain.repository.NotificationService
 import javax.inject.Inject
 
+/**
+ * Caso de uso: mostrar una notificación local (también usado por el botón de prueba).
+ */
 class SendNotificationUseCase @Inject constructor(
     private val notificationService: NotificationService
 ) {

@@ -7,6 +7,12 @@ import com.onell.botso.domain.repository.NotificationService
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
+/**
+ * `BroadcastReceiver` que se dispara cuando vence una alarma de clase.
+ *
+ * Muestra la notificación de aviso ("la clase empieza en 30 minutos") usando
+ * `NotificationService`, inyectado por Hilt.
+ */
 @AndroidEntryPoint
 class ClassAlarmReceiver : BroadcastReceiver() {
     @Inject

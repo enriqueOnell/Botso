@@ -9,6 +9,14 @@ import java.time.ZoneId
 import java.time.temporal.TemporalAdjusters
 import javax.inject.Inject
 
+/**
+ * Caso de uso: activar/desactivar recordatorios de clase.
+ *
+ * Persiste la preferencia y, al activar, recorre todos los horarios del usuario
+ * para programar una alarma 30 minutos antes de la próxima ocurrencia de cada
+ * clase (si la hora ya pasó hoy, se programa para la semana siguiente). Al
+ * desactivar, cancela las alarmas por id de curso.
+ */
 class ToggleClassNotificationsUseCase @Inject constructor(
     private val repository: SettingsRepository,
     private val alarmScheduler: ClassAlarmScheduler,

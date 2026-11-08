@@ -5,6 +5,9 @@ import com.onell.botso.domain.repository.ClassSessionRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
+/**
+ * Caso de uso: observar las clases de un día de la semana.
+ */
 class GetSessionsForDayUseCase @Inject constructor(
     private val repository: ClassSessionRepository
 ) {

@@ -10,6 +10,12 @@ import jakarta.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
+/**
+ * Implementación de `GradeRepository` sobre Room.
+ *
+ * Provee las notas de un curso (con el curso embebido) y el CRUD de
+ * calificaciones usado por `CourseGradesViewModel`.
+ */
 class GradeRepositoryImpl @Inject constructor(
     private val gradeDao: GradeDao
 ) : GradeRepository {

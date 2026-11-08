@@ -23,6 +23,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 
+/**
+ * Tarjeta de acceso a una plataforma académica externa.
+ *
+ * Abre la URL en Custom Tabs (mejor integración que un navegador embebido).
+ */
 @Composable
 fun PlatformCard(
     modifier: Modifier = Modifier,

@@ -39,6 +39,9 @@ import java.time.format.DateTimeFormatter
 import java.util.UUID
 import kotlinx.coroutines.launch
 
+/**
+ * Hoja inferior para crear o editar un semestre con fechas de inicio y fin.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditSemesterDialog(

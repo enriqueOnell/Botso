@@ -2,6 +2,11 @@ package com.onell.botso.domain.model
 
 import java.time.LocalDate
 
+/**
+ * Modelo de dominio de una tarea académica.
+ *
+ * Incluye fecha límite (`LocalDate`), prioridad, semana, estado y descripción.
+ */
 data class Task(
     val id: String,
     val courseId: String,

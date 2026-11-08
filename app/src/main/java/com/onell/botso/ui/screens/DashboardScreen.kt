@@ -44,6 +44,13 @@ import com.onell.botso.ui.viewmodel.DashboardViewModel
 import java.time.LocalDate
 import java.time.LocalTime
 
+/**
+ * Pantalla principal (Dashboard).
+ *
+ * Muestra el carrusel de plataformas académicas (EVA/SINU), las clases de hoy,
+ * el contador de tareas pendientes, las tareas prioritarias y el promedio de
+ * cada materia. Solo consume `DashboardUiState`; no contiene lógica de negocio.
+ */
 @Composable
 fun DashboardScreen(
     modifier: Modifier = Modifier,

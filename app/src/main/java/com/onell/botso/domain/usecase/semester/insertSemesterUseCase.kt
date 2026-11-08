@@ -4,6 +4,9 @@ import com.onell.botso.domain.model.Semester
 import com.onell.botso.domain.repository.SemesterRepository
 import javax.inject.Inject
 
+/**
+ * Caso de uso: registrar un semestre.
+ */
 class InsertSemesterUseCase @Inject constructor(
     private val repository: SemesterRepository
 ) {

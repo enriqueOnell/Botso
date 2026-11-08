@@ -19,6 +19,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
+/**
+ * Sección de edición de notas de un corte.
+ *
+ * Contiene los campos Formativa/Cognitiva y el teclado numérico. El porcentaje
+ * mostrado depende del corte (20% en el corte 3, 15% en los demás).
+ */
 @Composable
 fun GradeInputSection(
     termId: Int,

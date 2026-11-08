@@ -4,6 +4,9 @@ import com.onell.botso.domain.model.Course
 import com.onell.botso.domain.repository.CourseRepository
 import javax.inject.Inject
 
+/**
+ * Caso de uso: registrar un curso nuevo.
+ */
 class InsertCourseUseCase @Inject constructor(
     private val repository: CourseRepository
 ) {

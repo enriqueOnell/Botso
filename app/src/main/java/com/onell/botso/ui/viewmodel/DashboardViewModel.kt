@@ -16,6 +16,13 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
 
+/**
+ * ViewModel del Dashboard.
+ *
+ * Combina cuatro fuentes reactivas (clases de hoy, tareas pendientes, tareas
+ * prioritarias y cursos con notas) en un único `DashboardUiState.Success`.
+ * Cualquier cambio en Room vuelve a emitir y actualiza la pantalla.
+ */
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
     private val getSessionsForDayUseCase: GetSessionsForDayUseCase,

@@ -24,6 +24,11 @@ import com.onell.botso.domain.model.Grade
 import java.lang.String.format
 import java.util.Locale
 
+/**
+ * Fila resumen de una materia con su promedio.
+ *
+ * El color del indicador depende de si el promedio aprueba (>= 3.0).
+ */
 @Composable
 fun CourseGradeItem(courseWithGrades: CourseWithGrades) {
     Card(

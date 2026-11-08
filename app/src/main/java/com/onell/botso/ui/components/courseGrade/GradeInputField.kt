@@ -18,6 +18,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
+/**
+ * Campo de solo lectura para una nota.
+ *
+ * Se dibuja con un `OutlinedTextField` y una capa clicable encima para abrir el
+ * teclado numérico; no usa el teclado del sistema.
+ */
 @Composable
 fun GradeInputField(
     label: String,

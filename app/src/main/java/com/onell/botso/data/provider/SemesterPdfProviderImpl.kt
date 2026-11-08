@@ -11,6 +11,13 @@ import java.io.File
 import java.io.FileOutputStream
 import javax.inject.Inject
 
+/**
+ * Generador de reportes PDF de un semestre usando `PdfDocument`.
+ *
+ * Dibuja el encabezado, las fechas y, por cada curso, el promedio y el detalle de
+ * notas. El archivo se escribe en `cacheDir` y se devuelve su ruta para que la UI
+ * lo comparta mediante `FileProvider`.
+ */
 class SemesterPdfProviderImpl @Inject constructor(
     @ApplicationContext private val context: Context
 ) : SemesterPdfProvider {

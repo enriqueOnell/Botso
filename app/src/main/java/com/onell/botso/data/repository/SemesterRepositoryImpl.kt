@@ -10,6 +10,13 @@ import jakarta.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
+/**
+ * Implementación de `SemesterRepository` sobre Room.
+ *
+ * Delega en `SemesterDao` y mapea entidades a modelos de dominio. Expone los
+ * datos como `Flow`, por lo que cualquier cambio en la BD se propaga
+ * automáticamente a los ViewModels.
+ */
 class SemesterRepositoryImpl @Inject constructor(
     private val semesterDao: SemesterDao
 ) : SemesterRepository {

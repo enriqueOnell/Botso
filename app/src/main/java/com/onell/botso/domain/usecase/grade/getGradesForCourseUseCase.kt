@@ -5,6 +5,9 @@ import com.onell.botso.domain.repository.GradeRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
+/**
+ * Caso de uso: observar las notas de un curso concreto.
+ */
 class GetGradesForCourseUseCase @Inject constructor(
     private val repository: GradeRepository
 ) {

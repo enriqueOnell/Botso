@@ -10,6 +10,13 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
+/**
+ * Módulo Hilt que provee la base de datos Room y sus DAOs.
+ *
+ * `BotsoDataBase` se crea una sola vez (`@Singleton`) y los DAOs se obtienen de
+ * ella, de modo que repositorios y casos de uso reciben las dependencias ya
+ * construidas.
+ */
 @Module
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {

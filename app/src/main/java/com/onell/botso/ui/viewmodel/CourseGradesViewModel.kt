@@ -16,6 +16,19 @@ import kotlinx.coroutines.launch
 import java.util.UUID
 import javax.inject.Inject
 
+/**
+ * ViewModel de la pantalla de Notas de un curso.
+ *
+ * Gestiona el corte seleccionado (1, 2 o 3), los valores "staged" de las notas
+ * Formativa y Cognitiva mientras se escriben, y el guardado.
+ *
+ * Reglas de negocio:
+ * - La escala válida es 0.0-5.0.
+ * - El corte 3 pesa 0.20; los cortes 1 y 2 pesan 0.15.
+ * - Las notas se identifican por nombre ("Nota Formativa" / "Nota Cognitiva")
+ *   dentro de cada corte; si existen se actualizan, si no se insertan.
+ * - `currentTermAverage` es el promedio simple de Formativa y Cognitiva del corte.
+ */
 @HiltViewModel
 class CourseGradesViewModel @Inject constructor(
     private val getGradesForCourseUseCase: GetGradesForCourseUseCase,
@@ -111,10 +124,12 @@ class CourseGradesViewModel @Inject constructor(
         val formativaScore = state.stagedFormativa.toDoubleOrNull() ?: 0.0
         val cognitivaScore = state.stagedCognitiva.toDoubleOrNull() ?: 0.0
 
+        // El tercer corte vale 20% de la nota final; los dos primeros, 15% cada uno.
         val weight = if (termId == 3) 0.20 else 0.15
 
         viewModelScope.launch {
             val currentGrades = state.courseData.grades
+            // Se guardan (insertan o actualizan) las dos notas del corte de forma independiente.
             saveOrUpdateGrade(courseId, termId, "Nota Formativa", formativaScore, weight, currentGrades)
             saveOrUpdateGrade(courseId, termId, "Nota Cognitiva", cognitivaScore, weight, currentGrades)
         }

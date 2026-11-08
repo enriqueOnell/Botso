@@ -39,6 +39,12 @@ import com.onell.botso.domain.model.Course
 import com.onell.botso.domain.model.CourseWithSession
 import java.time.LocalTime
 
+/**
+ * Tarjeta de una clase del día.
+ *
+ * Muestra horario, aula o modalidad remota, nombre de la materia y profesor.
+ * Es un componente puramente visual.
+ */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun ClassCard(sessionWithCourse: CourseWithSession) {

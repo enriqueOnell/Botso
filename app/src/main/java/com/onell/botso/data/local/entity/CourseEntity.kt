@@ -6,6 +6,12 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 
+/**
+ * Entidad Room de un curso/materia.
+ *
+ * Pertenece a un semestre mediante `semester_id`; el borrado en cascada elimina
+ * automáticamente sus notas, tareas y sesiones.
+ */
 @Entity(
     tableName = "courses",
     foreignKeys = [

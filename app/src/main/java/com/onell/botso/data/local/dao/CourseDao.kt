@@ -5,6 +5,14 @@ import com.onell.botso.data.local.entity.CourseEntity
 import com.onell.botso.data.local.entity.CourseWithGradesEntity
 import kotlinx.coroutines.flow.Flow
 
+/**
+ * DAO de cursos.
+ *
+ * Permite consultar cursos por semestre, por id y todos los cursos, incluyendo la
+ * consulta `@Transaction` que devuelve cada curso con sus notas
+ * (`CourseWithGradesEntity`). Las escrituras usan `REPLACE` para simplificar el
+ * upsert.
+ */
 @Dao
 interface CourseDao {
     @Query("SELECT * FROM courses WHERE semester_id = :semesterId")

@@ -9,6 +9,14 @@ import com.onell.botso.domain.repository.ClassAlarmScheduler
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
+/**
+ * Programador de alarmas de clase con `AlarmManager`.
+ *
+ * Calcula la hora de aviso (30 minutos antes del inicio), usa alarmas exactas
+ * cuando el sistema lo permite y cae a alarmas inexactas en Android 12+ si no
+ * hay permiso. El `PendingIntent` se identifica con el hash del id del curso para
+ * poder cancelarlo después.
+ */
 class ClassAlarmSchedulerImpl @Inject constructor(
     @ApplicationContext private val context: Context
 ) : ClassAlarmScheduler {

@@ -4,6 +4,9 @@ import com.onell.botso.domain.model.CourseWithGrades
 import com.onell.botso.domain.model.Grade
 import kotlinx.coroutines.flow.Flow
 
+/**
+ * Contrato de acceso a calificaciones.
+ */
 interface GradeRepository {
     fun getAllGrades(): Flow<List<Grade>>
     fun getGradesForCourse(courseId: String): Flow<CourseWithGrades?>

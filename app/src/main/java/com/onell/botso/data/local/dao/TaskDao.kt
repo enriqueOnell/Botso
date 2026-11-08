@@ -5,6 +5,13 @@ import com.onell.botso.data.local.entity.TaskEntity
 import com.onell.botso.data.local.entity.CourseWithTaskEntity
 import kotlinx.coroutines.flow.Flow
 
+/**
+ * DAO de tareas.
+ *
+ * Además del CRUD, incluye consultas agregadas que alimentan el Dashboard:
+ * conteo de tareas pendientes, tareas prioritarias y tareas con su curso
+ * asociado (`CourseWithTaskEntity`).
+ */
 @Dao
 interface TaskDao {
     @Query("SELECT * FROM tasks WHERE course_id = :courseId")

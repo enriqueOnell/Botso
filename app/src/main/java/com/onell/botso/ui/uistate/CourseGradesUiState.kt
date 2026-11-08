@@ -2,6 +2,12 @@ package com.onell.botso.ui.uistate
 
 import com.onell.botso.domain.model.CourseWithGrades
 
+/**
+ * Estados posibles de la pantalla de Notas.
+ *
+ * `Success` mantiene el corte actual, los textos en edición y el promedio del
+ * corte, además de los datos persistidos del curso.
+ */
 sealed interface CourseGradesUiState {
     data object Loading : CourseGradesUiState
 

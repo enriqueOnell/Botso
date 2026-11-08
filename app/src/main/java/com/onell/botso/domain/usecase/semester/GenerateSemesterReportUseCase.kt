@@ -6,6 +6,12 @@ import com.onell.botso.domain.repository.CourseRepository
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
+/**
+ * Caso de uso: generar el reporte PDF de un semestre.
+ *
+ * Obtiene una foto de todos los cursos con notas (`first()`), filtra los del
+ * semestre solicitado y delega el dibujo en `SemesterPdfProvider`.
+ */
 class GenerateSemesterReportUseCase @Inject constructor(
     private val courseRepository: CourseRepository,
     private val pdfProvider: SemesterPdfProvider

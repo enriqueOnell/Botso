@@ -6,6 +6,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.pm.PackageInfoCompat
 
+/**
+ * Texto con la versión instalada de la app (versionName + versionCode).
+ */
 @Composable
 fun AppVersionText() {
     val context = LocalContext.current

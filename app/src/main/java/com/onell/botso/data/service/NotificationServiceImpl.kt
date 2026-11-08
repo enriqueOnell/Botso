@@ -11,6 +11,13 @@ import com.onell.botso.domain.repository.NotificationService
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
+/**
+ * Implementación de `NotificationService` con `NotificationCompat`.
+ *
+ * Verifica el permiso `POST_NOTIFICATIONS` antes de publicar y usa el canal
+ * creado en `NotificationModule`. Cada notificación recibe un id basado en el
+ * tiempo para no sobrescribir las anteriores.
+ */
 class NotificationServiceImpl @Inject constructor(
     @ApplicationContext private val context: Context,
     private val notificationManager: NotificationManagerCompat

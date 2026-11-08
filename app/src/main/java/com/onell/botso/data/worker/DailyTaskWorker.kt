@@ -10,6 +10,14 @@ import com.onell.botso.domain.usecase.task.GetPendingTasksCountUseCase
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.first
+
+/**
+ * Worker periódico que recuerda las tareas pendientes.
+ *
+ * Se ejecuta con WorkManager (cada 3 horas, ver
+ * `TaskNotificationSchedulerImpl`). Respeta la preferencia del usuario y solo
+ * notifica si hay tareas sin completar.
+ */
 @HiltWorker
 class DailyTaskWorker @AssistedInject constructor(
     @Assisted private val context: Context,

@@ -18,6 +18,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
+/**
+ * Teclado numérico de 0-9 con acciones de guardar y borrar.
+ */
 @Composable
 fun NumericPad(
     onNumberClick: (String) -> Unit,

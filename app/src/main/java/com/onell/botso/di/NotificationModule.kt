@@ -12,6 +12,12 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
+/**
+ * Módulo Hilt de notificaciones.
+ *
+ * Crea el canal principal (`botso_main_channel`) en Android 8+ y provee
+ * `NotificationManagerCompat` como singleton.
+ */
 @Module
 @InstallIn(SingletonComponent::class)
 object NotificationModule {

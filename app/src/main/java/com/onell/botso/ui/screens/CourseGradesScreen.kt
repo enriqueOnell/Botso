@@ -34,6 +34,13 @@ import com.onell.botso.ui.theme.BotsoTheme
 import com.onell.botso.ui.uistate.CourseGradesUiState
 import com.onell.botso.ui.viewmodel.CourseGradesViewModel
 
+/**
+ * Pantalla de Notas de un curso.
+ *
+ * Muestra el promedio total en un indicador circular, permite cambiar de corte y
+ * editar las notas Formativa/Cognitiva con un teclado numérico propio. Toda la
+ * validación y el guardado se delegan a `CourseGradesViewModel`.
+ */
 @Composable
 fun CourseGradesScreen(
     courseId: String,
