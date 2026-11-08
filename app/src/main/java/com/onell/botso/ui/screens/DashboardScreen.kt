@@ -1,11 +1,15 @@
 package com.onell.botso.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -252,14 +256,24 @@ fun DashboardContent(
                         }
                     }
                 } else {
-                    items(
-                        items = uiState.coursesWithGrades,
-                        key = { "All ${it.course.id}" }
-                    ) { courseWithGrades ->
-                        CourseGradeItem(
-                            courseWithGrades = courseWithGrades,
-                        )
+                    items(uiState.coursesWithGrades.chunked(2)) { rowCourses ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(IntrinsicSize.Min),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            for (courseWithGrades in rowCourses) {
+                                CourseGradeItem(
+                                    courseWithGrades = courseWithGrades,
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .fillMaxHeight()
+                                )
+                            }
+                        }
                     }
+
                 }
             }
         }
@@ -283,6 +297,24 @@ fun DashboardScreenPreview() {
         )
     )
     val courses = listOf(
+        CourseWithGrades(
+            course = Course(
+                id = "id2",
+                semesterId = "semesterId",
+                name = "name",
+                professor = "professor"
+            ),
+            grades = listOf(
+                Grade(
+                    id = "g1",
+                    courseId = "id2",
+                    name = "Formativa",
+                    score = 4.0,
+                    weight = 0.5,
+                    termId = 1
+                )
+            )
+        ),
         CourseWithGrades(
             course = Course(
                 id = "id2",

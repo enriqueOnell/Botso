@@ -1,9 +1,13 @@
 package com.onell.botso.ui.components.dashboard
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -30,53 +34,62 @@ import java.util.Locale
  * El color del indicador depende de si el promedio aprueba (>= 3.0).
  */
 @Composable
-fun CourseGradeItem(courseWithGrades: CourseWithGrades) {
+fun CourseGradeItem(
+    courseWithGrades: CourseWithGrades,
+    modifier: Modifier = Modifier
+) {
+    val isApproved = courseWithGrades.averageGrade >= 3.0
+
+    val backgroundColor = if (isApproved) Color(0xFFC8E6C9) else Color(0xFFF8E1EE)
+    val textColor = if (isApproved) Color(0xFF1B5E20) else Color(0xFF4A1224)
+
     Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.large,
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(28.dp),
         colors = CardDefaults.cardColors(
-            containerColor = if (courseWithGrades.averageGrade >= 3.0) Color(0xFFA0F399) else Color(0xFFFFDAD6),
+            containerColor = backgroundColor
         )
     ) {
-        Row(
+        Column(
             modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
-            Column {
+            Column(
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 Text(
                     text = courseWithGrades.course.name,
                     style = MaterialTheme.typography.titleLarge,
+                    color = textColor,
                 )
                 if (courseWithGrades.course.professor.isNotBlank()) {
                     Text(
                         text = courseWithGrades.course.professor,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        style = MaterialTheme.typography.bodyMedium,
                     )
                 }
             }
-            Surface(
-                color = if (courseWithGrades.averageGrade >= 3.0) Color(0xFFA0F399) else Color(
-                    0xFFFFDAD6
-                ),
-                shape = RoundedCornerShape(24.dp)
-            ) {
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.BottomEnd){
                 Text(
                     text = format(Locale.US, "%.2f", courseWithGrades.averageGrade),
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
                     style = MaterialTheme.typography.displayMedium,
-                    fontWeight = FontWeight.ExtraBold,
-                    color = if (courseWithGrades.averageGrade >= 3.0) Color(0xFF002106) else Color(
-                        0xFF410002
-                    )
+                    color = textColor,
+                    modifier = Modifier.padding(top = 8.dp)
                 )
             }
+
+
         }
     }
 }
+
 
 @Preview
 @Composable
