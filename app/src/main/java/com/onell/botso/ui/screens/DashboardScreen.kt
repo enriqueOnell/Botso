@@ -108,43 +108,11 @@ fun DashboardContent(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 item {
-                    Text(
-                        text = "Plataformas",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.SemiBold
+                    PendingTasksCard(
+                        count = uiState.pendingTasksCount,
                     )
                 }
-                item {
-                    HorizontalUncontainedCarousel(
-                        state = rememberCarouselState { 2 }, // Le decimos que son exactamente 2 elementos
-                        itemWidth = 300.dp,
-                        itemSpacing = 12.dp,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                    ) { index ->
-                        when (index) {
-                            0 -> {
-                                PlatformCard(
-                                    text = "EVA",
-                                    url = eva,
-                                    modifier = Modifier
-                                        .fillMaxHeight()
-                                        .maskClip(MaterialTheme.shapes.extraLarge)
-                                )
-                            }
 
-                            1 -> {
-                                PlatformCard(
-                                    text = "SINU",
-                                    url = sinu,
-                                    modifier = Modifier
-                                        .fillMaxHeight()
-                                        .maskClip(MaterialTheme.shapes.extraLarge)
-                                )
-                            }
-                        }
-                    }
-                }
                 item {
                     Text(
                         text = "Clases de Hoy",
@@ -181,9 +149,42 @@ fun DashboardContent(
                 }
 
                 item {
-                    PendingTasksCard(
-                        count = uiState.pendingTasksCount,
+                    Text(
+                        text = "Plataformas",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.SemiBold
                     )
+                }
+                item {
+                    HorizontalUncontainedCarousel(
+                        state = rememberCarouselState { 2 }, // Le decimos que son exactamente 2 elementos
+                        itemWidth = 300.dp,
+                        itemSpacing = 12.dp,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ) { index ->
+                        when (index) {
+                            0 -> {
+                                PlatformCard(
+                                    text = "EVA",
+                                    url = eva,
+                                    modifier = Modifier
+                                        .fillMaxHeight()
+                                        .maskClip(MaterialTheme.shapes.extraLarge)
+                                )
+                            }
+
+                            1 -> {
+                                PlatformCard(
+                                    text = "SINU",
+                                    url = sinu,
+                                    modifier = Modifier
+                                        .fillMaxHeight()
+                                        .maskClip(MaterialTheme.shapes.extraLarge)
+                                )
+                            }
+                        }
+                    }
                 }
 
                 item {
