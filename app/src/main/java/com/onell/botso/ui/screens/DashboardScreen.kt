@@ -213,12 +213,14 @@ fun DashboardContent(
                         }
                     }
                 } else {
+                    val coursesMap = uiState.coursesWithGrades.associate { it.course.id to it.course.name }
                     items(
                         items = uiState.priorityTasks,
                         key = { it.id }
                     ) { task ->
                         PriorityItem(
                             task = task,
+                            courseName = coursesMap[task.courseId] ?: "",
                             modifier = Modifier.fillMaxWidth()
                         )
                     }
