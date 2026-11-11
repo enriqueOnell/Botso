@@ -1,6 +1,5 @@
 package com.onell.botso.ui.screens
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -26,7 +25,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -97,7 +95,7 @@ fun DashboardContent(
             ) {
                 Text(
                     text = uiState.message,
-                    style = MaterialTheme.typography.bodyLarge,
+                    style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.error
                 )
             }
@@ -120,8 +118,8 @@ fun DashboardContent(
                 item {
                     Text(
                         text = "Clases de Hoy",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.SemiBold
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
                     )
                 }
 
@@ -155,14 +153,14 @@ fun DashboardContent(
                 item {
                     Text(
                         text = "Plataformas",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.SemiBold
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        style = MaterialTheme.typography.headlineSmall,
                     )
                 }
                 item {
                     HorizontalUncontainedCarousel(
                         state = rememberCarouselState { 2 }, // Le decimos que son exactamente 2 elementos
-                        itemWidth = 300.dp,
+                        itemWidth = 300                                              .dp,
                         itemSpacing = 12.dp,
                         modifier = Modifier
                             .fillMaxWidth()
@@ -194,9 +192,8 @@ fun DashboardContent(
                 item {
                     Text(
                         text = "Tareas Prioritarias",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.SemiBold,
-                        modifier = Modifier.padding(top = 8.dp)
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        style = MaterialTheme.typography.headlineSmall,
                     )
                 }
 
@@ -217,7 +214,8 @@ fun DashboardContent(
                         }
                     }
                 } else {
-                    val coursesMap = uiState.coursesWithGrades.associate { it.course.id to it.course.name }
+                    val coursesMap =
+                        uiState.coursesWithGrades.associate { it.course.id to it.course.name }
                     items(
                         items = uiState.priorityTasks,
                         key = { it.id }
@@ -233,9 +231,8 @@ fun DashboardContent(
                 item {
                     Text(
                         text = "Mis Materias",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.SemiBold,
-                        modifier = Modifier.padding(top = 8.dp)
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        style = MaterialTheme.typography.headlineSmall,
                     )
                 }
 
