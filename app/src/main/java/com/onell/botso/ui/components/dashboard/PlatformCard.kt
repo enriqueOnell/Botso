@@ -53,7 +53,7 @@ fun PlatformCard(
             }
             .fillMaxWidth(),
         shape = MaterialTheme.shapes.large,
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
     ) {
 
         Box(modifier = Modifier.fillMaxWidth(), Alignment.Center) {
@@ -63,7 +63,7 @@ fun PlatformCard(
                     .offset(x = (-90                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  ).dp, y = (-0).dp)
                     .size(150.dp)
                     .background(
-                        color = MaterialTheme.colorScheme.primary,
+                        color = MaterialTheme.colorScheme.primaryContainer,
                         shape = MaterialShapes.Oval.toShape()
                     )
             )
@@ -84,13 +84,13 @@ fun PlatformCard(
                         Icon(
                             imageVector = Icons.Default.School,
                             contentDescription = "Browser",
-                            tint = MaterialTheme.colorScheme.primaryContainer
+                            tint = MaterialTheme.colorScheme.primary
                         )
                         Spacer(Modifier.padding(4.dp))
                         Text(
                             text = text,
                             style = MaterialTheme.typography.headlineSmall,
-                            color = MaterialTheme.colorScheme.primaryContainer
+                            color = MaterialTheme.colorScheme.primary
                         )
                     }
 
@@ -98,7 +98,7 @@ fun PlatformCard(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.Launch,
                             contentDescription = "Lanzador de la plataforma",
-                            tint = MaterialTheme.colorScheme.primary
+                            tint = MaterialTheme.colorScheme.primaryContainer
                         )
                     }
                 }

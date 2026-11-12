@@ -53,6 +53,7 @@ fun PendingTasksCard(count: Int) {
                 Column{
                     Text(
                         text = "Tareas \nPendientes",
+                        color = MaterialTheme.colorScheme.primaryContainer,
                         style = MaterialTheme.typography.headlineMedium,
                         maxLines = 2
                     )

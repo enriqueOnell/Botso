@@ -12,7 +12,7 @@ import androidx.compose.ui.graphics.Color
  * y reducción de fatiga visual durante largas sesiones de estudio.
  *
  * Casos de uso de los tokens principales en la app:
- * - `primary` / `onPrimary`: Botones de acción principal, Floating Action Buttons (FAB), bordes activos y estados seleccionados.
+ * - `primary` / `onPrimary`: Botones de acción principal, Floating Action Bonsutt (FAB), bordes activos y estados seleccionados.
  * - `primaryContainer` / `onPrimaryContainer`: Tarjetas destacadas, pestañas activas (Tabs), chips de selección.
  * - `secondary` / `onSecondary`: Elementos secundarios, iconos de apoyo y metadatos informativos.
  * - `secondaryContainer` / `onSecondaryContainer`: Contenedores secundarios y estados en curso.

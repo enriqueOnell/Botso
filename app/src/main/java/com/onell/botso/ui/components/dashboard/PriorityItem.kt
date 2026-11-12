@@ -64,14 +64,14 @@ fun PriorityItem(
         ) {
             Surface(
                 shape = CircleShape,
-                color = MaterialTheme.colorScheme.errorContainer,
+                color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(44.dp)
             ) {
                 Box(contentAlignment = Alignment.Center) {
                     Icon(
                         imageVector = Icons.Rounded.PriorityHigh,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onErrorContainer,
+                        tint = MaterialTheme.colorScheme.primaryContainer,
                         modifier = Modifier.size(22.dp)
                     )
                 }
