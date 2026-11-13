@@ -50,17 +50,17 @@ fun ClassCard(sessionWithCourse: CourseWithSession) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.extraLarge,
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
     ) {
         Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
 
             Box(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
-                    .offset(x = 16.dp, y = (-46).dp)
+                    .offset(x = 16.dp, y = (-40).dp)
                     .size(150.dp)
-                    .clip(MaterialShapes.Cookie6Sided.toShape())
-                    .background(MaterialTheme.colorScheme.primary)
+                    .clip(MaterialShapes.Circle.toShape())
+                    .background(MaterialTheme.colorScheme.secondary)
             )
 
             Column(modifier = Modifier.padding(16.dp)) {
@@ -70,24 +70,24 @@ fun ClassCard(sessionWithCourse: CourseWithSession) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Surface(
-                        shape = CircleShape, color = MaterialTheme.colorScheme.primary
+                        shape = CircleShape, color = MaterialTheme.colorScheme.secondary
                     ) {
                         Text(
                             text = "${sessionWithCourse.session.startTime} - ${sessionWithCourse.session.endTime}",
                             style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.primaryContainer,
+                            color = MaterialTheme.colorScheme.secondaryContainer,
                             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                         )
                     }
                     Surface(
-                        color = MaterialTheme.colorScheme.primaryContainer,
+                        color = MaterialTheme.colorScheme.secondaryContainer,
                         shape = RoundedCornerShape(24.dp),
-                        border = BorderStroke(2.dp, color = MaterialTheme.colorScheme.primary)
+                        border = BorderStroke(2.dp, color = MaterialTheme.colorScheme.secondary)
                     ) {
                         Text(
                             text = if (sessionWithCourse.session.isRemote) "Remota" else sessionWithCourse.session.room,
                             style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.primary,
+                            color = MaterialTheme.colorScheme.secondary,
                             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                         )
                     }
@@ -96,7 +96,7 @@ fun ClassCard(sessionWithCourse: CourseWithSession) {
                 Text(
                     text = sessionWithCourse.course.name,
                     style = MaterialTheme.typography.headlineMedium,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                    color = MaterialTheme.colorScheme.onSecondaryContainer
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -104,14 +104,14 @@ fun ClassCard(sessionWithCourse: CourseWithSession) {
                         Icons.Rounded.Person,
                         contentDescription = null,
                         modifier = Modifier.size(16.dp),
-                        tint = MaterialTheme.colorScheme.onPrimaryContainer
+                        tint = MaterialTheme.colorScheme.onSecondaryContainer
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
                         text = sessionWithCourse.course.professor,
                         style = MaterialTheme.typography.bodyMedium,
                         maxLines = 1,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                        color = MaterialTheme.colorScheme.onSecondaryContainer
                     )
                 }
             }

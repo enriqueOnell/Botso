@@ -120,7 +120,7 @@ fun DashboardContent(
                     Text(
                         text = "Clases de Hoy",
                         style = MaterialTheme.typography.headlineSmall,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer,
                     )
                 }
 
@@ -154,7 +154,7 @@ fun DashboardContent(
                 item {
                     Text(
                         text = "Plataformas",
-                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        color = MaterialTheme.colorScheme.onTertiaryContainer,
                         style = MaterialTheme.typography.headlineSmall,
                     )
                 }

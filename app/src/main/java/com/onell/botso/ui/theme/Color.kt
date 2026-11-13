@@ -8,48 +8,35 @@ import androidx.compose.ui.graphics.Color
 
 /**
  * Paleta de colores institucional para Botso (Expressive Academic Canvas).
- * Inspirada en la ilustración multitonal del morral académico:
- * - Púrpura/Violeta (#6A3DF0 / #4F378A): Color primario de marca (base inferior del morral).
- * - Turquesa/Menta (#008073 / #14B8A6): Color secundario (bolsillo frontal y tirantes).
- * - Amarillo/Dorado (#B45309 / #FACC15): Color terciario y de resalte (cuerpo superior).
- * - Índigo Oscuro (#14121A / #1C1B22): Superficies y bordes oscuros profundos.
- *
- * Casos de uso de los tokens principales en la app:
- * - `primary` / `onPrimary`: Botones de acción principal, Floating Action Buttons (FAB), bordes activos y estados seleccionados.
- * - `primaryContainer` / `onPrimaryContainer`: Tarjetas destacadas, pestañas activas (Tabs), chips de selección.
- * - `secondary` / `onSecondary`: Elementos secundarios, tarjetas de plataforma, chips de estado "En Curso".
- * - `secondaryContainer` / `onSecondaryContainer`: Contenedores secundarios y badges informativos.
- * - `tertiary` / `onTertiary`: Resaltado de tareas prioritarias, insignias de métricas y acentos.
- * - `surface` / `onSurface`: Fondo general de pantallas y tipografía principal de lectura.
- * - `surfaceContainerLowest`: Superficie blanca/oscura pura para tarjetas de contenido elevado (`CourseGradeItem`, `SettingsCard`, inputs activos).
- * - `surfaceContainerLow`: Fondo tonal bajo para campos de texto (`FilledFormField`) y estados vacíos suaves.
- * - `surfaceContainerHigh`: Superficie para filas de tareas pendientes, elementos secundarios y botones de cancelar.
- * - `surfaceContainerHighest`: Círculos contenedores de iconos y elementos desactivados.
- * - `error` / `onError` / `errorContainer` / `onErrorContainer`: Alertas de eliminación, tareas vencidas y calificaciones reprobatorias (< 3.0).
+ * Extraída y optimizada a partir de la identidad visual original ("uniapp_3.png"):
+ * - Púrpura/Violeta (#6A3DF0 / #CFBCFF): Color primario de marca (base inferior del morral).
+ * - Menta/Turquesa (#006B5F / #55DBC2): Color secundario (bolsillo frontal y tirantes).
+ * - Mostaza/Dorado (#7A5900 / #F5BE48): Color terciario y de resalte (cuerpo superior).
+ * - Índigo Oscuro (#131219 / #2E2A3E): Superficies oscuras extraídas de los bordes del icono.
  */
 val BotsoLightColors = lightColorScheme(
     primary = Color(0xFF6A3DF0),
     onPrimary = Color(0xFFFFFFFF),
     primaryContainer = Color(0xFFE9DDFF),
     onPrimaryContainer = Color(0xFF22005D),
-    secondary = Color(0xFF008073),
+    secondary = Color(0xFF006B5F), // Más oscuro para contraste en modo claro
     onSecondary = Color(0xFFFFFFFF),
-    secondaryContainer = Color(0xFFCCFBF1),
+    secondaryContainer = Color(0xFF76F8DE), // Menta brillante del bolsillo para contenedores
     onSecondaryContainer = Color(0xFF00201B),
-    tertiary = Color(0xFFB45309),
+    tertiary = Color(0xFF7A5900), // Dorado oscuro para legibilidad
     onTertiary = Color(0xFFFFFFFF),
-    tertiaryContainer = Color(0xFFFEF3C7),
-    onTertiaryContainer = Color(0xFF451A03),
-    surface = Color(0xFFFCF8FF),
-    onSurface = Color(0xFF1C1B22),
+    tertiaryContainer = Color(0xFFFFDEA5), // Amarillo mostaza del icono para contenedores
+    onTertiaryContainer = Color(0xFF261900),
+    surface = Color(0xFFFCFAFF),
+    onSurface = Color(0xFF1B1B21),
     onSurfaceVariant = Color(0xFF494551),
     surfaceContainerLowest = Color(0xFFFFFFFF),
-    surfaceContainerLow = Color(0xFFF7F2FB),
-    surfaceContainer = Color(0xFFF1ECF7),
-    surfaceContainerHigh = Color(0xFFEBE5F2),
-    surfaceContainerHighest = Color(0xFFE5DFEC),
-    outline = Color(0xFF7A7582),
-    outlineVariant = Color(0xFFCBC4D2),
+    surfaceContainerLow = Color(0xFFF6F3FB),
+    surfaceContainer = Color(0xFFF0EDF6),
+    surfaceContainerHigh = Color(0xFFEAE7F0),
+    surfaceContainerHighest = Color(0xFFE4E1EA),
+    outline = Color(0xFF797581),
+    outlineVariant = Color(0xFFCAC4D2),
     error = Color(0xFFBA1A1A),
     onError = Color(0xFFFFFFFF),
     errorContainer = Color(0xFFFFDAD6),
@@ -57,28 +44,28 @@ val BotsoLightColors = lightColorScheme(
 )
 
 val BotsoDarkColors = darkColorScheme(
-    primary = Color(0xFFD0BCFF),
-    onPrimary = Color(0xFF381E72),
-    primaryContainer = Color(0xFF4F378A),
+    primary = Color(0xFFCFBCFF),
+    onPrimary = Color(0xFF380092),
+    primaryContainer = Color(0xFF5216DB),
     onPrimaryContainer = Color(0xFFE9DDFF),
-    secondary = Color(0xFF5EEAD4),
-    onSecondary = Color(0xFF003731),
+    secondary = Color(0xFF55DBC2), // Menta vibrante del icono destacando en la oscuridad
+    onSecondary = Color(0xFF003730),
     secondaryContainer = Color(0xFF005047),
-    onSecondaryContainer = Color(0xFFCCFBF1),
-    tertiary = Color(0xFFFDE047),
-    onTertiary = Color(0xFF451A03),
-    tertiaryContainer = Color(0xFF78350F),
-    onTertiaryContainer = Color(0xFFFEF3C7),
-    surface = Color(0xFF14121A),
-    onSurface = Color(0xFFE6E1EC),
-    onSurfaceVariant = Color(0xFFCAC4D0),
-    surfaceContainerLowest = Color(0xFF0F0D14),
-    surfaceContainerLow = Color(0xFF1C1A23),
-    surfaceContainer = Color(0xFF211F28),
-    surfaceContainerHigh = Color(0xFF2B2933),
-    surfaceContainerHighest = Color(0xFF36343E),
-    outline = Color(0xFF938F99),
-    outlineVariant = Color(0xFF49454E),
+    onSecondaryContainer = Color(0xFF76F8DE),
+    tertiary = Color(0xFFF5BE48), // Amarillo mostaza brillante
+    onTertiary = Color(0xFF412D00),
+    tertiaryContainer = Color(0xFF5D4200),
+    onTertiaryContainer = Color(0xFFFFDEA5),
+    surface = Color(0xFF131219), // Índigo muy profundo basado en los bordes del icono
+    onSurface = Color(0xFFE4E1EA),
+    onSurfaceVariant = Color(0xFFCAC4D2),
+    surfaceContainerLowest = Color(0xFF0D0C13),
+    surfaceContainerLow = Color(0xFF1B1A21),
+    surfaceContainer = Color(0xFF1F1D25),
+    surfaceContainerHigh = Color(0xFF2A2830),
+    surfaceContainerHighest = Color(0xFF35323B),
+    outline = Color(0xFF938F9A),
+    outlineVariant = Color(0xFF494551),
     error = Color(0xFFFFB4AB),
     onError = Color(0xFF690005),
     errorContainer = Color(0xFF93000A),
@@ -86,9 +73,7 @@ val BotsoDarkColors = darkColorScheme(
 )
 
 /**
- * Colores semánticos específicos de dominio académico que Material Design no modela por defecto:
- * - `passContainer` / `onPassContainer`: Usado para destacar calificaciones aprobatorias (promedio >= 3.0)
- *   y estados académicos positivos ("En Curso").
+ * Colores semánticos específicos de dominio académico.
  */
 @Immutable
 data class BotsoSemanticColors(
