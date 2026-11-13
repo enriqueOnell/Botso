@@ -41,6 +41,7 @@ import com.onell.botso.ui.components.dashboard.CourseGradeItem
 import com.onell.botso.ui.components.dashboard.PendingTasksCard
 import com.onell.botso.ui.components.dashboard.PlatformCard
 import com.onell.botso.ui.components.dashboard.PriorityItem
+import com.onell.botso.ui.theme.BotsoTheme
 import com.onell.botso.ui.uistate.DashboardUiState
 import com.onell.botso.ui.viewmodel.DashboardViewModel
 import java.time.LocalDate
@@ -351,23 +352,27 @@ fun DashboardScreenPreview() {
         )
     )
 
-    DashboardContent(
-        uiState = DashboardUiState.Success(
-            priorityTasks = tasks,
-            coursesWithGrades = courses,
-            todayClasses = todayClasses
+    BotsoTheme {
+        DashboardContent(
+            uiState = DashboardUiState.Success(
+                priorityTasks = tasks,
+                coursesWithGrades = courses,
+                todayClasses = todayClasses
+            )
         )
-    )
+    }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun DashboardScreenPreview2() {
-    DashboardContent(
-        uiState = DashboardUiState.Success(
-            priorityTasks = emptyList(),
-            coursesWithGrades = emptyList(),
-            todayClasses = emptyList()
+    BotsoTheme {
+        DashboardContent(
+            uiState = DashboardUiState.Success(
+                priorityTasks = emptyList(),
+                coursesWithGrades = emptyList(),
+                todayClasses = emptyList()
+            )
         )
-    )
+    }
 }

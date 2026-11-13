@@ -30,6 +30,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
+import com.onell.botso.ui.theme.BotsoTheme
 
 /**
  * Tarjeta de acceso a una plataforma académica externa.
@@ -111,8 +112,10 @@ fun PlatformCard(
 @Preview(showBackground = true)
 @Composable
 fun PlatformCardPreview() {
-    PlatformCard(
-        text = "SINU",
-        url = ""
-    )
+    BotsoTheme {
+        PlatformCard(
+            text = "SINU",
+            url = ""
+        )
+    }
 }

@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.onell.botso.ui.theme.BotsoTheme
 import com.onell.botso.domain.model.Course
 import com.onell.botso.domain.model.CourseWithGrades
 import com.onell.botso.domain.model.Grade
@@ -76,27 +77,29 @@ fun CourseGradeItem(
 }
 
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun CourseGradeItemPreview() {
-    CourseGradeItem(
-        courseWithGrades = CourseWithGrades(
-            course = Course(
-                id = "id2",
-                semesterId = "semesterId",
-                name = "name",
-                professor = "professor"
-            ),
-            grades = listOf(
-                Grade(
-                    id = "g1",
-                    courseId = "id2",
-                    name = "Formativa",
-                    score = 5.0,
-                    weight = 1.0,
-                    termId = 1
+    BotsoTheme {
+        CourseGradeItem(
+            courseWithGrades = CourseWithGrades(
+                course = Course(
+                    id = "id2",
+                    semesterId = "semesterId",
+                    name = "Estructuras de Datos",
+                    professor = "Profesor Salcedo"
+                ),
+                grades = listOf(
+                    Grade(
+                        id = "g1",
+                        courseId = "id2",
+                        name = "Formativa",
+                        score = 5.0,
+                        weight = 1.0,
+                        termId = 1
+                    )
                 )
             )
         )
-    )
+    }
 }

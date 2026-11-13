@@ -8,14 +8,18 @@ import androidx.compose.ui.graphics.Color
 
 /**
  * Paleta de colores institucional para Botso (Expressive Academic Canvas).
- * Define esquemas de color claros y oscuros (Light y Dark) ajustados para accesibilidad (WCAG)
- * y reducción de fatiga visual durante largas sesiones de estudio.
+ * Inspirada en la ilustración multitonal del morral académico:
+ * - Púrpura/Violeta (#6A3DF0 / #4F378A): Color primario de marca (base inferior del morral).
+ * - Turquesa/Menta (#008073 / #14B8A6): Color secundario (bolsillo frontal y tirantes).
+ * - Amarillo/Dorado (#B45309 / #FACC15): Color terciario y de resalte (cuerpo superior).
+ * - Índigo Oscuro (#14121A / #1C1B22): Superficies y bordes oscuros profundos.
  *
  * Casos de uso de los tokens principales en la app:
- * - `primary` / `onPrimary`: Botones de acción principal, Floating Action Bonsutt (FAB), bordes activos y estados seleccionados.
+ * - `primary` / `onPrimary`: Botones de acción principal, Floating Action Buttons (FAB), bordes activos y estados seleccionados.
  * - `primaryContainer` / `onPrimaryContainer`: Tarjetas destacadas, pestañas activas (Tabs), chips de selección.
- * - `secondary` / `onSecondary`: Elementos secundarios, iconos de apoyo y metadatos informativos.
- * - `secondaryContainer` / `onSecondaryContainer`: Contenedores secundarios y estados en curso.
+ * - `secondary` / `onSecondary`: Elementos secundarios, tarjetas de plataforma, chips de estado "En Curso".
+ * - `secondaryContainer` / `onSecondaryContainer`: Contenedores secundarios y badges informativos.
+ * - `tertiary` / `onTertiary`: Resaltado de tareas prioritarias, insignias de métricas y acentos.
  * - `surface` / `onSurface`: Fondo general de pantallas y tipografía principal de lectura.
  * - `surfaceContainerLowest`: Superficie blanca/oscura pura para tarjetas de contenido elevado (`CourseGradeItem`, `SettingsCard`, inputs activos).
  * - `surfaceContainerLow`: Fondo tonal bajo para campos de texto (`FilledFormField`) y estados vacíos suaves.
@@ -26,36 +30,45 @@ import androidx.compose.ui.graphics.Color
 val BotsoLightColors = lightColorScheme(
     primary = Color(0xFF6A3DF0),
     onPrimary = Color(0xFFFFFFFF),
-    primaryContainer = Color(0xFFE7DEFF),
-    onPrimaryContainer = Color(0xFF210064),
-    secondary = Color(0xFF5B5790),
+    primaryContainer = Color(0xFFE9DDFF),
+    onPrimaryContainer = Color(0xFF22005D),
+    secondary = Color(0xFF008073),
     onSecondary = Color(0xFFFFFFFF),
-    secondaryContainer = Color(0xFFE4DFEC),
-    onSecondaryContainer = Color(0xFF1B1B22),
+    secondaryContainer = Color(0xFFCCFBF1),
+    onSecondaryContainer = Color(0xFF00201B),
+    tertiary = Color(0xFFB45309),
+    onTertiary = Color(0xFFFFFFFF),
+    tertiaryContainer = Color(0xFFFEF3C7),
+    onTertiaryContainer = Color(0xFF451A03),
     surface = Color(0xFFFCF8FF),
-    onSurface = Color(0xFF1B1B22),
-    onSurfaceVariant = Color(0xFF4B4658),
+    onSurface = Color(0xFF1C1B22),
+    onSurfaceVariant = Color(0xFF494551),
     surfaceContainerLowest = Color(0xFFFFFFFF),
-    surfaceContainerLow = Color(0xFFF6F2FB),
-    surfaceContainer = Color(0xFFF0EBF7),
-    surfaceContainerHigh = Color(0xFFEAE5F2),
-    surfaceContainerHighest = Color(0xFFE4DFEC),
-    outline = Color(0xFF7A7587),
+    surfaceContainerLow = Color(0xFFF7F2FB),
+    surfaceContainer = Color(0xFFF1ECF7),
+    surfaceContainerHigh = Color(0xFFEBE5F2),
+    surfaceContainerHighest = Color(0xFFE5DFEC),
+    outline = Color(0xFF7A7582),
+    outlineVariant = Color(0xFFCBC4D2),
     error = Color(0xFFBA1A1A),
     onError = Color(0xFFFFFFFF),
-    errorContainer = Color(0xFFFFDAD9),
+    errorContainer = Color(0xFFFFDAD6),
     onErrorContainer = Color(0xFF410002),
 )
 
 val BotsoDarkColors = darkColorScheme(
-    primary = Color(0xFFCABEFF),
-    onPrimary = Color(0xFF2A0A7A),
-    primaryContainer = Color(0xFF4A2BB8),
-    onPrimaryContainer = Color(0xFFE7DEFF),
-    secondary = Color(0xFFC8C3E4),
-    onSecondary = Color(0xFF302E4D),
-    secondaryContainer = Color(0xFF36343E),
-    onSecondaryContainer = Color(0xFFE6E1EC),
+    primary = Color(0xFFD0BCFF),
+    onPrimary = Color(0xFF381E72),
+    primaryContainer = Color(0xFF4F378A),
+    onPrimaryContainer = Color(0xFFE9DDFF),
+    secondary = Color(0xFF5EEAD4),
+    onSecondary = Color(0xFF003731),
+    secondaryContainer = Color(0xFF005047),
+    onSecondaryContainer = Color(0xFFCCFBF1),
+    tertiary = Color(0xFFFDE047),
+    onTertiary = Color(0xFF451A03),
+    tertiaryContainer = Color(0xFF78350F),
+    onTertiaryContainer = Color(0xFFFEF3C7),
     surface = Color(0xFF14121A),
     onSurface = Color(0xFFE6E1EC),
     onSurfaceVariant = Color(0xFFCAC4D0),
@@ -63,8 +76,9 @@ val BotsoDarkColors = darkColorScheme(
     surfaceContainerLow = Color(0xFF1C1A23),
     surfaceContainer = Color(0xFF211F28),
     surfaceContainerHigh = Color(0xFF2B2933),
-    surfaceContainerHighest = Color(0xFF36343B),
+    surfaceContainerHighest = Color(0xFF36343E),
     outline = Color(0xFF938F99),
+    outlineVariant = Color(0xFF49454E),
     error = Color(0xFFFFB4AB),
     onError = Color(0xFF690005),
     errorContainer = Color(0xFF93000A),

@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.onell.botso.ui.theme.BotsoTheme
 
 /**
  * Tarjeta destacada con el número de tareas pendientes.
@@ -72,8 +73,10 @@ fun PendingTasksCard(count: Int) {
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun PendingTasksCardPreview() {
-    PendingTasksCard(count = 5)
+    BotsoTheme {
+        PendingTasksCard(count = 5)
+    }
 }

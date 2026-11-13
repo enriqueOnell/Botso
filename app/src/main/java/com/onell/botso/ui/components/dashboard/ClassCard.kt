@@ -32,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.onell.botso.ui.theme.BotsoTheme
 import com.onell.botso.domain.model.ClassSession
 import com.onell.botso.domain.model.Course
 import com.onell.botso.domain.model.CourseWithSession
@@ -118,50 +119,54 @@ fun ClassCard(sessionWithCourse: CourseWithSession) {
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun ClassCardRemotePreview() {
-    val todayClasses = CourseWithSession(
-        session = ClassSession(
-            "12",
-            "id2",
-            1,
-            LocalTime.of(10, 9),
-            LocalTime.of(20, 17),
-            "room",
-            true
-        ),
-        course = Course(
-            id = "id2",
-            semesterId = "semesterId",
-            name = "name",
-            professor = "professor"
+    BotsoTheme {
+        val todayClasses = CourseWithSession(
+            session = ClassSession(
+                "12",
+                "id2",
+                1,
+                LocalTime.of(10, 9),
+                LocalTime.of(20, 17),
+                "room",
+                true
+            ),
+            course = Course(
+                id = "id2",
+                semesterId = "semesterId",
+                name = "name",
+                professor = "professor"
+            )
         )
-    )
 
-    ClassCard(sessionWithCourse = todayClasses)
+        ClassCard(sessionWithCourse = todayClasses)
+    }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun ClassCardWhitRoomPreview() {
-    val todayClasses = CourseWithSession(
-        session = ClassSession(
-            "12",
-            "id2",
-            1,
-            LocalTime.of(10, 9),
-            LocalTime.of(20, 17),
-            "salon 404 - 20 de julio",
-            false
-        ),
-        course = Course(
-            id = "id2",
-            semesterId = "semesterId",
-            name = "name",
-            professor = "professor"
+    BotsoTheme {
+        val todayClasses = CourseWithSession(
+            session = ClassSession(
+                "12",
+                "id2",
+                1,
+                LocalTime.of(10, 9),
+                LocalTime.of(20, 17),
+                "salon 404 - 20 de julio",
+                false
+            ),
+            course = Course(
+                id = "id2",
+                semesterId = "semesterId",
+                name = "name",
+                professor = "professor"
+            )
         )
-    )
 
-    ClassCard(sessionWithCourse = todayClasses)
+        ClassCard(sessionWithCourse = todayClasses)
+    }
 }
