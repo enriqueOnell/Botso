@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -110,7 +111,7 @@ fun DashboardContent(
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                item {
+                item(contentType = "Tareas pendientes") {
                     PendingTasksCard(
                         count = uiState.pendingTasksCount,
                     )
@@ -118,9 +119,36 @@ fun DashboardContent(
 
                 item {
                     Text(
-                        text = "Clases de Hoy",
+                        text = "Plataformas",
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
                         style = MaterialTheme.typography.headlineSmall,
-                        color = MaterialTheme.colorScheme.onSecondaryContainer,
+                    )
+                }
+
+                item {
+                    Row {
+
+                        PlatformCard(
+                            text = "EVA",
+                            url = eva,
+                            modifier = Modifier.weight(1f)
+                        )
+                        Spacer(Modifier.padding(8.dp))
+                        PlatformCard(
+                            text = "SINU",
+                            url = sinu,
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+
+
+                }
+
+                item {
+                    Text(
+                        text = "Clases de Hoy",
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        style = MaterialTheme.typography.headlineSmall,
                     )
                 }
 
@@ -153,45 +181,6 @@ fun DashboardContent(
 
                 item {
                     Text(
-                        text = "Plataformas",
-                        color = MaterialTheme.colorScheme.onTertiaryContainer,
-                        style = MaterialTheme.typography.headlineSmall,
-                    )
-                }
-                item {
-                    HorizontalUncontainedCarousel(
-                        state = rememberCarouselState { 2 }, // Le decimos que son exactamente 2 elementos
-                        itemWidth = 300                                              .dp,
-                        itemSpacing = 12.dp,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                    ) { index ->
-                        when (index) {
-                            0 -> {
-                                PlatformCard(
-                                    text = "EVA",
-                                    url = eva,
-                                    modifier = Modifier
-                                        .fillMaxHeight()
-                                        .maskClip(MaterialTheme.shapes.extraLarge)
-                                )
-                            }
-
-                            1 -> {
-                                PlatformCard(
-                                    text = "SINU",
-                                    url = sinu,
-                                    modifier = Modifier
-                                        .fillMaxHeight()
-                                        .maskClip(MaterialTheme.shapes.extraLarge)
-                                )
-                            }
-                        }
-                    }
-                }
-
-                item {
-                    Text(
                         text = "Tareas Prioritarias",
                         color = MaterialTheme.colorScheme.onPrimaryContainer,
                         style = MaterialTheme.typography.headlineSmall,
@@ -214,18 +203,21 @@ fun DashboardContent(
                             )
                         }
                     }
+
                 } else {
-                    val coursesMap =
-                        uiState.coursesWithGrades.associate { it.course.id to it.course.name }
                     items(
                         items = uiState.priorityTasks,
-                        key = { it.id }
                     ) { task ->
-                        PriorityItem(
-                            task = task,
-                            courseName = coursesMap[task.courseId] ?: "",
-                            modifier = Modifier.fillMaxWidth()
-                        )
+
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = MaterialTheme.shapes.large,
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+                        ) {
+                            PriorityItem(
+                                task = task,
+                            )
+                        }
                     }
                 }
 
@@ -280,8 +272,19 @@ fun DashboardContent(
 
 @Preview(showBackground = true)
 @Composable
-fun DashboardScreenPreview() {
+private fun DashboardScreenPreview() {
     val tasks = listOf(
+        Task(
+            id = "id",
+            courseId = "courseId",
+            title = "title",
+            dueDate = LocalDate.now(),
+            isPriority = true,
+            hasAttachment = true,
+            status = TaskStatus.TODO,
+            week = 3,
+            description = ""
+        ),
         Task(
             id = "id",
             courseId = "courseId",
@@ -365,7 +368,7 @@ fun DashboardScreenPreview() {
 
 @Preview(showBackground = true)
 @Composable
-fun DashboardScreenPreview2() {
+private fun DashboardScreenPreview2() {
     BotsoTheme {
         DashboardContent(
             uiState = DashboardUiState.Success(

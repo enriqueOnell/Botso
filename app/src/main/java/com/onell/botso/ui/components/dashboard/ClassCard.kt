@@ -1,6 +1,5 @@
 package com.onell.botso.ui.components.dashboard
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material3.Card
@@ -32,10 +30,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.onell.botso.ui.theme.BotsoTheme
 import com.onell.botso.domain.model.ClassSession
 import com.onell.botso.domain.model.Course
 import com.onell.botso.domain.model.CourseWithSession
+import com.onell.botso.ui.theme.BotsoTheme
 import java.time.LocalTime
 
 /**
@@ -46,21 +44,21 @@ import java.time.LocalTime
  */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun ClassCard(sessionWithCourse: CourseWithSession) {
+fun ClassCard(sessionWithCourse: CourseWithSession, modifier: Modifier = Modifier) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.extraLarge,
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
     ) {
         Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
 
             Box(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
-                    .offset(x = 16.dp, y = (-40).dp)
+                    .offset(x = 0.dp, y = (-40).dp)
                     .size(150.dp)
-                    .clip(MaterialShapes.Circle.toShape())
-                    .background(MaterialTheme.colorScheme.secondary)
+                    .clip(MaterialShapes.Slanted.toShape())
+                    .background(MaterialTheme.colorScheme.primary)
             )
 
             Column(modifier = Modifier.padding(16.dp)) {
@@ -70,24 +68,23 @@ fun ClassCard(sessionWithCourse: CourseWithSession) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Surface(
-                        shape = CircleShape, color = MaterialTheme.colorScheme.secondary
-                    ) {
-                        Text(
-                            text = "${sessionWithCourse.session.startTime} - ${sessionWithCourse.session.endTime}",
-                            style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.secondaryContainer,
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                        )
-                    }
-                    Surface(
-                        color = MaterialTheme.colorScheme.secondaryContainer,
-                        shape = RoundedCornerShape(24.dp),
-                        border = BorderStroke(2.dp, color = MaterialTheme.colorScheme.secondary)
+                        shape = MaterialTheme.shapes.extraSmall, color = MaterialTheme.colorScheme.primary
                     ) {
                         Text(
                             text = if (sessionWithCourse.session.isRemote) "Remota" else sessionWithCourse.session.room,
                             style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.secondary,
+                            color = MaterialTheme.colorScheme.primaryContainer,
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                        )
+                    }
+                    Surface(
+                        color = MaterialTheme.colorScheme.primaryContainer,
+                        shape = MaterialTheme.shapes.extraSmall,
+                    ) {
+                        Text(
+                            text = "${sessionWithCourse.session.startTime} - ${sessionWithCourse.session.endTime}",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                         )
                     }
@@ -96,7 +93,7 @@ fun ClassCard(sessionWithCourse: CourseWithSession) {
                 Text(
                     text = sessionWithCourse.course.name,
                     style = MaterialTheme.typography.headlineMedium,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer
+                    color = MaterialTheme.colorScheme.primary
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -104,14 +101,14 @@ fun ClassCard(sessionWithCourse: CourseWithSession) {
                         Icons.Rounded.Person,
                         contentDescription = null,
                         modifier = Modifier.size(16.dp),
-                        tint = MaterialTheme.colorScheme.onSecondaryContainer
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
                         text = sessionWithCourse.course.professor,
                         style = MaterialTheme.typography.bodyMedium,
                         maxLines = 1,
-                        color = MaterialTheme.colorScheme.onSecondaryContainer
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                 }
             }
@@ -121,7 +118,7 @@ fun ClassCard(sessionWithCourse: CourseWithSession) {
 
 @Preview(showBackground = true)
 @Composable
-fun ClassCardRemotePreview() {
+private fun ClassCardRemotePreview() {
     BotsoTheme {
         val todayClasses = CourseWithSession(
             session = ClassSession(
@@ -147,7 +144,7 @@ fun ClassCardRemotePreview() {
 
 @Preview(showBackground = true)
 @Composable
-fun ClassCardWhitRoomPreview() {
+private fun ClassCardWhitRoomPreview() {
     BotsoTheme {
         val todayClasses = CourseWithSession(
             session = ClassSession(

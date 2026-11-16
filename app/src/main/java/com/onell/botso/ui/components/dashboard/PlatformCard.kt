@@ -1,15 +1,11 @@
 package com.onell.botso.ui.components.dashboard
 
 import androidx.browser.customtabs.CustomTabsIntent
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -21,6 +17,7 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
@@ -39,11 +36,8 @@ import com.onell.botso.ui.theme.BotsoTheme
  */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun PlatformCard(
-    modifier: Modifier = Modifier,
-    text: String,
-    url: String
-) {
+fun PlatformCard(text: String, url: String, modifier: Modifier = Modifier) {
+
     val context = LocalContext.current
 
     Card(
@@ -54,64 +48,42 @@ fun PlatformCard(
             }
             .fillMaxWidth(),
         shape = MaterialTheme.shapes.large,
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiary)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondary)
     ) {
+        Row(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
 
-        Box(modifier = Modifier.fillMaxWidth(), Alignment.Center) {
-
-            Box(
-                modifier = Modifier
-                    .offset(x = (-85).dp)
-                    .size(150.dp)
-                    .background(
-                        color = MaterialTheme.colorScheme.tertiaryContainer,
-                        shape = MaterialShapes.Cookie6Sided.toShape()
-                    )
-            )
-
-            Column(
-                modifier = Modifier
-                    .padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+            Surface(
+                shape = MaterialShapes.Circle.toShape(),
+                color = MaterialTheme.colorScheme.secondaryContainer,
+                modifier = Modifier.size(44.dp)
             ) {
-                Row(
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Row {
-                        Icon(
-                            imageVector = Icons.Default.School,
-                            contentDescription = "Browser",
-                            tint = MaterialTheme.colorScheme.tertiary
-                        )
-                        Spacer(Modifier.padding(4.dp))
-                        Text(
-                            text = text,
-                            style = MaterialTheme.typography.headlineSmall,
-                            color = MaterialTheme.colorScheme.tertiary
-                        )
-                    }
-
-                    Row {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.Launch,
-                            contentDescription = "Lanzador de la plataforma",
-                            tint = MaterialTheme.colorScheme.tertiaryContainer
-                        )
-                    }
-                }
+                Icon(
+                    modifier = Modifier.padding(8.dp),
+                    imageVector = Icons.Default.School,
+                    contentDescription = "Browser",
+                    tint = MaterialTheme.colorScheme.secondary
+                )
             }
-        }
 
+            Spacer(Modifier.padding(4.dp))
+
+            Text(
+                text = text,
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.secondaryContainer
+            )
+        }
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun PlatformCardPreview() {
+private fun PlatformCardPreview() {
     BotsoTheme {
         PlatformCard(
             text = "SINU",

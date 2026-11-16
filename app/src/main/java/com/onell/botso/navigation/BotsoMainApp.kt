@@ -19,6 +19,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.material3.FloatingToolbarDefaults
 import androidx.compose.material3.HorizontalFloatingToolbar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -32,6 +34,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -78,7 +81,7 @@ import java.util.UUID
  */
 @Composable
 fun BotsoMainApp(
-    taskViewModel: TasksViewModel = hiltViewModel(),
+    modifier: Modifier = Modifier, taskViewModel: TasksViewModel = hiltViewModel(),
     semesterViewModel: SemestersViewModel = hiltViewModel(),
     navController: NavHostController = rememberNavController()
 ) {
@@ -127,7 +130,7 @@ fun BotsoMainApp(
                     Text(
                         text = title,
                         style = MaterialTheme.typography.headlineLarge,
-                        color = MaterialTheme.colorScheme.primary,
+                        color = MaterialTheme.colorScheme.primary
                     )
                 },
             )
@@ -137,16 +140,22 @@ fun BotsoMainApp(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 32.dp),
-                contentAlignment = Alignment.Center
+                contentAlignment = Alignment.Center,
+
+
             ) {
                 HorizontalFloatingToolbar(
                     expanded = true,
+                    collapsedShadowElevation = 0.dp,
+                    expandedShadowElevation = 0.dp,
+                    colors = FloatingToolbarDefaults.standardFloatingToolbarColors(MaterialTheme.colorScheme.primaryContainer),
                     floatingActionButton = {
                         if (isCourseGrades) {
                             FloatingActionButton(
                                 onClick = { navController.popBackStack() },
+                                elevation = FloatingActionButtonDefaults.elevation(0.dp,0.dp,0.dp,0.dp),
                                 shape = FabShape,
-                                containerColor = MaterialTheme.colorScheme.primary
+                                containerColor = MaterialTheme.colorScheme.tertiary
                             ) {
                                 Icon(
                                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -155,8 +164,9 @@ fun BotsoMainApp(
                             }
                         } else if (isTasks || isSemesters) {
                             FloatingActionButton(
+                                elevation = FloatingActionButtonDefaults.elevation(0.dp,0.dp,0.dp,0.dp),
                                 shape = FabShape,
-                                containerColor = MaterialTheme.colorScheme.primary,
+                                containerColor = MaterialTheme.colorScheme.tertiary,
                                 onClick = {
                                     if (isTasks) showTaskDialog = true
                                     if (isSemesters) showSemesterDialog = true
@@ -166,8 +176,9 @@ fun BotsoMainApp(
                             }
                         } else if (isDashboard) {
                             FloatingActionButton(
+                                elevation = FloatingActionButtonDefaults.elevation(0.dp,0.dp,0.dp,0.dp),
                                 shape = FabShape,
-                                containerColor = MaterialTheme.colorScheme.primary,
+                                containerColor = MaterialTheme.colorScheme.tertiary,
                                 onClick = {
                                     navController.navigate(Route.Settings) {
                                         popUpTo(Route.Dashboard) { saveState = true }
@@ -178,9 +189,10 @@ fun BotsoMainApp(
                             ) { Icon(Icons.Default.Settings, contentDescription = "Ajustes") }
                         } else if (isSettings) {
                             FloatingActionButton(
+                                elevation = FloatingActionButtonDefaults.elevation(0.dp,0.dp,0.dp,0.dp),
                                 shape = FabShape,
                                 onClick = { navController.popBackStack() },
-                                containerColor = MaterialTheme.colorScheme.primary
+                                containerColor = MaterialTheme.colorScheme.tertiary
                             ) {
                                 Icon(
                                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -213,8 +225,8 @@ fun BotsoMainApp(
                                         }
                                     },
                                     colors = ButtonDefaults.buttonColors(
-                                        containerColor = if (isDashboard) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainer,
-                                        contentColor = if (isDashboard) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                                        containerColor = if (isDashboard) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primaryContainer,
+                                        contentColor = if (isDashboard) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.tertiary
                                     ),
                                     contentPadding = PaddingValues(12.dp),
                                     modifier = Modifier.padding(horizontal = 4.dp)
@@ -237,8 +249,8 @@ fun BotsoMainApp(
                                         }
                                     },
                                     colors = ButtonDefaults.buttonColors(
-                                        containerColor = if (isTasks) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainer,
-                                        contentColor = if (isTasks) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                                        containerColor = if (isTasks) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primaryContainer,
+                                        contentColor = if (isTasks) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.tertiary
                                     ),
                                     contentPadding = PaddingValues(12.dp),
                                     modifier = Modifier.padding(horizontal = 4.dp)
@@ -261,8 +273,8 @@ fun BotsoMainApp(
                                         }
                                     },
                                     colors = ButtonDefaults.buttonColors(
-                                        containerColor = if (isSemesters) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainer,
-                                        contentColor = if (isSemesters) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                                        containerColor = if (isSemesters) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primaryContainer,
+                                        contentColor = if (isSemesters) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.tertiary
                                     ),
                                     contentPadding = PaddingValues(12.dp),
                                     modifier = Modifier.padding(horizontal = 4.dp)

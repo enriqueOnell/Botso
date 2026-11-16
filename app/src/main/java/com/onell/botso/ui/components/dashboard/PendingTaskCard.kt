@@ -29,9 +29,9 @@ import com.onell.botso.ui.theme.BotsoTheme
  */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun PendingTasksCard(count: Int) {
+fun PendingTasksCard(count: Int, modifier: Modifier = Modifier) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
     ) {
@@ -75,7 +75,7 @@ fun PendingTasksCard(count: Int) {
 
 @Preview(showBackground = true)
 @Composable
-fun PendingTasksCardPreview() {
+private fun PendingTasksCardPreview() {
     BotsoTheme {
         PendingTasksCard(count = 5)
     }
