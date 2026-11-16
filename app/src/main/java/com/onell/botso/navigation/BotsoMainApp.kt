@@ -151,22 +151,19 @@ fun BotsoMainApp(
                 modifier = Modifier
                     .background(Color.Transparent)
                     .fillMaxWidth()
-                    .navigationBarsPadding().padding(horizontal = 16.dp, vertical = 12.dp),
+                    .navigationBarsPadding(),
                 contentAlignment = Alignment.Center,
 
             ) {
                 HorizontalFloatingToolbar(
                     expanded = true,
-                    collapsedShadowElevation = 0.dp,
-                    expandedShadowElevation = 0.dp,
-                    colors = FloatingToolbarDefaults.standardFloatingToolbarColors(MaterialTheme.colorScheme.primaryContainer),
+                    colors = FloatingToolbarDefaults.standardFloatingToolbarColors(MaterialTheme.colorScheme.tertiaryContainer),
                     floatingActionButton = {
                         if (isCourseGrades) {
                             FloatingActionButton(
                                 onClick = { navController.popBackStack() },
-                                elevation = FloatingActionButtonDefaults.elevation(0.dp,0.dp,0.dp,0.dp),
-                                shape = FabShape,
-                                containerColor = MaterialTheme.colorScheme.tertiary
+                                elevation = FloatingActionButtonDefaults.elevation(1.dp,0.dp,0.dp,0.dp),
+                                containerColor = MaterialTheme.colorScheme.tertiary,
                             ) {
                                 Icon(
                                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -175,8 +172,7 @@ fun BotsoMainApp(
                             }
                         } else if (isTasks || isSemesters) {
                             FloatingActionButton(
-                                elevation = FloatingActionButtonDefaults.elevation(0.dp,0.dp,0.dp,0.dp),
-                                shape = FabShape,
+                                elevation = FloatingActionButtonDefaults.elevation(1.dp,0.dp,0.dp,0.dp),
                                 containerColor = MaterialTheme.colorScheme.tertiary,
                                 onClick = {
                                     if (isTasks) showTaskDialog = true
@@ -187,8 +183,7 @@ fun BotsoMainApp(
                             }
                         } else if (isDashboard) {
                             FloatingActionButton(
-                                elevation = FloatingActionButtonDefaults.elevation(0.dp,0.dp,0.dp,0.dp),
-                                shape = FabShape,
+                                elevation = FloatingActionButtonDefaults.elevation(1.dp,0.dp,0.dp,0.dp),
                                 containerColor = MaterialTheme.colorScheme.tertiary,
                                 onClick = {
                                     navController.navigate(Route.Settings) {
@@ -196,12 +191,13 @@ fun BotsoMainApp(
                                         launchSingleTop = true
                                         restoreState = true
                                     }
-                                }
+                                },
+                                shape = MaterialTheme.shapes.medium
+
                             ) { Icon(Icons.Default.Settings, contentDescription = "Ajustes") }
                         } else if (isSettings) {
                             FloatingActionButton(
-                                elevation = FloatingActionButtonDefaults.elevation(0.dp,0.dp,0.dp,0.dp),
-                                shape = FabShape,
+                                elevation = FloatingActionButtonDefaults.elevation(1.dp,0.dp,0.dp,0.dp),
                                 onClick = { navController.popBackStack() },
                                 containerColor = MaterialTheme.colorScheme.tertiary
                             ) {
@@ -222,7 +218,6 @@ fun BotsoMainApp(
                                 Text(
                                     modifier = Modifier.padding(horizontal = 32.dp),
                                     text = currentCourseName.ifEmpty { "..." },
-                                    fontWeight = FontWeight.Bold
                                 )
                             } else if (isDashboard || isTasks || isSemesters) {
                                 Button(
@@ -236,11 +231,10 @@ fun BotsoMainApp(
                                         }
                                     },
                                     colors = ButtonDefaults.buttonColors(
-                                        containerColor = if (isDashboard) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primaryContainer,
-                                        contentColor = if (isDashboard) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.tertiary
+                                        containerColor = if (isDashboard) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.tertiaryContainer,
+                                        contentColor = if (isDashboard) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.tertiary
                                     ),
                                     contentPadding = PaddingValues(12.dp),
-                                    modifier = Modifier.padding(horizontal = 4.dp)
                                 ) {
                                     Icon(
                                         imageVector = Icons.Default.Dashboard,
@@ -260,11 +254,10 @@ fun BotsoMainApp(
                                         }
                                     },
                                     colors = ButtonDefaults.buttonColors(
-                                        containerColor = if (isTasks) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primaryContainer,
-                                        contentColor = if (isTasks) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.tertiary
+                                        containerColor = if (isTasks) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.tertiaryContainer,
+                                        contentColor = if (isTasks) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.tertiary
                                     ),
                                     contentPadding = PaddingValues(12.dp),
-                                    modifier = Modifier.padding(horizontal = 4.dp)
                                 ) {
                                     Icon(
                                         imageVector = Icons.Default.TaskAlt,
@@ -284,11 +277,10 @@ fun BotsoMainApp(
                                         }
                                     },
                                     colors = ButtonDefaults.buttonColors(
-                                        containerColor = if (isSemesters) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primaryContainer,
-                                        contentColor = if (isSemesters) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.tertiary
+                                        containerColor = if (isSemesters) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.tertiaryContainer,
+                                        contentColor = if (isSemesters) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.tertiary
                                     ),
                                     contentPadding = PaddingValues(12.dp),
-                                    modifier = Modifier.padding(horizontal = 4.dp)
                                 ) {
                                     Icon(
                                         imageVector = Icons.Default.School,
@@ -298,9 +290,9 @@ fun BotsoMainApp(
                                 }
                             } else if (isSettings) {
                                 Text(
-                                    modifier = Modifier.padding(horizontal = 32.dp),
+                                    modifier = Modifier.padding(horizontal = 16.dp),
                                     text = "Ajustes",
-                                    fontWeight = FontWeight.Bold
+                                    style = MaterialTheme.typography.titleMedium,
                                 )
                             }
                         }

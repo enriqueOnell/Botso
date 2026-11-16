@@ -37,6 +37,9 @@ fun CourseGradeItem(
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.large,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.tertiaryContainer
+        )
     ) {
         Column(
             modifier = Modifier
@@ -49,13 +52,13 @@ fun CourseGradeItem(
             ) {
                 Text(
                     text = courseWithGrades.course.name,
-                    color = MaterialTheme.colorScheme.onPrimary,
+                    color = MaterialTheme.colorScheme.tertiary,
                     style = MaterialTheme.typography.titleLarge,
                 )
                 if (courseWithGrades.course.professor.isNotBlank()) {
                     Text(
                         text = courseWithGrades.course.professor,
-                        color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f),
+                        color = MaterialTheme.colorScheme.onTertiaryContainer,
                         style = MaterialTheme.typography.bodyMedium,
                     )
                 }
@@ -68,7 +71,7 @@ fun CourseGradeItem(
                 contentAlignment = Alignment.BottomEnd){
                 Text(
                     text = format(Locale.US, "%.2f", courseWithGrades.averageGrade),
-                    color = MaterialTheme.colorScheme.onPrimary,
+                    color = if (courseWithGrades.averageGrade >= 3.0) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.displayMedium,
                 )
             }
@@ -79,7 +82,7 @@ fun CourseGradeItem(
 
 @Preview(showBackground = true)
 @Composable
-fun CourseGradeItemPreview() {
+private fun CourseGradeItemPreview() {
     BotsoTheme {
         CourseGradeItem(
             courseWithGrades = CourseWithGrades(
@@ -95,6 +98,33 @@ fun CourseGradeItemPreview() {
                         courseId = "id2",
                         name = "Formativa",
                         score = 5.0,
+                        weight = 1.0,
+                        termId = 1
+                    )
+                )
+            )
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun CourseGradeItem2Preview() {
+    BotsoTheme {
+        CourseGradeItem(
+            courseWithGrades = CourseWithGrades(
+                course = Course(
+                    id = "id2",
+                    semesterId = "semesterId",
+                    name = "Estructuras de Datos",
+                    professor = "Profesor Salcedo"
+                ),
+                grades = listOf(
+                    Grade(
+                        id = "g1",
+                        courseId = "id2",
+                        name = "Formativa",
+                        score = 2.0,
                         weight = 1.0,
                         termId = 1
                     )
