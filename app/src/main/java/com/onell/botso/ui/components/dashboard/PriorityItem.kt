@@ -1,16 +1,12 @@
 package com.onell.botso.ui.components.dashboard
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddAlert
-import androidx.compose.material.icons.filled.Alarm
 import androidx.compose.material.icons.filled.PriorityHigh
-import androidx.compose.material.icons.filled.School
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -75,8 +71,7 @@ fun PriorityItem(
             }
 
             Spacer(modifier = Modifier.padding(8.dp))
-            Column(
-            ) {
+            Column {
                 Text(
                     text = formattedDate,
                     style = MaterialTheme.typography.labelSmall,

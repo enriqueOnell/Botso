@@ -1,5 +1,6 @@
 package com.onell.botso.navigation
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -148,9 +149,11 @@ fun BotsoMainApp(
         bottomBar = {
             Box(
                 modifier = Modifier
+                    .background(Color.Transparent)
                     .fillMaxWidth()
                     .navigationBarsPadding().padding(horizontal = 16.dp, vertical = 12.dp),
                 contentAlignment = Alignment.Center,
+
             ) {
                 HorizontalFloatingToolbar(
                     expanded = true,
@@ -311,7 +314,7 @@ fun BotsoMainApp(
             startDestination = Route.Dashboard,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
+                .padding(top = paddingValues.calculateTopPadding())
         ) {
 
             composable<Route.Dashboard> {
