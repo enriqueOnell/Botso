@@ -39,7 +39,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -64,7 +63,6 @@ import com.onell.botso.ui.screens.DashboardScreen
 import com.onell.botso.ui.screens.SemestersScreen
 import com.onell.botso.ui.screens.SettingsScreen
 import com.onell.botso.ui.screens.TasksScreen
-import com.onell.botso.ui.theme.FabShape
 import com.onell.botso.ui.uistate.TasksUiState
 import com.onell.botso.ui.viewmodel.SemestersViewModel
 import com.onell.botso.ui.viewmodel.TasksViewModel
@@ -157,13 +155,14 @@ fun BotsoMainApp(
             ) {
                 HorizontalFloatingToolbar(
                     expanded = true,
-                    colors = FloatingToolbarDefaults.standardFloatingToolbarColors(MaterialTheme.colorScheme.tertiaryContainer),
+                    colors = FloatingToolbarDefaults.standardFloatingToolbarColors(MaterialTheme.colorScheme.primaryContainer),
                     floatingActionButton = {
                         if (isCourseGrades) {
                             FloatingActionButton(
                                 onClick = { navController.popBackStack() },
                                 elevation = FloatingActionButtonDefaults.elevation(1.dp,0.dp,0.dp,0.dp),
                                 containerColor = MaterialTheme.colorScheme.tertiary,
+                                shape = MaterialTheme.shapes.medium
                             ) {
                                 Icon(
                                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -177,7 +176,8 @@ fun BotsoMainApp(
                                 onClick = {
                                     if (isTasks) showTaskDialog = true
                                     if (isSemesters) showSemesterDialog = true
-                                }
+                                },
+                                shape = MaterialTheme.shapes.medium
                             ) {
                                 Icon(Icons.Default.Add, contentDescription = "Agregar")
                             }
@@ -199,7 +199,8 @@ fun BotsoMainApp(
                             FloatingActionButton(
                                 elevation = FloatingActionButtonDefaults.elevation(1.dp,0.dp,0.dp,0.dp),
                                 onClick = { navController.popBackStack() },
-                                containerColor = MaterialTheme.colorScheme.tertiary
+                                containerColor = MaterialTheme.colorScheme.tertiary,
+                                shape = MaterialTheme.shapes.medium
                             ) {
                                 Icon(
                                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -231,8 +232,8 @@ fun BotsoMainApp(
                                         }
                                     },
                                     colors = ButtonDefaults.buttonColors(
-                                        containerColor = if (isDashboard) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.tertiaryContainer,
-                                        contentColor = if (isDashboard) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.tertiary
+                                        containerColor = if (isDashboard) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primaryContainer,
+                                        contentColor = if (isDashboard) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.tertiary
                                     ),
                                     contentPadding = PaddingValues(12.dp),
                                 ) {
@@ -254,8 +255,8 @@ fun BotsoMainApp(
                                         }
                                     },
                                     colors = ButtonDefaults.buttonColors(
-                                        containerColor = if (isTasks) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.tertiaryContainer,
-                                        contentColor = if (isTasks) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.tertiary
+                                        containerColor = if (isTasks) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primaryContainer,
+                                        contentColor = if (isTasks) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.tertiary
                                     ),
                                     contentPadding = PaddingValues(12.dp),
                                 ) {
@@ -277,8 +278,8 @@ fun BotsoMainApp(
                                         }
                                     },
                                     colors = ButtonDefaults.buttonColors(
-                                        containerColor = if (isSemesters) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.tertiaryContainer,
-                                        contentColor = if (isSemesters) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.tertiary
+                                        containerColor = if (isSemesters) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primaryContainer,
+                                        contentColor = if (isSemesters) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.tertiary
                                     ),
                                     contentPadding = PaddingValues(12.dp),
                                 ) {

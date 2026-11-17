@@ -38,7 +38,7 @@ fun CourseGradeItem(
         modifier = modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.tertiaryContainer
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
         )
     ) {
         Column(
@@ -52,13 +52,12 @@ fun CourseGradeItem(
             ) {
                 Text(
                     text = courseWithGrades.course.name,
-                    color = MaterialTheme.colorScheme.tertiary,
+                    color = MaterialTheme.colorScheme.primary,
                     style = MaterialTheme.typography.titleLarge,
                 )
                 if (courseWithGrades.course.professor.isNotBlank()) {
                     Text(
                         text = courseWithGrades.course.professor,
-                        color = MaterialTheme.colorScheme.onTertiaryContainer,
                         style = MaterialTheme.typography.bodyMedium,
                     )
                 }

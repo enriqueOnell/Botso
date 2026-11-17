@@ -250,7 +250,8 @@ fun AddEditTaskDialog(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                val selectedDateMillis = datePickerState.selectedDateMillis ?: System.currentTimeMillis()
+                val selectedDateMillis =
+                    datePickerState.selectedDateMillis ?: System.currentTimeMillis()
                 val selectedLocalDate = Instant.ofEpochMilli(selectedDateMillis)
                     .atZone(ZoneId.of("UTC"))
                     .toLocalDate()
@@ -302,7 +303,7 @@ fun AddEditTaskDialog(
                         }
                     },
                     enabled = title.isNotBlank() && selectedCourseId.isNotBlank() &&
-                        courses.isNotEmpty() && !isClosing,
+                            courses.isNotEmpty() && description.isNotBlank() && !isClosing,
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(24.dp)
                 ) {
