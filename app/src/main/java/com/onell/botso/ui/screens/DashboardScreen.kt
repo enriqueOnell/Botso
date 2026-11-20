@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -38,8 +37,8 @@ import com.onell.botso.domain.model.TaskStatus
 import com.onell.botso.ui.components.dashboard.ClassCard
 import com.onell.botso.ui.components.dashboard.CourseGradeItem
 import com.onell.botso.ui.components.dashboard.PendingTasksCard
-import com.onell.botso.ui.components.dashboard.PlatformCard
-import com.onell.botso.ui.components.dashboard.PriorityItem
+import com.onell.botso.ui.components.dashboard.PlatformSectionCard
+import com.onell.botso.ui.components.dashboard.PriorityTaskItem
 import com.onell.botso.ui.theme.BotsoTheme
 import com.onell.botso.ui.uistate.DashboardUiState
 import com.onell.botso.ui.viewmodel.DashboardViewModel
@@ -109,38 +108,16 @@ fun DashboardContent(
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                item(contentType = "Tareas pendientes") {
+                item(contentType = "PendingTasks Section") {
                     PendingTasksCard(
                         count = uiState.pendingTasksCount,
                     )
                 }
 
-                item {
-                    Text(
-                        text = "Plataformas",
-                        color = MaterialTheme.colorScheme.onPrimaryContainer,
-                        style = MaterialTheme.typography.headlineSmall,
-                    )
+                item(contentType = "Platform Cards Sections") {
+                    PlatformSectionCard()
                 }
 
-                item {
-                    Row {
-
-                        PlatformCard(
-                            text = "EVA",
-                            url = eva,
-                            modifier = Modifier.weight(1f)
-                        )
-                        Spacer(Modifier.padding(8.dp))
-                        PlatformCard(
-                            text = "SINU",
-                            url = sinu,
-                            modifier = Modifier.weight(1f)
-                        )
-                    }
-
-
-                }
 
                 item {
                     Text(
@@ -207,7 +184,7 @@ fun DashboardContent(
                         items = uiState.priorityTasks,
                     ) { task ->
 
-                        PriorityItem(
+                        PriorityTaskItem(
                             task = task,
                         )
                     }

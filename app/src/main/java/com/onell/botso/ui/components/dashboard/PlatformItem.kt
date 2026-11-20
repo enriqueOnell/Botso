@@ -2,14 +2,12 @@ package com.onell.botso.ui.components.dashboard
 
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Launch
 import androidx.compose.material.icons.filled.School
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -36,7 +34,7 @@ import com.onell.botso.ui.theme.BotsoTheme
  */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun PlatformCard(text: String, url: String, modifier: Modifier = Modifier) {
+fun PlatformItem(text: String, url: String, modifier: Modifier = Modifier) {
 
     val context = LocalContext.current
 
@@ -83,9 +81,9 @@ fun PlatformCard(text: String, url: String, modifier: Modifier = Modifier) {
 
 @Preview(showBackground = true)
 @Composable
-private fun PlatformCardPreview() {
+private fun PlatformItemPreview() {
     BotsoTheme {
-        PlatformCard(
+        PlatformItem(
             text = "SINU",
             url = ""
         )

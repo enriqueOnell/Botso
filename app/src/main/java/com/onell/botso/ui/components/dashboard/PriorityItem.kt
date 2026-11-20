@@ -1,6 +1,5 @@
 package com.onell.botso.ui.components.dashboard
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -31,7 +30,7 @@ import java.util.Locale
  */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun PriorityItem(
+fun PriorityTaskItem(
     task: Task,
     modifier: Modifier = Modifier
 ) {
@@ -52,65 +51,60 @@ fun PriorityItem(
     val dayNumber = task.dueDate.format(dayNumberFormatter)
     val month = task.dueDate.format(monthFormatter)
 
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.large,
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+    Row(
+        modifier = Modifier.padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(
-            modifier = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+
+        Surface(
+            color = MaterialTheme.colorScheme.errorContainer,
+            shape = MaterialTheme.shapes.extraSmall
         ) {
-
-            Surface(
-                color = MaterialTheme.colorScheme.errorContainer,
-                shape = MaterialTheme.shapes.extraSmall
+            Column(
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Column(
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = day,
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.error,
-                    )
-                    Text(
-                        text = dayNumber,
-                        style = MaterialTheme.typography.headlineSmall,
-                        color = MaterialTheme.colorScheme.error,
-                    )
-                    Text(
-                        text = month,
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.error,
-                    )
-                }
-            }
-            Spacer(modifier = Modifier.padding(8.dp))
-            Column{
                 Text(
-                    text = task.title,
+                    text = day,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.error,
+                )
+                Text(
+                    text = dayNumber,
                     style = MaterialTheme.typography.headlineSmall,
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.error,
                 )
-                Spacer(modifier = Modifier.padding(2.dp))
                 Text(
-                    text = task.description,
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                    text = month,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.error,
                 )
             }
-
         }
+        Spacer(modifier = Modifier.padding(8.dp))
+        Column {
+            Text(
+                text = task.title,
+                style = MaterialTheme.typography.headlineSmall,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Spacer(modifier = Modifier.padding(2.dp))
+            Text(
+                text = task.description,
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onPrimaryContainer
+            )
+        }
+
     }
+
 }
 
 @Preview(showBackground = true)
 @Composable
-private fun PriorityItemPreview() {
+private fun PriorityTaskItemPreview() {
     BotsoTheme {
-        PriorityItem(
+        PriorityTaskItem(
             task = Task(
                 id = "id",
                 courseId = "courseId",

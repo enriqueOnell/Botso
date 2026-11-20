@@ -73,6 +73,9 @@ dependencies {
     implementation(libs.androidx.hilt.work)
     ksp(libs.androidx.hilt.compiler)
 
+    implementation(libs.haze)
+    implementation(libs.haze.blur)
+
     testImplementation(libs.junit)
     testImplementation(libs.androidx.junit)
     testImplementation(libs.kotlinx.coroutines.test)
