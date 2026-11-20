@@ -52,7 +52,7 @@ fun PriorityTaskItem(
     val month = task.dueDate.format(monthFormatter)
 
     Row(
-        modifier = Modifier.padding(16.dp),
+        modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
     ) {
 

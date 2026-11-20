@@ -19,6 +19,8 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.carousel.HorizontalUncontainedCarousel
+import androidx.compose.material3.carousel.rememberCarouselState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -34,11 +36,12 @@ import com.onell.botso.domain.model.CourseWithSession
 import com.onell.botso.domain.model.Grade
 import com.onell.botso.domain.model.Task
 import com.onell.botso.domain.model.TaskStatus
-import com.onell.botso.ui.components.dashboard.ClassCard
+import com.onell.botso.ui.components.dashboard.ClassItem
 import com.onell.botso.ui.components.dashboard.CourseGradeItem
 import com.onell.botso.ui.components.dashboard.PendingTasksCard
 import com.onell.botso.ui.components.dashboard.PlatformSectionCard
 import com.onell.botso.ui.components.dashboard.PriorityTaskItem
+import com.onell.botso.ui.components.dashboard.TodayClassSectionCard
 import com.onell.botso.ui.theme.BotsoTheme
 import com.onell.botso.ui.uistate.DashboardUiState
 import com.onell.botso.ui.viewmodel.DashboardViewModel
@@ -71,10 +74,6 @@ fun DashboardContent(
     uiState: DashboardUiState,
     modifier: Modifier = Modifier
 ) {
-
-    val eva = "https://evapresencial.americana.edu.co"
-    val sinu = "https://campus.americana.edu.co/cua/sgacampus/#notr62"
-
     when (uiState) {
         is DashboardUiState.Loading -> {
             Box(
@@ -114,49 +113,17 @@ fun DashboardContent(
                     )
                 }
 
-                item(contentType = "Platform Cards Sections") {
+                item(contentType = "PlatformCards Section") {
                     PlatformSectionCard()
                 }
 
-
-                item {
-                    Text(
-                        text = "Clases de Hoy",
-                        color = MaterialTheme.colorScheme.onPrimaryContainer,
-                        style = MaterialTheme.typography.headlineSmall,
-                    )
-                }
-
-                if (uiState.todayClasses.isEmpty()) {
-                    item {
-                        Card(
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(24.dp),
-                            colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.surfaceVariant
-                            )
-                        ) {
-                            Text(
-                                text = "No hay clases programadas para hoy",
-                                modifier = Modifier.padding(16.dp),
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                        }
-                    }
-                } else {
-                    items(
-                        items = uiState.todayClasses,
-                        key = { "Today ${it.session.id}" }
-                    ) { courseWithSession ->
-                        ClassCard(
-                            sessionWithCourse = courseWithSession,
-                        )
-                    }
+                item(contentType = "Today Classes Section") {
+                    TodayClassSectionCard(uiState.todayClasses)
                 }
 
                 item {
                     Text(
-                        text = "Tareas Prioritarias",
+                        text = "Tareas con Prioridad",
                         color = MaterialTheme.colorScheme.onPrimaryContainer,
                         style = MaterialTheme.typography.headlineSmall,
                     )
@@ -310,8 +277,8 @@ private fun DashboardScreenPreview() {
                 "12",
                 "id2",
                 1,
-                LocalTime.of(10, 9),
-                LocalTime.of(20, 17),
+                LocalTime.of(10, 0),
+                LocalTime.of(12, 0),
                 "room",
                 true
             ),
@@ -321,10 +288,27 @@ private fun DashboardScreenPreview() {
                 name = "name",
                 professor = "professor"
             )
+        ),
+        CourseWithSession(
+            session = ClassSession(
+                "13",
+                "24",
+                1,
+                LocalTime.of(13, 0),
+                LocalTime.of(15, 0),
+                "room",
+                true
+            ),
+            course = Course(
+                id = "24",
+                semesterId = "semesterId",
+                name = "name",
+                professor = "professor"
+            )
         )
     )
 
-    BotsoTheme {
+    BotsoTheme{
         DashboardContent(
             uiState = DashboardUiState.Success(
                 priorityTasks = tasks,

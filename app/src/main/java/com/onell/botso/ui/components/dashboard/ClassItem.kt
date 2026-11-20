@@ -43,11 +43,11 @@ import java.time.LocalTime
  */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun ClassCard(sessionWithCourse: CourseWithSession, modifier: Modifier = Modifier) {
+fun ClassItem(sessionWithCourse: CourseWithSession, modifier: Modifier = Modifier) {
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.extraLarge,
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
     ) {
         Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
 
@@ -117,7 +117,7 @@ fun ClassCard(sessionWithCourse: CourseWithSession, modifier: Modifier = Modifie
 
 @Preview(showBackground = true)
 @Composable
-private fun ClassCardRemotePreview() {
+private fun ClassItemRemotePreview() {
     BotsoTheme {
         val todayClasses = CourseWithSession(
             session = ClassSession(
@@ -137,13 +137,13 @@ private fun ClassCardRemotePreview() {
             )
         )
 
-        ClassCard(sessionWithCourse = todayClasses)
+        ClassItem(sessionWithCourse = todayClasses)
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-private fun ClassCardWhitRoomPreview() {
+private fun ClassItemWhitRoomPreview() {
     BotsoTheme {
         val todayClasses = CourseWithSession(
             session = ClassSession(
@@ -163,6 +163,6 @@ private fun ClassCardWhitRoomPreview() {
             )
         )
 
-        ClassCard(sessionWithCourse = todayClasses)
+        ClassItem(sessionWithCourse = todayClasses)
     }
 }
