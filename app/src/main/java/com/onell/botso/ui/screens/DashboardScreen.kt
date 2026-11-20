@@ -19,8 +19,6 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.carousel.HorizontalUncontainedCarousel
-import androidx.compose.material3.carousel.rememberCarouselState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -36,11 +34,10 @@ import com.onell.botso.domain.model.CourseWithSession
 import com.onell.botso.domain.model.Grade
 import com.onell.botso.domain.model.Task
 import com.onell.botso.domain.model.TaskStatus
-import com.onell.botso.ui.components.dashboard.ClassItem
 import com.onell.botso.ui.components.dashboard.CourseGradeItem
 import com.onell.botso.ui.components.dashboard.PendingTasksCard
 import com.onell.botso.ui.components.dashboard.PlatformSectionCard
-import com.onell.botso.ui.components.dashboard.PriorityTaskItem
+import com.onell.botso.ui.components.dashboard.PriorityTasksSectionCard
 import com.onell.botso.ui.components.dashboard.TodayClassSectionCard
 import com.onell.botso.ui.theme.BotsoTheme
 import com.onell.botso.ui.uistate.DashboardUiState
@@ -107,13 +104,11 @@ fun DashboardContent(
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                item(contentType = "PendingTasks Section") {
-                    PendingTasksCard(
-                        count = uiState.pendingTasksCount,
-                    )
+                item(contentType = "Pending Tasks Section") {
+                    PendingTasksCard(count = uiState.pendingTasksCount)
                 }
 
-                item(contentType = "PlatformCards Section") {
+                item(contentType = "Platform Cards Section") {
                     PlatformSectionCard()
                 }
 
@@ -121,40 +116,8 @@ fun DashboardContent(
                     TodayClassSectionCard(uiState.todayClasses)
                 }
 
-                item {
-                    Text(
-                        text = "Tareas con Prioridad",
-                        color = MaterialTheme.colorScheme.onPrimaryContainer,
-                        style = MaterialTheme.typography.headlineSmall,
-                    )
-                }
-
-                if (uiState.priorityTasks.isEmpty()) {
-                    item {
-                        Card(
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(24.dp),
-                            colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.surfaceVariant
-                            )
-                        ) {
-                            Text(
-                                text = "No hay tareas prioritarias",
-                                modifier = Modifier.padding(16.dp),
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                        }
-                    }
-
-                } else {
-                    items(
-                        items = uiState.priorityTasks,
-                    ) { task ->
-
-                        PriorityTaskItem(
-                            task = task,
-                        )
-                    }
+                item(contentType = "Priority Tasks Section") {
+                    PriorityTasksSectionCard(uiState.priorityTasks)
                 }
 
                 item {
@@ -213,24 +176,13 @@ private fun DashboardScreenPreview() {
         Task(
             id = "id",
             courseId = "courseId",
-            title = "title",
+            title = "Tarea 1",
             dueDate = LocalDate.now(),
             isPriority = true,
             hasAttachment = true,
             status = TaskStatus.TODO,
             week = 3,
-            description = ""
-        ),
-        Task(
-            id = "id",
-            courseId = "courseId",
-            title = "title",
-            dueDate = LocalDate.now(),
-            isPriority = true,
-            hasAttachment = true,
-            status = TaskStatus.TODO,
-            week = 3,
-            description = ""
+            description = "Hay que hacer tarea 1"
         )
     )
     val courses = listOf(
