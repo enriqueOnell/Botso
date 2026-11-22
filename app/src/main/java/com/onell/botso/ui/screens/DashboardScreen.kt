@@ -35,6 +35,7 @@ import com.onell.botso.domain.model.Grade
 import com.onell.botso.domain.model.Task
 import com.onell.botso.domain.model.TaskStatus
 import com.onell.botso.ui.components.dashboard.CourseGradeItem
+import com.onell.botso.ui.components.dashboard.CourseGradeSectionCard
 import com.onell.botso.ui.components.dashboard.PendingTasksCard
 import com.onell.botso.ui.components.dashboard.PlatformSectionCard
 import com.onell.botso.ui.components.dashboard.PriorityTasksSectionCard
@@ -121,48 +122,7 @@ fun DashboardContent(
                 }
 
                 item {
-                    Text(
-                        text = "Mis Materias",
-                        color = MaterialTheme.colorScheme.onPrimaryContainer,
-                        style = MaterialTheme.typography.headlineSmall,
-                    )
-                }
-
-                if (uiState.coursesWithGrades.isEmpty()) {
-                    item {
-                        Card(
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(24.dp),
-                            colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.surfaceVariant
-                            )
-                        ) {
-                            Text(
-                                text = "No hay materias registradas",
-                                modifier = Modifier.padding(16.dp),
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                        }
-                    }
-                } else {
-                    items(uiState.coursesWithGrades.chunked(2)) { rowCourses ->
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(IntrinsicSize.Min),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            for (courseWithGrades in rowCourses) {
-                                CourseGradeItem(
-                                    courseWithGrades = courseWithGrades,
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .fillMaxHeight()
-                                )
-                            }
-                        }
-                    }
-
+                    CourseGradeSectionCard(uiState.coursesWithGrades)
                 }
             }
         }
