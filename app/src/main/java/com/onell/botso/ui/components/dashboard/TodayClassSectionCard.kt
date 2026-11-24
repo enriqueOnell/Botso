@@ -1,7 +1,7 @@
 package com.onell.botso.ui.components.dashboard
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -9,9 +9,8 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.carousel.HorizontalUncontainedCarousel
-import androidx.compose.material3.carousel.rememberCarouselState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -28,30 +27,30 @@ fun TodayClassSectionCard(
 ) {
     Card(
         modifier = modifier,
-        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceVariant)
+        shape = MaterialTheme.shapes.large,
+        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainerLow)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = "Clases del Dìa",
+                text = "Clases del Día",
                 color = MaterialTheme.colorScheme.onPrimaryContainer,
                 style = MaterialTheme.typography.headlineSmall,
             )
 
             Spacer(modifier = Modifier.padding(8.dp))
 
-            HorizontalUncontainedCarousel(
-                state = rememberCarouselState { todayClasses.size },
+            Column(
                 modifier = Modifier.fillMaxWidth(),
-                itemWidth = 290.dp,
-                itemSpacing = 12.dp,
-                contentPadding = PaddingValues(horizontal = 4.dp)
-            ) { index ->
-                val courseWithSession = todayClasses[index]
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                todayClasses.forEach { todayClass ->
+                    key(todayClass.session.id) {
+                        ClassItem(
+                            sessionWithCourse = todayClass
+                        )
+                    }
 
-                ClassItem(
-                    sessionWithCourse = courseWithSession,
-                    modifier = Modifier.maskClip(MaterialTheme.shapes.large)
-                )
+                }
             }
         }
     }

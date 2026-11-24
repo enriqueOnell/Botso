@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.LocationOn
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -56,7 +57,7 @@ fun ClassItem(sessionWithCourse: CourseWithSession, modifier: Modifier = Modifie
                     .align(Alignment.BottomEnd)
                     .offset(x = 0.dp, y = (-40).dp)
                     .size(150.dp)
-                    .clip(MaterialShapes.Slanted.toShape())
+                    .clip(MaterialShapes.Circle.toShape())
                     .background(MaterialTheme.colorScheme.primary)
             )
 
@@ -66,16 +67,12 @@ fun ClassItem(sessionWithCourse: CourseWithSession, modifier: Modifier = Modifie
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Surface(
-                        shape = MaterialTheme.shapes.extraSmall, color = MaterialTheme.colorScheme.primary
-                    ) {
-                        Text(
-                            text = if (sessionWithCourse.session.isRemote) "Remota" else sessionWithCourse.session.room,
-                            style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.primaryContainer,
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                        )
-                    }
+                    Text(
+                        text = sessionWithCourse.course.name,
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+
                     Surface(
                         color = MaterialTheme.colorScheme.primaryContainer,
                         shape = MaterialTheme.shapes.extraSmall,
@@ -89,16 +86,10 @@ fun ClassItem(sessionWithCourse: CourseWithSession, modifier: Modifier = Modifie
                     }
                 }
                 Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = sessionWithCourse.course.name,
-                    style = MaterialTheme.typography.headlineMedium,
-                    color = MaterialTheme.colorScheme.primary
-                )
-                Spacer(modifier = Modifier.height(8.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         Icons.Rounded.Person,
-                        contentDescription = null,
+                        contentDescription = "profesor",
                         modifier = Modifier.size(16.dp),
                         tint = MaterialTheme.colorScheme.onPrimaryContainer
                     )
@@ -110,6 +101,25 @@ fun ClassItem(sessionWithCourse: CourseWithSession, modifier: Modifier = Modifie
                         color = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                 }
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        Icons.Rounded.LocationOn,
+                        contentDescription = "location",
+                        modifier = Modifier.size(16.dp),
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = if (sessionWithCourse.session.isRemote) "Remota" else sessionWithCourse.session.room,
+                        style = MaterialTheme.typography.bodyMedium,
+
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                }
+
+
             }
         }
     }

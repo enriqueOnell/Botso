@@ -27,7 +27,8 @@ fun PriorityTasksSectionCard(
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceVariant)
+        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainerLow),
+        shape = MaterialTheme.shapes.large
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
@@ -40,7 +41,7 @@ fun PriorityTasksSectionCard(
 
             Column(
                 modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 priorityTasks.forEach { task ->
                     key(task.id) {

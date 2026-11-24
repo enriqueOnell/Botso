@@ -3,6 +3,7 @@ package com.onell.botso.ui.components.dashboard
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,6 +13,8 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.carousel.HorizontalUncontainedCarousel
+import androidx.compose.material3.carousel.rememberCarouselState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
@@ -41,36 +44,23 @@ fun CourseGradeSectionCard(
         ) {
             Text(
                 text = "Mis materias",
-                color = MaterialTheme.colorScheme.onSurface,
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                style = MaterialTheme.typography.headlineSmall,
             )
 
-            Column(
+            HorizontalUncontainedCarousel(
+                state = rememberCarouselState { courses.size },
                 modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                courses.chunked(2).forEach { rowCourses ->
-                    key(rowCourses.first().course.id) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(IntrinsicSize.Min),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            for (courseWithGrades in rowCourses) {
-                                key(courseWithGrades.course.id) {
-                                    CourseGradeItem(
-                                        courseWithGrades = courseWithGrades,
-                                        modifier = Modifier
-                                            .weight(1f)
-                                            .fillMaxHeight()
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
+                itemWidth = 180.dp,
+                itemSpacing = 12.dp,
+                contentPadding = PaddingValues(horizontal = 4.dp)
+            ) { index ->
+                val courseWithGrades = courses[index]
+
+                CourseGradeItem(
+                    courseWithGrades = courseWithGrades,
+                    modifier = Modifier.maskClip(MaterialTheme.shapes.extraLarge)
+                )
             }
         }
     }

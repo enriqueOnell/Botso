@@ -2,19 +2,10 @@ package com.onell.botso.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
@@ -34,7 +25,6 @@ import com.onell.botso.domain.model.CourseWithSession
 import com.onell.botso.domain.model.Grade
 import com.onell.botso.domain.model.Task
 import com.onell.botso.domain.model.TaskStatus
-import com.onell.botso.ui.components.dashboard.CourseGradeItem
 import com.onell.botso.ui.components.dashboard.CourseGradeSectionCard
 import com.onell.botso.ui.components.dashboard.PendingTasksCard
 import com.onell.botso.ui.components.dashboard.PlatformSectionCard
@@ -121,7 +111,7 @@ fun DashboardContent(
                     PriorityTasksSectionCard(uiState.priorityTasks)
                 }
 
-                item {
+                item(contentType = "Course Grade Section") {
                     CourseGradeSectionCard(uiState.coursesWithGrades)
                 }
             }
