@@ -23,7 +23,7 @@ fun PlatformSectionCard(
 
     Card(
         modifier = modifier,
-        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceVariant),
+        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainerLow),
         shape = MaterialTheme.shapes.large
     ) {
         Column(modifier = Modifier.padding(16.dp)) {

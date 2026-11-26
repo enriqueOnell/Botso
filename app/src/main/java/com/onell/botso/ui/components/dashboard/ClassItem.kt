@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -21,13 +20,13 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.pointer.motionEventSpy
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.onell.botso.domain.model.ClassSession
@@ -54,18 +53,38 @@ fun ClassItem(sessionWithCourse: CourseWithSession, modifier: Modifier = Modifie
 
             Box(
                 modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .offset(x = 0.dp, y = (-40).dp)
+                    .align(Alignment.BottomStart)
+                    .offset(x = (-20).dp, y = 0.dp)
                     .size(150.dp)
-                    .clip(MaterialShapes.Circle.toShape())
+                    .clip(MaterialShapes.Square.toShape())
                     .background(MaterialTheme.colorScheme.primary)
             )
 
-            Column(modifier = Modifier.padding(16.dp)) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth().padding(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(32.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+
+                    Text(
+                        text = "${sessionWithCourse.session.startTime}",
+                        style = MaterialTheme.typography.headlineLarge,
+                        color = MaterialTheme.colorScheme.primaryContainer
+                    )
+
+                    Text(
+                        text = "${sessionWithCourse.session.endTime}",
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = MaterialTheme.colorScheme.primaryContainer,
+                    )
+
+                }
+
+                Column(
+                    modifier = Modifier,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Text(
                         text = sessionWithCourse.course.name,
@@ -73,53 +92,39 @@ fun ClassItem(sessionWithCourse: CourseWithSession, modifier: Modifier = Modifie
                         color = MaterialTheme.colorScheme.primary
                     )
 
-                    Surface(
-                        color = MaterialTheme.colorScheme.primaryContainer,
-                        shape = MaterialTheme.shapes.extraSmall,
-                    ) {
+                    Row {
+                        Icon(
+                            Icons.Rounded.Person,
+                            contentDescription = "profesor",
+                            modifier = Modifier.size(16.dp),
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = "${sessionWithCourse.session.startTime} - ${sessionWithCourse.session.endTime}",
-                            style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                            text = sessionWithCourse.course.professor,
+                            style = MaterialTheme.typography.bodyMedium,
+                            maxLines = 1,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
                         )
                     }
+
+                    Row {
+                        Icon(
+                            Icons.Rounded.LocationOn,
+                            contentDescription = "location",
+                            modifier = Modifier.size(16.dp),
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = if (sessionWithCourse.session.isRemote) "Remota" else sessionWithCourse.session.room,
+                            style = MaterialTheme.typography.bodyMedium,
+
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                    }
+
                 }
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        Icons.Rounded.Person,
-                        contentDescription = "profesor",
-                        modifier = Modifier.size(16.dp),
-                        tint = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = sessionWithCourse.course.professor,
-                        style = MaterialTheme.typography.bodyMedium,
-                        maxLines = 1,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        Icons.Rounded.LocationOn,
-                        contentDescription = "location",
-                        modifier = Modifier.size(16.dp),
-                        tint = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = if (sessionWithCourse.session.isRemote) "Remota" else sessionWithCourse.session.room,
-                        style = MaterialTheme.typography.bodyMedium,
-
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
-                }
-
-
             }
         }
     }
@@ -142,8 +147,8 @@ private fun ClassItemRemotePreview() {
             course = Course(
                 id = "id2",
                 semesterId = "semesterId",
-                name = "name",
-                professor = "professor"
+                name = "Materia 1",
+                professor = "Profesor"
             )
         )
 
@@ -168,8 +173,8 @@ private fun ClassItemWhitRoomPreview() {
             course = Course(
                 id = "id2",
                 semesterId = "semesterId",
-                name = "name",
-                professor = "professor"
+                name = "Materia 1",
+                professor = "Profesor"
             )
         )
 

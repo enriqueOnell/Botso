@@ -50,7 +50,7 @@ import java.time.LocalDate
 @Composable
 fun TasksScreen(
     viewModel: TasksViewModel,
-    uiState: TasksUiState
+    uiState: TasksUiState, modifier: Modifier = Modifier
 ) {
     var taskToEdit by remember { mutableStateOf<Task?>(null) }
     val courses = (uiState as? TasksUiState.Success)?.courses ?: emptyList()
@@ -67,7 +67,7 @@ fun TasksScreen(
         },
         onDeleteTask = { viewModel.deleteTask(it) },
         onEditTask = { taskToEdit = it },
-        modifier = Modifier.padding(16.dp)
+        modifier = modifier.padding(16.dp)
     )
 
     taskToEdit?.let { task ->

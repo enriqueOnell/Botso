@@ -23,6 +23,7 @@ import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.FloatingToolbarDefaults
+import androidx.compose.material3.FloatingToolbarExitDirection
 import androidx.compose.material3.HorizontalFloatingToolbar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -81,9 +82,11 @@ import java.util.UUID
  * semestres y cursos. Los datos provienen de `TasksViewModel` y
  * `SemestersViewModel`; la UI solo dispara eventos y refleja el estado.
  */
+@Suppress("ViewModelForwarding")
 @Composable
 fun BotsoMainApp(
-    modifier: Modifier = Modifier, taskViewModel: TasksViewModel = hiltViewModel(),
+    modifier: Modifier = Modifier,
+    taskViewModel: TasksViewModel = hiltViewModel(),
     semesterViewModel: SemestersViewModel = hiltViewModel(),
     navController: NavHostController = rememberNavController()
 ) {
@@ -111,15 +114,26 @@ fun BotsoMainApp(
     val isCourseGrades = currentDestination?.hasRoute<Route.CourseGrades>() == true
     val isSettings = currentDestination?.hasRoute<Route.Settings>() == true
 
+
+    val appBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    val toolbarScrollBehavior = FloatingToolbarDefaults.exitAlwaysScrollBehavior(
+        exitDirection = FloatingToolbarExitDirection.Bottom
+    )
+
     LaunchedEffect(currentDestination) {
         if (!isCourseGrades) {
             currentCourseName = ""
         }
+
+        appBarScrollBehavior.state.heightOffset = 0f
+        toolbarScrollBehavior.state.offset = 0f
     }
 
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     Scaffold(
-        modifier = modifier.fillMaxSize().nestedScroll(scrollBehavior.nestedScrollConnection),
+        modifier = modifier
+            .fillMaxSize()
+            .nestedScroll(appBarScrollBehavior.nestedScrollConnection)
+            .nestedScroll(toolbarScrollBehavior),
         topBar = {
             val title = when {
                 isDashboard -> "Botso"
@@ -137,7 +151,7 @@ fun BotsoMainApp(
                         color = MaterialTheme.colorScheme.primary
                     )
                 },
-                scrollBehavior = scrollBehavior,
+                scrollBehavior = appBarScrollBehavior,
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Transparent,
                     scrolledContainerColor = Color.Transparent
@@ -148,19 +162,25 @@ fun BotsoMainApp(
             Box(
                 modifier = Modifier
                     .background(Color.Transparent)
-                    .fillMaxWidth()
-                    .navigationBarsPadding(),
+                    .fillMaxWidth(),
                 contentAlignment = Alignment.Center,
 
-            ) {
+                ) {
                 HorizontalFloatingToolbar(
+                    modifier = Modifier.navigationBarsPadding(),
                     expanded = true,
+                    scrollBehavior = toolbarScrollBehavior,
                     colors = FloatingToolbarDefaults.standardFloatingToolbarColors(MaterialTheme.colorScheme.primaryContainer),
                     floatingActionButton = {
                         if (isCourseGrades) {
                             FloatingActionButton(
                                 onClick = { navController.popBackStack() },
-                                elevation = FloatingActionButtonDefaults.elevation(1.dp,0.dp,0.dp,0.dp),
+                                elevation = FloatingActionButtonDefaults.elevation(
+                                    1.dp,
+                                    0.dp,
+                                    0.dp,
+                                    0.dp
+                                ),
                                 containerColor = MaterialTheme.colorScheme.tertiary,
                                 shape = MaterialTheme.shapes.medium
                             ) {
@@ -171,7 +191,12 @@ fun BotsoMainApp(
                             }
                         } else if (isTasks || isSemesters) {
                             FloatingActionButton(
-                                elevation = FloatingActionButtonDefaults.elevation(1.dp,0.dp,0.dp,0.dp),
+                                elevation = FloatingActionButtonDefaults.elevation(
+                                    1.dp,
+                                    0.dp,
+                                    0.dp,
+                                    0.dp
+                                ),
                                 containerColor = MaterialTheme.colorScheme.tertiary,
                                 onClick = {
                                     if (isTasks) showTaskDialog = true
@@ -183,7 +208,12 @@ fun BotsoMainApp(
                             }
                         } else if (isDashboard) {
                             FloatingActionButton(
-                                elevation = FloatingActionButtonDefaults.elevation(1.dp,0.dp,0.dp,0.dp),
+                                elevation = FloatingActionButtonDefaults.elevation(
+                                    1.dp,
+                                    0.dp,
+                                    0.dp,
+                                    0.dp
+                                ),
                                 containerColor = MaterialTheme.colorScheme.tertiary,
                                 onClick = {
                                     navController.navigate(Route.Settings) {
@@ -197,7 +227,12 @@ fun BotsoMainApp(
                             ) { Icon(Icons.Default.Settings, contentDescription = "Ajustes") }
                         } else if (isSettings) {
                             FloatingActionButton(
-                                elevation = FloatingActionButtonDefaults.elevation(1.dp,0.dp,0.dp,0.dp),
+                                elevation = FloatingActionButtonDefaults.elevation(
+                                    1.dp,
+                                    0.dp,
+                                    0.dp,
+                                    0.dp
+                                ),
                                 onClick = { navController.popBackStack() },
                                 containerColor = MaterialTheme.colorScheme.tertiary,
                                 shape = MaterialTheme.shapes.medium

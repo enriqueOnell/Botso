@@ -1,22 +1,24 @@
 package com.onell.botso.ui.components.dashboard
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.onell.botso.domain.model.Task
@@ -27,86 +29,104 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 /**
- * Fila de tarea prioritaria — Material 3 Expressive.
- * Muestra el título, la materia (en lugar de la descripción) y la fecha formateada (día, número y mes).
+ * Tarjeta de tarea prioritaria.
+ * Muestra el nombre de la materia con icono de graduación, título en destacado,
+ * descripción de la tarea y un badge vertical con la fecha (día semana, número y mes).
  */
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun PriorityTaskItem(
     task: Task,
     modifier: Modifier = Modifier
 ) {
-    val dayFormatter = remember {
+    val dayOfWeekFormatter = remember {
         DateTimeFormatter.ofPattern("EEE", Locale.forLanguageTag("es"))
-
     }
-
     val dayNumberFormatter = remember {
         DateTimeFormatter.ofPattern("d", Locale.forLanguageTag("es"))
     }
-
     val monthFormatter = remember {
         DateTimeFormatter.ofPattern("MMM", Locale.forLanguageTag("es"))
     }
 
-    val day = task.dueDate.format(dayFormatter)
+    val dayOfWeek = task.dueDate.format(dayOfWeekFormatter).lowercase()
     val dayNumber = task.dueDate.format(dayNumberFormatter)
     val month = task.dueDate.format(monthFormatter)
 
     Card(
         modifier = modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.large,
-        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primaryContainer)
+        shape = RoundedCornerShape(32.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+        )
     ) {
-
         Row(
-            verticalAlignment = Alignment.CenterVertically
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-
-            Surface(
-                modifier = Modifier.padding(16.dp),
-                color = MaterialTheme.colorScheme.errorContainer,
-                shape = MaterialShapes.Slanted.toShape()
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = 16.dp)
             ) {
-                Column(
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = day,
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.error,
-                    )
-                    Text(
-                        text = dayNumber,
-                        style = MaterialTheme.typography.headlineSmall,
-                        color = MaterialTheme.colorScheme.error,
-                    )
-                    Text(
-                        text = month,
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.error,
-                    )
-                }
-            }
-            Column {
+                Spacer(modifier = Modifier.height(4.dp))
+
                 Text(
                     text = task.title,
                     style = MaterialTheme.typography.headlineSmall,
-                    color = MaterialTheme.colorScheme.primary
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
-                Spacer(modifier = Modifier.padding(2.dp))
-                Text(
-                    text = task.description,
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
-                )
+
+                if (task.description.isNotBlank()) {
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = task.description,
+                        style = MaterialTheme.typography.titleSmall,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
             }
 
+            Surface(
+                shape = MaterialTheme.shapes.small,
+                color = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
+            ) {
+                Column(
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = dayOfWeek,
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.Medium,
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                    Text(
+                        text = dayNumber,
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                    Text(
+                        text = month,
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.Medium,
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                }
+            }
         }
     }
-
-
 }
 
 @Preview(showBackground = true)
@@ -116,14 +136,14 @@ private fun PriorityTaskItemPreview() {
         PriorityTaskItem(
             task = Task(
                 id = "id",
-                courseId = "courseId",
-                title = "Entrega de proyecto final",
-                dueDate = LocalDate.now(),
+                courseId = "58",
+                title = "Tarea 1",
+                dueDate = LocalDate.of(2026, 11, 7),
                 isPriority = true,
                 hasAttachment = true,
                 status = TaskStatus.TODO,
                 week = 3,
-                description = "Descripción oculta"
+                description = "Debo hacer la tarea 1 por que si no me tiro la materia"
             ),
         )
     }
