@@ -1,16 +1,21 @@
 package com.onell.botso.ui.components.dashboard
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.EventAvailable
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.carousel.HorizontalUncontainedCarousel
+import androidx.compose.material3.carousel.rememberCarouselState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -20,36 +25,46 @@ import com.onell.botso.domain.model.CourseWithSession
 import com.onell.botso.ui.theme.BotsoTheme
 import java.time.LocalTime
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TodayClassSectionCard(
     todayClasses: List<CourseWithSession>,
     modifier: Modifier = Modifier
 ) {
     Card(
-        modifier = modifier,
+        modifier = modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainerLow)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 text = "Clases del Día",
-                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                color = MaterialTheme.colorScheme.onSurface,
                 style = MaterialTheme.typography.headlineSmall,
             )
 
-            Spacer(modifier = Modifier.padding(8.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                todayClasses.forEach { todayClass ->
-                    key(todayClass.session.id) {
-                        ClassItem(
-                            sessionWithCourse = todayClass
-                        )
-                    }
+            if (todayClasses.isEmpty()) {
+                SectionEmptyState(
+                    title = "¡Día libre!",
+                    subtitle = "No tienes clases programadas para hoy",
+                    icon = Icons.Rounded.EventAvailable
+                )
+            } else {
+                HorizontalUncontainedCarousel(
+                    state = rememberCarouselState { todayClasses.size },
+                    modifier = Modifier.fillMaxWidth(),
+                    itemWidth = 280.dp,
+                    itemSpacing = 12.dp,
+                    contentPadding = PaddingValues(horizontal = 2.dp)
+                ) { index ->
+                    val todayClass = todayClasses[index]
 
+                    ClassItem(
+                        sessionWithCourse = todayClass,
+                        modifier = Modifier.maskClip(MaterialTheme.shapes.large)
+                    )
                 }
             }
         }
@@ -67,31 +82,31 @@ private fun PreviewTodayClassSectionCard() {
                 1,
                 LocalTime.of(10, 0),
                 LocalTime.of(12, 0),
-                "room",
+                "Salón 302",
                 true
             ),
             course = Course(
                 id = "id2",
                 semesterId = "semesterId",
-                name = "name",
-                professor = "professor"
+                name = "Sistemas Operativos",
+                professor = "Edgar Morillo"
             )
         ),
         CourseWithSession(
             session = ClassSession(
                 "13",
-                "24",
+                "id3",
                 1,
-                LocalTime.of(13, 0),
-                LocalTime.of(15, 0),
-                "room",
-                true
+                LocalTime.of(14, 0),
+                LocalTime.of(16, 0),
+                "Lab 4",
+                false
             ),
             course = Course(
-                id = "24",
+                id = "id3",
                 semesterId = "semesterId",
-                name = "name",
-                professor = "professor"
+                name = "Calidad de Software",
+                professor = "Luis Bedoya"
             )
         )
     )
@@ -99,6 +114,16 @@ private fun PreviewTodayClassSectionCard() {
     BotsoTheme {
         TodayClassSectionCard(
             todayClasses = todayClasses,
+        )
+    }
+}
+
+@Preview(name = "TodayClassSectionCardEmpty")
+@Composable
+private fun PreviewTodayClassSectionCardEmpty() {
+    BotsoTheme {
+        TodayClassSectionCard(
+            todayClasses = emptyList(),
         )
     }
 }

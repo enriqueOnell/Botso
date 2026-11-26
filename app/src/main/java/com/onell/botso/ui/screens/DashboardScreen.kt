@@ -95,6 +95,10 @@ fun DashboardContent(
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
+                item(contentType = "Today Classes Section") {
+                    TodayClassSectionCard(uiState.todayClasses)
+                }
+                
                 item(contentType = "Pending Tasks Section") {
                     PendingTasksCard(count = uiState.pendingTasksCount)
                 }
@@ -103,13 +107,10 @@ fun DashboardContent(
                     PlatformSectionCard()
                 }
 
-                item(contentType = "Today Classes Section") {
-                    TodayClassSectionCard(uiState.todayClasses)
-                }
-
                 item(contentType = "Priority Tasks Section") {
                     PriorityTasksSectionCard(uiState.priorityTasks)
                 }
+
 
                 item(contentType = "Course Grade Section") {
                     CourseGradeSectionCard(uiState.coursesWithGrades)

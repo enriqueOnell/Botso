@@ -2,10 +2,11 @@ package com.onell.botso.ui.components.dashboard
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.TaskAlt
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -39,23 +40,29 @@ fun PriorityTasksSectionCard(
 
             Spacer(modifier = Modifier.padding(8.dp))
 
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                priorityTasks.forEach { task ->
-                    key(task.id) {
-                        PriorityTaskItem(task = task)
+            if (priorityTasks.isEmpty()) {
+                SectionEmptyState(
+                    title = "¡Todo al día!",
+                    subtitle = "No tienes tareas prioritarias pendientes",
+                    icon = Icons.Rounded.TaskAlt
+                )
+            } else {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    priorityTasks.forEach { task ->
+                        key(task.id) {
+                            PriorityTaskItem(task = task)
+                        }
                     }
                 }
             }
         }
     }
-
-
 }
 
-@Preview(name = "PlatformSectionCard")
+@Preview(name = "PriorityTasksSectionCard")
 @Composable
 private fun PreviewPriorityTasksSectionCard() {
     val priorityTasks = listOf(
@@ -69,22 +76,18 @@ private fun PreviewPriorityTasksSectionCard() {
             status = TaskStatus.TODO,
             week = 3,
             description = "Hay que hacer tarea 1"
-        ),
-        Task(
-            id = "id",
-            courseId = "courseId",
-            title = "Tarea 2",
-            dueDate = LocalDate.now(),
-            isPriority = true,
-            hasAttachment = true,
-            status = TaskStatus.TODO,
-            week = 3,
-            description = "Debo hacer la tarea do por que si no me tiro la materia 1"
         )
     )
 
-
     BotsoTheme {
         PriorityTasksSectionCard(priorityTasks)
+    }
+}
+
+@Preview(name = "PriorityTasksSectionCardEmpty")
+@Composable
+private fun PreviewPriorityTasksSectionCardEmpty() {
+    BotsoTheme {
+        PriorityTasksSectionCard(emptyList())
     }
 }

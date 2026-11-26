@@ -1,22 +1,37 @@
 package com.onell.botso.ui.components.dashboard
 
+import android.content.res.Configuration
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.AttachFile
+import androidx.compose.material.icons.rounded.PriorityHigh
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -28,123 +43,184 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
-/**
- * Tarjeta de tarea prioritaria.
- * Muestra el nombre de la materia con icono de graduación, título en destacado,
- * descripción de la tarea y un badge vertical con la fecha (día semana, número y mes).
- */
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun PriorityTaskItem(
     task: Task,
     modifier: Modifier = Modifier
 ) {
-    val dayOfWeekFormatter = remember {
-        DateTimeFormatter.ofPattern("EEE", Locale.forLanguageTag("es"))
-    }
-    val dayNumberFormatter = remember {
-        DateTimeFormatter.ofPattern("d", Locale.forLanguageTag("es"))
-    }
-    val monthFormatter = remember {
-        DateTimeFormatter.ofPattern("MMM", Locale.forLanguageTag("es"))
-    }
+    val localeEs = remember { Locale.forLanguageTag("es") }
+    val dayOfWeekFormatter = remember { DateTimeFormatter.ofPattern("EEE", localeEs) }
+    val dayNumberFormatter = remember { DateTimeFormatter.ofPattern("d", localeEs) }
+    val monthFormatter = remember { DateTimeFormatter.ofPattern("MMM", localeEs) }
 
-    val dayOfWeek = task.dueDate.format(dayOfWeekFormatter).lowercase()
+    val dayOfWeek = task.dueDate.format(dayOfWeekFormatter).replace(".", "").uppercase()
     val dayNumber = task.dueDate.format(dayNumberFormatter)
-    val month = task.dueDate.format(monthFormatter)
+    val month = task.dueDate.format(monthFormatter).replace(".", "").lowercase()
 
     Card(
         modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(32.dp),
+        shape = RoundedCornerShape(28.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer,
             contentColor = MaterialTheme.colorScheme.onPrimaryContainer
         )
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Column(
+        Box(modifier = Modifier.fillMaxWidth()) {
+            // Forma orgánica decorativa en la esquina inferior derecha
+            Box(
                 modifier = Modifier
-                    .weight(1f)
-                    .padding(end = 16.dp)
+                    .align(Alignment.BottomEnd)
+                    .offset(x = 22.dp, y = 22.dp)
+                    .size(110.dp)
+                    .clip(MaterialShapes.Sunny.toShape())
+                    .background(MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.06f))
+            )
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(14.dp)
             ) {
-                Spacer(modifier = Modifier.height(4.dp))
-
-                Text(
-                    text = task.title,
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-
-                if (task.description.isNotBlank()) {
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = task.description,
-                        style = MaterialTheme.typography.titleSmall,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
-            }
-
-            Surface(
-                shape = MaterialTheme.shapes.small,
-                color = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary
-            ) {
+                // Columna izquierda: metadatos, título y descripción
                 Column(
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
+                    modifier = Modifier.weight(1f)
                 ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        Surface(
+                            shape = CircleShape,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.12f)
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(2.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Rounded.PriorityHigh,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(12.dp),
+                                    tint = MaterialTheme.colorScheme.onPrimaryContainer
+                                )
+                                Text(
+                                    text = "Sem. ${task.week}",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                                )
+                            }
+                        }
+
+                        if (task.hasAttachment) {
+                            Icon(
+                                imageVector = Icons.Rounded.AttachFile,
+                                contentDescription = "Tiene archivo adjunto",
+                                modifier = Modifier.size(15.dp),
+                                tint = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.75f)
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
                     Text(
-                        text = dayOfWeek,
-                        style = MaterialTheme.typography.labelMedium,
-                        fontWeight = FontWeight.Medium,
-                        color = MaterialTheme.colorScheme.onPrimary
-                    )
-                    Text(
-                        text = dayNumber,
+                        text = task.title,
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onPrimary
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
-                    Text(
-                        text = month,
-                        style = MaterialTheme.typography.labelMedium,
-                        fontWeight = FontWeight.Medium,
-                        color = MaterialTheme.colorScheme.onPrimary
-                    )
+
+                    if (task.description.isNotBlank()) {
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = task.description,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f),
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                }
+
+                // Badge vertical de fecha con acento tertiary
+                Surface(
+                    modifier = Modifier.widthIn(min = 66.dp),
+                    shape = RoundedCornerShape(20.dp),
+                    color = MaterialTheme.colorScheme.tertiary,
+                    contentColor = MaterialTheme.colorScheme.onTertiary
+                ) {
+                    Column(
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = dayOfWeek,
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onTertiary.copy(alpha = 0.85f)
+                        )
+                        Text(
+                            text = dayNumber,
+                            style = MaterialTheme.typography.headlineSmall,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = MaterialTheme.colorScheme.onTertiary
+                        )
+                        Text(
+                            text = month,
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.onTertiary.copy(alpha = 0.9f)
+                        )
+                    }
                 }
             }
         }
     }
 }
 
-@Preview(showBackground = true)
+@Preview(name = "Light Mode", showBackground = true)
+@Preview(name = "Dark Mode", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun PriorityTaskItemPreview() {
     BotsoTheme {
-        PriorityTaskItem(
-            task = Task(
-                id = "id",
-                courseId = "58",
-                title = "Tarea 1",
-                dueDate = LocalDate.of(2026, 11, 7),
-                isPriority = true,
-                hasAttachment = true,
-                status = TaskStatus.TODO,
-                week = 3,
-                description = "Debo hacer la tarea 1 por que si no me tiro la materia"
-            ),
-        )
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            PriorityTaskItem(
+                task = Task(
+                    id = "id1",
+                    courseId = "58",
+                    title = "Taller de Redes OAuth2",
+                    dueDate = LocalDate.of(2026, 11, 27),
+                    isPriority = true,
+                    hasAttachment = true,
+                    status = TaskStatus.TODO,
+                    week = 14,
+                    description = "Subir captura de Wireshark y repositorio antes de medianoche."
+                )
+            )
+            PriorityTaskItem(
+                task = Task(
+                    id = "id2",
+                    courseId = "59",
+                    title = "Parcial Calidad de Software",
+                    dueDate = LocalDate.of(2026, 12, 2),
+                    isPriority = true,
+                    hasAttachment = false,
+                    status = TaskStatus.TODO,
+                    week = 15,
+                    description = ""
+                )
+            )
+        }
     }
 }

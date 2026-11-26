@@ -2,13 +2,12 @@ package com.onell.botso.ui.components.dashboard
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.School
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -16,9 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.carousel.HorizontalUncontainedCarousel
 import androidx.compose.material3.carousel.rememberCarouselState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.onell.botso.domain.model.Course
@@ -48,19 +45,27 @@ fun CourseGradeSectionCard(
                 style = MaterialTheme.typography.headlineSmall,
             )
 
-            HorizontalUncontainedCarousel(
-                state = rememberCarouselState { courses.size },
-                modifier = Modifier.fillMaxWidth(),
-                itemWidth = 180.dp,
-                itemSpacing = 12.dp,
-                contentPadding = PaddingValues(horizontal = 4.dp)
-            ) { index ->
-                val courseWithGrades = courses[index]
-
-                CourseGradeItem(
-                    courseWithGrades = courseWithGrades,
-                    modifier = Modifier.maskClip(MaterialTheme.shapes.extraLarge)
+            if (courses.isEmpty()) {
+                SectionEmptyState(
+                    title = "Sin materias registradas",
+                    subtitle = "Inscribe materias en la sección de Semestres",
+                    icon = Icons.Rounded.School
                 )
+            } else {
+                HorizontalUncontainedCarousel(
+                    state = rememberCarouselState { courses.size },
+                    modifier = Modifier.fillMaxWidth(),
+                    itemWidth = 180.dp,
+                    itemSpacing = 12.dp,
+                    contentPadding = PaddingValues(horizontal = 4.dp)
+                ) { index ->
+                    val courseWithGrades = courses[index]
+
+                    CourseGradeItem(
+                        courseWithGrades = courseWithGrades,
+                        modifier = Modifier.maskClip(MaterialTheme.shapes.extraLarge)
+                    )
+                }
             }
         }
     }
@@ -87,36 +92,17 @@ private fun PreviewCourseGradeSectionCard() {
                     termId = 1
                 )
             )
-        ),
-        CourseWithGrades(
-            course = Course(
-                id = "id2",
-                semesterId = "semesterId",
-                name = "Sistemas Operativos",
-                professor = "Edgar Morillo"
-            ),
-            grades = listOf(
-                Grade(
-                    id = "g2",
-                    courseId = "id2",
-                    name = "Corte 1",
-                    score = 3.8,
-                    weight = 0.3,
-                    termId = 1
-                )
-            )
-        ),
-        CourseWithGrades(
-            course = Course(
-                id = "id3",
-                semesterId = "semesterId",
-                name = "Auditoría Informática",
-                professor = "Profesor"
-            ),
-            grades = emptyList()
         )
     )
     BotsoTheme {
         CourseGradeSectionCard(courses)
+    }
+}
+
+@Preview(name = "CourseGradeSectionCardEmpty")
+@Composable
+private fun PreviewCourseGradeSectionCardEmpty() {
+    BotsoTheme {
+        CourseGradeSectionCard(emptyList())
     }
 }
