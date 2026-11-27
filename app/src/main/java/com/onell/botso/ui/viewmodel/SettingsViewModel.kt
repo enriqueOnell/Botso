@@ -2,10 +2,13 @@ package com.onell.botso.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.onell.botso.domain.model.ThemeMode
 import com.onell.botso.domain.usecase.notification.SendNotificationUseCase
 import com.onell.botso.domain.usecase.settigns.GetClassNotificationsUseCase
 import com.onell.botso.domain.usecase.settigns.GetDynamicColorThemeUseCase
 import com.onell.botso.domain.usecase.settigns.GetTaskNotificationsUseCase
+import com.onell.botso.domain.usecase.settigns.GetThemeModeUseCase
+import com.onell.botso.domain.usecase.settigns.SetThemeModeUseCase
 import com.onell.botso.domain.usecase.settigns.ToggleClassNotificationsUseCase
 import com.onell.botso.domain.usecase.settigns.ToggleDynamicColorThemeUseCase
 import com.onell.botso.domain.usecase.settigns.ToggleTaskNotificationsUseCase
@@ -22,7 +25,7 @@ import javax.inject.Inject
 /**
  * ViewModel de Ajustes.
  *
- * Combina las preferencias persistidas en DataStore (color dinámico y
+ * Combina las preferencias persistidas en DataStore (tema, color dinámico y
  * notificaciones) y expone acciones para cambiarlas. La UI resuelve el permiso
  * `POST_NOTIFICATIONS` y devuelve el resultado con
  * `onNotificationPermissionResult` para mantener preferencia y permiso
@@ -30,6 +33,9 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
+    private val getThemeModeUseCase: GetThemeModeUseCase,
+    private val setThemeModeUseCase: SetThemeModeUseCase,
+
     private val getDynamicColorThemeUseCase: GetDynamicColorThemeUseCase,
     private val toggleDynamicColorThemeUseCase: ToggleDynamicColorThemeUseCase,
 
@@ -51,13 +57,16 @@ class SettingsViewModel @Inject constructor(
     fun loadSettings() {
         viewModelScope.launch {
             combine(
+                getThemeModeUseCase(),
                 getDynamicColorThemeUseCase(),
                 getTaskNotificationsUseCase(),
                 getClassNotificationsUseCase()
-            ) { isDynamicColorEnabled,
+            ) { themeMode,
+                isDynamicColorEnabled,
                 isTaskNotificationsEnabled,
                 isClassNotificationsEnabled ->
                 SettingsUiState(
+                    themeMode = themeMode,
                     isDynamicColorEnabled = isDynamicColorEnabled,
                     isTaskNotificationsEnabled = isTaskNotificationsEnabled,
                     isClassNotificationsEnabled = isClassNotificationsEnabled
@@ -66,6 +75,12 @@ class SettingsViewModel @Inject constructor(
                 .collect { updatedState ->
                     _uiState.value = updatedState
                 }
+        }
+    }
+
+    fun onThemeModeSelected(themeMode: ThemeMode) {
+        viewModelScope.launch {
+            setThemeModeUseCase(themeMode)
         }
     }
 

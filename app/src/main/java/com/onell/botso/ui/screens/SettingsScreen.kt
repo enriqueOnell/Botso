@@ -5,26 +5,31 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.NotificationsActive
+import androidx.compose.material.icons.rounded.Palette
+import androidx.compose.material.icons.rounded.Schedule
+import androidx.compose.material.icons.rounded.TaskAlt
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -37,7 +42,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
@@ -46,8 +50,13 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.onell.botso.ui.components.settings.AppVersionText
-import com.onell.botso.ui.components.settings.SettingsCard
+import com.onell.botso.domain.model.ThemeMode
+import com.onell.botso.ui.components.settings.SettingsAboutItem
+import com.onell.botso.ui.components.settings.SettingsPermissionNotice
+import com.onell.botso.ui.components.settings.SettingsSectionCard
+import com.onell.botso.ui.components.settings.SettingsThemeModeItem
+import com.onell.botso.ui.components.settings.SettingsToggleItem
+import com.onell.botso.ui.theme.BotsoTheme
 import com.onell.botso.ui.uistate.NotificationToggle
 import com.onell.botso.ui.uistate.SettingsUiState
 import com.onell.botso.ui.viewmodel.SettingsViewModel
@@ -65,7 +74,7 @@ private const val NOTIFICATION_PERMISSION = Manifest.permission.POST_NOTIFICATIO
 
 @Composable
 fun SettingsScreen(
-    viewModel: SettingsViewModel = hiltViewModel()
+    modifier: Modifier = Modifier, viewModel: SettingsViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
@@ -73,8 +82,6 @@ fun SettingsScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
-    // El permiso vive en el sistema: se consulta siempre al volver a la pantalla,
-    // nunca se cachea en el ViewModel.
     var hasNotificationPermission by remember {
         mutableStateOf(context.hasNotificationPermission())
     }
@@ -82,8 +89,6 @@ fun SettingsScreen(
         hasNotificationPermission = context.hasNotificationPermission()
     }
 
-    // Ajuste pendiente de resolver el permiso. La UI recuerda a quién
-    // corresponde el resultado del diálogo del sistema.
     var pendingToggle by rememberSaveable { mutableStateOf<NotificationToggle?>(null) }
     var showRationaleDialog by rememberSaveable { mutableStateOf(false) }
     var showBlockedDialog by rememberSaveable { mutableStateOf(false) }
@@ -103,8 +108,6 @@ fun SettingsScreen(
                     "Sin permiso de notificaciones no recibirás recordatorios."
                 )
             }
-            // Si el sistema ya no muestra el diálogo, el permiso quedó
-            // bloqueado definitivamente y solo se puede recuperar en Ajustes.
             if (activity != null && !activity.shouldShowNotificationRationale()) {
                 showBlockedDialog = true
             }
@@ -126,10 +129,11 @@ fun SettingsScreen(
         }
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = modifier.fillMaxSize()) {
         SettingsContent(
             uiState = uiState,
             hasNotificationPermission = hasNotificationPermission,
+            onThemeModeSelect = viewModel::onThemeModeSelected,
             onDynamicColor = { isChecked -> viewModel.onDynamicColorToggled(isChecked) },
             onNotificationToggle = onNotificationToggle
         )
@@ -138,7 +142,7 @@ fun SettingsScreen(
             hostState = snackbarHostState,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(16.dp)
+                .padding(start = 16.dp, end = 16.dp, bottom = 96.dp)
         )
     }
 
@@ -207,89 +211,103 @@ fun SettingsScreen(
     }
 }
 
+/**
+ * Contenido puro de Ajustes.
+ *
+ * No conoce el ViewModel ni el permiso del sistema: recibe el estado y los
+ * callbacks, lo que permite previsualizarlo en claro/oscuro con datos falsos.
+ */
 @Composable
 fun SettingsContent(
     uiState: SettingsUiState,
     hasNotificationPermission: Boolean,
+    onThemeModeSelect: (ThemeMode) -> Unit,
     onDynamicColor: (Boolean) -> Unit,
     onNotificationToggle: (NotificationToggle, Boolean) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(4.dp),
-        contentPadding = PaddingValues(16.dp),
+        modifier = modifier.fillMaxSize(),
+        contentPadding = PaddingValues(
+            start = 16.dp,
+            top = 16.dp,
+            end = 16.dp,
+            bottom = 96.dp
+        ),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        item {
-            Text(
-                text = "Apariencia",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.SemiBold
-            )
-        }
-        item {
-            SettingsCard(
-                name = "Color Dinámico",
-                onCheckedChange = onDynamicColor,
-                isActive = uiState.isDynamicColorEnabled
-            )
-        }
-
-        item {
-            Text(
-                text = "Notificaciones",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.SemiBold
-            )
-        }
-
-        item {
-            SettingsCard(
-                name = "Notificaciones de Tareas",
-                onCheckedChange = { isEnabled ->
-                    onNotificationToggle(NotificationToggle.TASKS, isEnabled)
-                },
-                isActive = uiState.isTaskNotificationsEnabled && hasNotificationPermission
-            )
-        }
-
-        item {
-            SettingsCard(
-                name = "Notificaciones de Clases",
-                onCheckedChange = { isEnabled ->
-                    onNotificationToggle(NotificationToggle.CLASSES, isEnabled)
-                },
-                isActive = uiState.isClassNotificationsEnabled && hasNotificationPermission
-            )
-        }
-
-        item {
-            Text(
-                text = "Acerca de",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.SemiBold
-            )
-        }
-
-        item {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(24.dp)
+        item(key = "appearance") {
+            SettingsSectionCard(
+                title = "Apariencia",
+                subtitle = "Color y tema de la aplicación",
+                icon = Icons.Rounded.Palette,
+                iconContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                iconContentColor = MaterialTheme.colorScheme.primary
             ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Botso",
-                        fontWeight = FontWeight.SemiBold
-                    )
-                    AppVersionText()
+                SettingsThemeModeItem(
+                    selectedMode = uiState.themeMode,
+                    onModeSelected = onThemeModeSelect
+                )
+
+                SettingsToggleItem(
+                    title = "Color dinámico",
+                    description = "Adapta Botso a los colores de tu fondo de pantalla cuando estén disponibles.",
+                    icon = Icons.Rounded.Palette,
+                    checked = uiState.isDynamicColorEnabled,
+                    onCheckedChange = onDynamicColor,
+                    iconContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                    iconContentColor = MaterialTheme.colorScheme.primary
+                )
+            }
+        }
+
+        item(key = "notifications") {
+            SettingsSectionCard(
+                title = "Notificaciones",
+                subtitle = "Elige qué avisos quieres recibir",
+                icon = Icons.Rounded.NotificationsActive,
+                iconContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                iconContentColor = MaterialTheme.colorScheme.secondary
+            ) {
+                SettingsToggleItem(
+                    title = "Notificaciones de tareas",
+                    description = "Recordatorios de entregas y tareas pendientes.",
+                    icon = Icons.Rounded.TaskAlt,
+                    checked = uiState.isTaskNotificationsEnabled && hasNotificationPermission,
+                    onCheckedChange = { isEnabled ->
+                        onNotificationToggle(NotificationToggle.TASKS, isEnabled)
+                    },
+                    iconContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    iconContentColor = MaterialTheme.colorScheme.secondary
+                )
+
+                SettingsToggleItem(
+                    title = "Notificaciones de clases",
+                    description = "Avisos antes de que comience cada clase.",
+                    icon = Icons.Rounded.Schedule,
+                    checked = uiState.isClassNotificationsEnabled && hasNotificationPermission,
+                    onCheckedChange = { isEnabled ->
+                        onNotificationToggle(NotificationToggle.CLASSES, isEnabled)
+                    },
+                    iconContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    iconContentColor = MaterialTheme.colorScheme.secondary
+                )
+
+                if (!hasNotificationPermission) {
+                    SettingsPermissionNotice()
                 }
+            }
+        }
+
+        item(key = "about") {
+            SettingsSectionCard(
+                title = "Acerca de",
+                subtitle = "Información de la aplicación",
+                icon = Icons.Rounded.Info,
+                iconContainerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                iconContentColor = MaterialTheme.colorScheme.tertiary
+            ) {
+                SettingsAboutItem()
             }
         }
     }
@@ -326,13 +344,49 @@ private fun Context.openNotificationSettings() {
         }
 }
 
-@Preview(showBackground = true)
+@Preview(name = "Settings Light", showBackground = true)
+@Preview(
+    name = "Settings Dark",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES
+)
 @Composable
-fun SettingsContentPreview() {
-    SettingsContent(
-        uiState = SettingsUiState(),
-        hasNotificationPermission = false,
-        onDynamicColor = {},
-        onNotificationToggle = { _, _ -> },
-    )
+private fun SettingsContentPreview() {
+    BotsoTheme {
+        Surface(color = MaterialTheme.colorScheme.surface) {
+            SettingsContent(
+                uiState = SettingsUiState(themeMode = ThemeMode.SYSTEM),
+                hasNotificationPermission = true,
+                onThemeModeSelect = {},
+                onDynamicColor = {},
+                onNotificationToggle = { _, _ -> }
+            )
+        }
+    }
+}
+
+@Preview(name = "Settings No Permission Light", showBackground = true)
+@Preview(
+    name = "Settings No Permission Dark",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES
+)
+@Composable
+private fun SettingsContentNoPermissionPreview() {
+    BotsoTheme {
+        Surface(color = MaterialTheme.colorScheme.surface) {
+            SettingsContent(
+                uiState = SettingsUiState(
+                    themeMode = ThemeMode.DARK,
+                    isDynamicColorEnabled = true,
+                    isTaskNotificationsEnabled = true,
+                    isClassNotificationsEnabled = false
+                ),
+                hasNotificationPermission = false,
+                onThemeModeSelect = {},
+                onDynamicColor = {},
+                onNotificationToggle = { _, _ -> }
+            )
+        }
+    }
 }

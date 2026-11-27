@@ -5,8 +5,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.onell.botso.domain.model.ThemeMode
 import com.onell.botso.navigation.BotsoMainApp
 import com.onell.botso.ui.theme.BotsoTheme
 import com.onell.botso.ui.viewmodel.SettingsViewModel
@@ -17,7 +19,8 @@ import dagger.hilt.android.AndroidEntryPoint
  *
  * Responsabilidades:
  * - Habilitar dibujo edge-to-edge.
- * - Observar `SettingsViewModel` para aplicar el tema (color dinámico on/off).
+ * - Observar `SettingsViewModel` para aplicar el tema en tiempo real
+ *   (modo sistema/claro/oscuro y color dinámico on/off).
  * - Delegar toda la navegación y el contenido a `BotsoMainApp`.
  *
  * La anotación `@AndroidEntryPoint` permite que Hilt inyecte dependencias en la
@@ -33,7 +36,13 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val settingsState by settingsViewModel.uiState.collectAsStateWithLifecycle()
+            val darkTheme = when (settingsState.themeMode) {
+                ThemeMode.SYSTEM -> isSystemInDarkTheme()
+                ThemeMode.LIGHT -> false
+                ThemeMode.DARK -> true
+            }
             BotsoTheme(
+                darkTheme = darkTheme,
                 dynamicColor = settingsState.isDynamicColorEnabled
             ) {
                 BotsoMainApp()
