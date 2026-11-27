@@ -17,7 +17,6 @@ pendientes, tareas prioritarias y el promedio de cada materia.
 | No olvidar una clase | Recordatorio 30 minutos antes del inicio (alarma exacta cuando el sistema lo permite) |
 | No olvidar una tarea | Estados (Por Hacer / En Progreso / Hecho), prioridad automática si vence en ≤ 3 días y recordatorio periódico |
 | Conocer el rendimiento | Promedio ponderado por curso y por corte (Formativa + Cognitiva) |
-| Compartir resultados | Exportación del semestre a PDF y hoja de compartir del sistema |
 | Acceder rápido a la universidad | Accesos directos a las plataformas EVA y SINU mediante Custom Tabs |
 
 ### Pantallas
@@ -25,8 +24,8 @@ pendientes, tareas prioritarias y el promedio de cada materia.
 - **Dashboard**: plataformas académicas, clases del día, contador de tareas pendientes,
   tareas prioritarias y materias con su promedio.
 - **Tareas**: listado filtrado por estado, cambio rápido de estado, edición y borrado.
-- **Semestres**: semestres con sus materias y horarios; alta/edición/borrado y exportación a PDF.
-- **Notas del curso**: promedio total animado, selector de corte y teclado numérico propio
+- **Semestres**: semestres con sus materias y horarios; alta, edición y borrado.
+- **Notas del curso**: resumen del curso, listado por corte y teclado numérico propio
   para las notas Formativa y Cognitiva.
 - **Ajustes**: color dinámico, notificaciones de tareas y de clases, y versión de la app.
 
@@ -52,14 +51,14 @@ las APIs de Android: siempre pasa por un ViewModel, un caso de uso y una interfa
                                │
 ┌──────────────────────────────▼──────────────────────────────────┐
 │  Domain                                                         │
-│  models · repository interfaces · use cases · provider          │
+│  models · repository interfaces · use cases                     │
 │  Reglas de negocio puras (sin Android/Room)                     │
 └──────────────────────────────┬──────────────────────────────────┘
                                │
 ┌──────────────────────────────▼──────────────────────────────────┐
 │  Data                                                           │
 │  Room (entities + DAOs) · repositories · mappers · DataStore    │
-│  WorkManager · AlarmManager · NotificationService · PDF         │
+│  WorkManager · AlarmManager · NotificationService               │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -129,14 +128,12 @@ botso/
 │       │   │   │   ├── local/                   # Room: BD, DAOs y entidades
 │       │   │   │   ├── mapper/                  # Entity <-> Domain
 │       │   │   │   ├── repository/              # Implementaciones de repositorios
-│       │   │   │   ├── provider/                # Generación de PDF
 │       │   │   │   ├── receiver/                # Alarmas y arranque del dispositivo
 │       │   │   │   ├── service/                 # Notificaciones
 │       │   │   │   └── worker/                  # WorkManager
 │       │   │   ├── domain/
 │       │   │   │   ├── model/                   # Modelos puros
 │       │   │   │   ├── repository/              # Contratos
-│       │   │   │   ├── provider/                # Contrato del PDF
 │       │   │   │   └── usecase/                 # Casos de uso por entidad
 │       │   │   ├── di/                          # Módulos Hilt
 │       │   │   └── ui/

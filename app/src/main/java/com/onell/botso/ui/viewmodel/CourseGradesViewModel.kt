@@ -3,6 +3,7 @@ package com.onell.botso.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.onell.botso.domain.model.Grade
+import com.onell.botso.domain.usecase.grade.DeleteGradeUseCase
 import com.onell.botso.domain.usecase.grade.GetGradesForCourseUseCase
 import com.onell.botso.domain.usecase.grade.InsertGradeUseCase
 import com.onell.botso.domain.usecase.grade.UpdateGradeUseCase
@@ -33,7 +34,8 @@ import javax.inject.Inject
 class CourseGradesViewModel @Inject constructor(
     private val getGradesForCourseUseCase: GetGradesForCourseUseCase,
     private val insertGradeUseCase: InsertGradeUseCase,
-    private val updateGradeUseCase: UpdateGradeUseCase
+    private val updateGradeUseCase: UpdateGradeUseCase,
+    private val deleteGradeUseCase: DeleteGradeUseCase
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<CourseGradesUiState>(CourseGradesUiState.Loading)
     val uiState: StateFlow<CourseGradesUiState> = _uiState.asStateFlow()
@@ -146,6 +148,43 @@ class CourseGradesViewModel @Inject constructor(
             )
         }
     }
+    /**
+     * Selecciona el corte al que pertenece la nota y carga sus valores en el editor.
+     */
+    fun editGrade(grade: Grade) {
+        setTermId(grade.termId)
+    }
+
+    /**
+     * Elimina una nota y limpia el valor en edición si pertenece al corte activo.
+     */
+    fun deleteGrade(grade: Grade) {
+        viewModelScope.launch {
+            try {
+                deleteGradeUseCase(grade)
+                _uiState.update { currentState ->
+                    if (currentState is CourseGradesUiState.Success &&
+                        currentState.currentTermId == grade.termId
+                    ) {
+                        val formativa =
+                            if (grade.name.contains("Formativa")) "" else currentState.stagedFormativa
+                        val cognitiva =
+                            if (grade.name.contains("Cognitiva")) "" else currentState.stagedCognitiva
+                        currentState.copy(
+                            stagedFormativa = formativa,
+                            stagedCognitiva = cognitiva,
+                            currentTermAverage = calculateTermAverage(formativa, cognitiva)
+                        )
+                    } else {
+                        currentState
+                    }
+                }
+            } catch (e: Exception) {
+                _uiState.value = CourseGradesUiState.Error("Error al eliminar la nota: ${e.message}")
+            }
+        }
+    }
+
     private fun calculateTermAverage(formativa: String, cognitiva: String): Double {
         val f = formativa.toDoubleOrNull() ?: 0.0
         val c = cognitiva.toDoubleOrNull() ?: 0.0

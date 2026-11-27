@@ -13,18 +13,12 @@ import com.onell.botso.domain.usecase.semester.GetAllSemestersUseCase
 import com.onell.botso.domain.usecase.semester.GetSemestersWithCoursesUseCase
 import com.onell.botso.domain.usecase.semester.InsertSemesterUseCase
 import com.onell.botso.domain.usecase.semester.UpdateSemesterUseCase
-import com.onell.botso.domain.usecase.semester.GenerateSemesterReportUseCase
 import com.onell.botso.domain.usecase.session.InsertClassSessionUseCase
 import com.onell.botso.domain.usecase.session.UpdateClassSessionUseCase
 import com.onell.botso.ui.uistate.SemestersUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
@@ -34,9 +28,7 @@ import javax.inject.Inject
  * ViewModel de Semestres.
  *
  * Combina semestres y semestres-con-cursos en un `SemestersUiState.Success` y
- * ofrece operaciones CRUD de semestres, cursos y horarios. La generación de PDF
- * se ejecuta en `Dispatchers.IO` y el resultado se comunica por
- * `pdfGeneratedEvent` para que la UI abra el selector de compartir.
+ * ofrece operaciones CRUD de semestres, cursos y horarios.
  */
 @HiltViewModel
 class SemestersViewModel @Inject constructor(
@@ -49,15 +41,11 @@ class SemestersViewModel @Inject constructor(
     private val updateCourseUseCase: UpdateCourseUseCase,
     private val deleteCourseUseCase: DeleteCourseUseCase,
     private val insertClassSessionUseCase: InsertClassSessionUseCase,
-    private val updateClassSessionUseCase: UpdateClassSessionUseCase,
-    private val generateSemesterReportUseCase: GenerateSemesterReportUseCase
+    private val updateClassSessionUseCase: UpdateClassSessionUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<SemestersUiState>(SemestersUiState.Loading)
     val uiState: StateFlow<SemestersUiState> = _uiState.asStateFlow()
-
-    private val _pdfGeneratedEvent = MutableSharedFlow<String>()
-    val pdfGeneratedEvent: SharedFlow<String> = _pdfGeneratedEvent.asSharedFlow()
 
     init {
         loadSemestersAndCourses()
@@ -144,17 +132,6 @@ class SemestersViewModel @Inject constructor(
                 deleteCourseUseCase(course)
             } catch (e: Exception) {
                 _uiState.value = SemestersUiState.Error("Error deleting course: ${e.message}")
-            }
-        }
-    }
-
-    fun exportSemesterToPdf(semester: Semester) {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val filePath = generateSemesterReportUseCase(semester)
-                _pdfGeneratedEvent.emit(filePath)
-            } catch (e: Exception) {
-                _uiState.value = SemestersUiState.Error("Error generating PDF: ${e.message}")
             }
         }
     }

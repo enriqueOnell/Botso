@@ -12,8 +12,8 @@ import androidx.compose.ui.unit.sp
  * característico de los diseños académicos modernos.
  *
  * Casos de uso de cada estilo tipográfico en la app:
- * - `displayLarge`: Indicadores numéricos gigantes de calificaciones y promedios totales (`CircularGradeProgress`).
- * - `displayMedium` / `displaySmall`: Encabezados numéricos y métricas principales de impacto visual.
+ * - `displayLarge`: Métricas gigantes del Dashboard (`PendingTasksCard`) y contadores principales.
+ * - `displayMedium` / `displaySmall`: Encabezados numéricos y métricas principales de impacto visual (`CourseSummarySectionCard`).
  * - `headlineLarge`: Títulos principales en tarjetas destacadas de clase (`ClassCard`).
  * - `headlineMedium`: Títulos de la barra superior de navegación (`CenterAlignedTopAppBar`).
  * - `headlineSmall`: Cabeceras de hojas inferiores (`SheetHeader`), títulos de diálogos y tarjetas de resumen (`PendingTasksCard`).
@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.sp
  * - `bodyLarge`: Texto principal de párrafos y descripciones extensas.
  * - `bodyMedium`: Texto introducido en campos de formulario (`FilledFormField`), notas y listas.
  * - `labelLarge`: Texto en botones de acción y botoneras inferiores (`SheetFormButtons`, `DialogActionButton`).
- * - `labelSmall`: Insignias de porcentaje (`GradeInputField`), chips de estado y metadatos secundarios.
+ * - `labelSmall`: Insignias de porcentaje (`GradeItem`), chips de estado y metadatos secundarios.
  */
 val BotsoTypography = Typography(
     displayLarge = TextStyle(

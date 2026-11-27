@@ -1,11 +1,16 @@
-package com.onell.botso.ui.components.courseGrade
+package com.onell.botso.ui.components.grades
 
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Backspace
 import androidx.compose.material.icons.filled.Save
@@ -13,10 +18,13 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.onell.botso.ui.theme.BotsoTheme
 
 /**
  * Teclado numérico de 0-9 con acciones de guardar y borrar.
@@ -58,17 +66,18 @@ fun NumericPad(
             PadButton(text = "8", modifier = Modifier.weight(1f)) { onNumberClick("8") }
             PadButton(text = "9", modifier = Modifier.weight(1f)) { onNumberClick("9") }
         }
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            // Botón Guardar (Izquierda del 0)
             Button(
                 onClick = onSaveClick,
                 modifier = Modifier
                     .weight(1f)
                     .height(54.dp),
                 shapes = ButtonDefaults.shapes(),
+                contentPadding = PaddingValues(horizontal = 8.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = MaterialTheme.colorScheme.onPrimary
@@ -76,7 +85,14 @@ fun NumericPad(
             ) {
                 Icon(
                     imageVector = Icons.Default.Save,
-                    contentDescription = "Guardar"
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp)
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = "Guardar",
+                    style = MaterialTheme.typography.labelLarge,
+                    maxLines = 1
                 )
             }
 
@@ -89,7 +105,7 @@ fun NumericPad(
                     .height(54.dp),
                 shapes = ButtonDefaults.shapes(),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
                     contentColor = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             ) {
@@ -102,12 +118,22 @@ fun NumericPad(
     }
 }
 
-@Preview
+@Preview(name = "NumericPad Light", showBackground = true)
+@Preview(
+    name = "NumericPad Dark",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES
+)
 @Composable
-fun NumericPadPreview(){
-    NumericPad(
-        onNumberClick = {},
-        onDeleteClick = {},
-        onSaveClick = {}
-    )
+private fun NumericPadPreview() {
+    BotsoTheme {
+        Surface(color = MaterialTheme.colorScheme.surface) {
+            NumericPad(
+                onNumberClick = {},
+                onDeleteClick = {},
+                onSaveClick = {},
+                modifier = Modifier.padding(16.dp)
+            )
+        }
+    }
 }

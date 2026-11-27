@@ -376,7 +376,7 @@ fun BotsoMainApp(
                 val routeArgs = backStackEntry.toRoute<Route.CourseGrades>()
                 CourseGradesScreen(
                     courseId = routeArgs.courseId,
-                    onCourseLoaded = { name ->
+                    onCourseLoad = { name ->
                         currentCourseName = name
                     }
                 )

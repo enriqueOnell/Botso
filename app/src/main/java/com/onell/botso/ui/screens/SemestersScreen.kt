@@ -1,6 +1,5 @@
 package com.onell.botso.ui.screens
 
-import android.content.Intent
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,14 +16,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.content.FileProvider
 import com.onell.botso.domain.model.Course
 import com.onell.botso.domain.model.CourseWithSession
 import com.onell.botso.domain.model.Semester
@@ -35,15 +31,12 @@ import com.onell.botso.ui.components.semesters.previewCourse
 import com.onell.botso.ui.theme.BotsoTheme
 import com.onell.botso.ui.uistate.SemestersUiState
 import com.onell.botso.ui.viewmodel.SemestersViewModel
-import java.io.File
 import java.time.LocalDate
 
 /**
  * Pantalla de Semestres.
  *
- * Lista los semestres con sus materias y horarios. También escucha
- * `pdfGeneratedEvent` para compartir el reporte PDF generado mediante
- * `FileProvider`.
+ * Lista los semestres con sus materias y horarios.
  */
 @Composable
 fun SemestersScreen(
@@ -57,23 +50,6 @@ fun SemestersScreen(
     onDeleteSemesterClicked: (Semester) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val context = LocalContext.current
-
-    LaunchedEffect(Unit) {
-        viewModel.pdfGeneratedEvent.collect { pdfPath ->
-            val file = File(pdfPath)
-            if (file.exists()) {
-                val uri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
-                val intent = Intent(Intent.ACTION_SEND).apply {
-                    type = "application/pdf"
-                    putExtra(Intent.EXTRA_STREAM, uri)
-                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                }
-                context.startActivity(Intent.createChooser(intent, "Compartir Reporte"))
-            }
-        }
-    }
-
     SemestersContent(
         uiState = uiState,
         onNavigateToCourseGrades = onNavigateToCourseGrades,
@@ -82,7 +58,6 @@ fun SemestersScreen(
         onEditCourseClicked = onEditCourseClicked,
         onDeleteCourseClicked = onDeleteCourseClicked,
         onDeleteSemesterClicked = onDeleteSemesterClicked,
-        onExportPdf = { viewModel.exportSemesterToPdf(it) },
         modifier = modifier
     )
 }
@@ -104,7 +79,6 @@ fun SemestersContent(
     onEditCourseClicked: (CourseWithSession) -> Unit,
     onDeleteCourseClicked: (Course) -> Unit,
     onDeleteSemesterClicked: (Semester) -> Unit,
-    onExportPdf: (Semester) -> Unit,
     modifier: Modifier = Modifier
 ) {
     when (uiState) {
@@ -164,8 +138,7 @@ fun SemestersContent(
                             onEditSemester = onEditSemesterClicked,
                             onEditCourse = onEditCourseClicked,
                             onDeleteCourse = onDeleteCourseClicked,
-                            onDeleteSemester = onDeleteSemesterClicked,
-                            onExportPdf = onExportPdf
+                            onDeleteSemester = onDeleteSemesterClicked
                         )
                     }
                 }
@@ -194,8 +167,7 @@ private fun SemestersContentPreview() {
                 onEditSemesterClicked = {},
                 onEditCourseClicked = {},
                 onDeleteCourseClicked = {},
-                onDeleteSemesterClicked = {},
-                onExportPdf = {}
+                onDeleteSemesterClicked = {}
             )
         }
     }
@@ -218,8 +190,7 @@ private fun SemestersContentEmptyPreview() {
                 onEditSemesterClicked = {},
                 onEditCourseClicked = {},
                 onDeleteCourseClicked = {},
-                onDeleteSemesterClicked = {},
-                onExportPdf = {}
+                onDeleteSemesterClicked = {}
             )
         }
     }

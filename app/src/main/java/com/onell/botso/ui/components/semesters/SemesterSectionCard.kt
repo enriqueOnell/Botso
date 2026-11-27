@@ -19,7 +19,6 @@ import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.MoreVert
-import androidx.compose.material.icons.rounded.PictureAsPdf
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilledTonalIconButton
@@ -68,7 +67,6 @@ fun SemesterSectionCard(
     onEditCourse: (CourseWithSession) -> Unit,
     onDeleteCourse: (Course) -> Unit,
     onDeleteSemester: (Semester) -> Unit,
-    onExportPdf: (Semester) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     var showSemesterMenu by remember { mutableStateOf(false) }
@@ -198,16 +196,6 @@ fun SemesterSectionCard(
                                 }
                             )
                             DropdownMenuItem(
-                                text = { Text("Exportar a PDF") },
-                                onClick = {
-                                    showSemesterMenu = false
-                                    onExportPdf(semester)
-                                },
-                                leadingIcon = {
-                                    Icon(Icons.Rounded.PictureAsPdf, contentDescription = null)
-                                }
-                            )
-                            DropdownMenuItem(
                                 text = { Text("Eliminar semestre") },
                                 onClick = {
                                     showSemesterMenu = false
@@ -327,7 +315,6 @@ private fun SemesterSectionCardPreview() {
                 onEditCourse = {},
                 onDeleteCourse = {},
                 onDeleteSemester = {},
-                onExportPdf = {},
                 modifier = Modifier.padding(16.dp)
             )
         }
@@ -361,7 +348,6 @@ private fun SemesterSectionCardEmptyPreview() {
                 onEditCourse = {},
                 onDeleteCourse = {},
                 onDeleteSemester = {},
-                onExportPdf = {},
                 modifier = Modifier.padding(16.dp)
             )
         }
