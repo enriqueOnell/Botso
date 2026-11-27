@@ -24,7 +24,8 @@ import java.time.LocalDate
 @Composable
 fun PriorityTasksSectionCard(
     priorityTasks: List<Task>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    coursesMap: Map<String, String> = emptyMap()
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -53,7 +54,10 @@ fun PriorityTasksSectionCard(
                 ) {
                     priorityTasks.forEach { task ->
                         key(task.id) {
-                            PriorityTaskItem(task = task)
+                            PriorityTaskItem(
+                                task = task,
+                                courseName = coursesMap[task.courseId] ?: ""
+                            )
                         }
                     }
                 }
@@ -68,7 +72,7 @@ private fun PreviewPriorityTasksSectionCard() {
     val priorityTasks = listOf(
         Task(
             id = "id",
-            courseId = "courseId",
+            courseId = "58",
             title = "Tarea 1",
             dueDate = LocalDate.now(),
             isPriority = true,
@@ -80,7 +84,10 @@ private fun PreviewPriorityTasksSectionCard() {
     )
 
     BotsoTheme {
-        PriorityTasksSectionCard(priorityTasks)
+        PriorityTasksSectionCard(
+            priorityTasks = priorityTasks,
+            coursesMap = mapOf("58" to "Estructuras de Datos")
+        )
     }
 }
 

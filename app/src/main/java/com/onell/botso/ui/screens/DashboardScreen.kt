@@ -12,6 +12,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -88,6 +89,10 @@ fun DashboardContent(
         }
 
         is DashboardUiState.Success -> {
+            val coursesMap = remember(uiState.coursesWithGrades) {
+                uiState.coursesWithGrades.associate { it.course.id to it.course.name }
+            }
+
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
@@ -108,9 +113,11 @@ fun DashboardContent(
                 }
 
                 item(contentType = "Priority Tasks Section") {
-                    PriorityTasksSectionCard(uiState.priorityTasks)
+                    PriorityTasksSectionCard(
+                        priorityTasks = uiState.priorityTasks,
+                        coursesMap = coursesMap
+                    )
                 }
-
 
                 item(contentType = "Course Grade Section") {
                     CourseGradeSectionCard(uiState.coursesWithGrades)
