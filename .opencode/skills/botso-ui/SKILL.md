@@ -80,7 +80,7 @@ Estas son las parejas reales que producen la armonía actual. Úsalas como punto
 4. **Un solo acento saturado por tarjeta.** Una tarjeta neutra puede tener un badge de acento; una tarjeta héroe puede tener una forma decorativa. No apiles primary + secondary + tertiary en la misma tarjeta.
 5. **El texto principal nunca lleva alpha.** El alpha se usa solo para metadatos sobre un color de contenido ya establecido, como `onPrimaryContainer.copy(alpha = 0.8f)` en la descripción de `PriorityTaskItem`. Los números y títulos van a opacidad completa.
 6. **Verde/rojo solo con semántica.** Aprobado = `LocalBotsoColors.passContainer` / `onPassContainer`. Reprobado/error = `error` / `errorContainer`. No escribas `Color(0xFF34D399)` ni `Color.Green` en una pantalla.
-7. **Superficies nuevas al estilo Dashboard.** Usa `surfaceContainerLow` para secciones y `surfaceContainer` / `surfaceContainerHigh` para capas elevadas. `surfaceVariant` aparece en pantallas antiguas (`SemestersScreen`); no lo introduzcas en código nuevo y migra a `surfaceContainer*` cuando toques ese componente.
+7. **Superficies nuevas al estilo Dashboard.** Usa `surfaceContainerLow` para secciones y `surfaceContainer` / `surfaceContainerHigh` para capas elevadas. `surfaceVariant` ya no se usa en ninguna pantalla; no lo introduzcas en código nuevo y migra a `surfaceContainer*` cuando toques un componente antiguo.
 8. **Modo oscuro automático.** No hagas `if (isSystemInDarkTheme())` en componentes. El tema ya cambia los tokens y `LocalBotsoColors`. Solo verifica el resultado con previews en ambos modos.
 9. **Contraste mínimo.** Texto de cuerpo ≥ 4.5:1; texto grande (≥ 24 sp o ≥ 19 sp bold) ≥ 3:1. Si combinas tokens distintos a los de la tabla, verifica el contraste antes de dar la tarea por terminada.
 
@@ -245,8 +245,8 @@ Reglas:
 |---|---|---|
 | `XScreen` | Entrada con ViewModel / navegación | `DashboardScreen` |
 | `XContent` | UI pura testeable y previsualizable | `DashboardContent` |
-| `XSectionCard` | Contenedor de una sección completa | `TodayClassSectionCard`, `TaskFilterSectionCard` |
-| `XItem` | Elemento dentro de una lista o carrusel | `ClassItem`, `CourseGradeItem`, `TaskItem` |
+| `XSectionCard` | Contenedor de una sección completa | `TodayClassSectionCard`, `TaskFilterSectionCard`, `SemesterSectionCard` |
+| `XItem` | Elemento dentro de una lista o carrusel | `ClassItem`, `CourseGradeItem`, `TaskItem`, `SemesterCourseItem` |
 | `XCard` | Tarjeta independiente | `PendingTasksCard` |
 | `SectionEmptyState` | Estado vacío reutilizable | `SectionEmptyState` |
 
@@ -300,7 +300,7 @@ fun XSectionCard(
 ### 4.4 Estados vacíos
 
 - Reutiliza `SectionEmptyState(title, subtitle, icon)` para listas vacías dentro de tarjetas.
-- No inventes un `Card` vacío nuevo. `SemestersScreen` todavía tiene un estado vacío propio; al tocarlo, migra a `SectionEmptyState` o a un componente equivalente en su feature.
+- No inventes un `Card` vacío nuevo. Todas las pantallas del proyecto usan `SectionEmptyState`; si aparece una lista vacía nueva, reutilízalo en lugar de crear un estado vacío propio.
 - El icono debe comunicar el estado (`EventAvailable` para día libre, `TaskAlt` para todo al día, `School` para sin materias).
 - El subtítulo debe decir qué hacer, no solo repetir el título.
 

@@ -1,39 +1,42 @@
 package com.onell.botso.ui.screens
 
 import android.content.Intent
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.School
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import com.onell.botso.domain.model.Course
 import com.onell.botso.domain.model.CourseWithSession
 import com.onell.botso.domain.model.Semester
-import com.onell.botso.ui.components.semester.SemesterCard
+import com.onell.botso.domain.model.SemesterWithCourse
+import com.onell.botso.ui.components.dashboard.SectionEmptyState
+import com.onell.botso.ui.components.semesters.SemesterSectionCard
+import com.onell.botso.ui.components.semesters.previewCourse
+import com.onell.botso.ui.theme.BotsoTheme
 import com.onell.botso.ui.uistate.SemestersUiState
 import com.onell.botso.ui.viewmodel.SemestersViewModel
 import java.io.File
+import java.time.LocalDate
 
 /**
  * Pantalla de Semestres.
@@ -51,7 +54,8 @@ fun SemestersScreen(
     onEditSemesterClicked: (Semester) -> Unit,
     onEditCourseClicked: (CourseWithSession) -> Unit,
     onDeleteCourseClicked: (Course) -> Unit,
-    onDeleteSemesterClicked: (Semester) -> Unit
+    onDeleteSemesterClicked: (Semester) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
 
@@ -78,10 +82,18 @@ fun SemestersScreen(
         onEditCourseClicked = onEditCourseClicked,
         onDeleteCourseClicked = onDeleteCourseClicked,
         onDeleteSemesterClicked = onDeleteSemesterClicked,
-        onExportPdf = { viewModel.exportSemesterToPdf(it) }
+        onExportPdf = { viewModel.exportSemesterToPdf(it) },
+        modifier = modifier
     )
 }
 
+/**
+ * Contenido puro de Semestres.
+ *
+ * No conoce el ViewModel: recibe el estado y los callbacks de navegación y CRUD.
+ * La raíz queda transparente para respetar el fondo base de la app y la lista
+ * reserva espacio inferior para la `HorizontalFloatingToolbar`.
+ */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun SemestersContent(
@@ -92,52 +104,60 @@ fun SemestersContent(
     onEditCourseClicked: (CourseWithSession) -> Unit,
     onDeleteCourseClicked: (Course) -> Unit,
     onDeleteSemesterClicked: (Semester) -> Unit,
-    onExportPdf: (Semester) -> Unit
+    onExportPdf: (Semester) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     when (uiState) {
         is SemestersUiState.Loading -> {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Box(
+                modifier = modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
                 LoadingIndicator()
             }
         }
+
         is SemestersUiState.Error -> {
-            Box(modifier = Modifier.fillMaxSize().padding(24.dp), contentAlignment = Alignment.Center) {
-                Text(text = uiState.message, color = MaterialTheme.colorScheme.error)
+            Box(
+                modifier = modifier
+                    .fillMaxSize()
+                    .padding(24.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = uiState.message,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodyLarge,
+                    textAlign = TextAlign.Center
+                )
             }
         }
+
         is SemestersUiState.Success -> {
-            if (uiState.semesterWithCourses.isEmpty()) {
-                Box(
-                    modifier = Modifier.fillMaxSize().padding(16.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(24.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceVariant
+            LazyColumn(
+                modifier = modifier.fillMaxSize(),
+                contentPadding = PaddingValues(
+                    start = 16.dp,
+                    top = 16.dp,
+                    end = 16.dp,
+                    bottom = 96.dp
+                ),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                if (uiState.semesterWithCourses.isEmpty()) {
+                    item(key = "semesters-empty") {
+                        SectionEmptyState(
+                            title = "Sin semestres registrados",
+                            subtitle = "Crea tu primer semestre con el botón + para organizar tus materias.",
+                            icon = Icons.Rounded.School
                         )
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(20.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            Text(
-                                text = "No hay semestres registrados",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
                     }
-                }
-            } else {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    items(uiState.semesterWithCourses) { semesterData ->
-                        SemesterCard(
+                } else {
+                    items(
+                        items = uiState.semesterWithCourses,
+                        key = { it.semester.id }
+                    ) { semesterData ->
+                        SemesterSectionCard(
                             semesterData = semesterData,
                             onCourseClick = onNavigateToCourseGrades,
                             onAddCourse = { onAddCourseClicked(semesterData.semester.id) },
@@ -154,17 +174,95 @@ fun SemestersContent(
     }
 }
 
-@Preview(showBackground = true)
+@Preview(name = "Semesters Light", showBackground = true)
+@Preview(
+    name = "Semesters Dark",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES
+)
 @Composable
-private fun SemestersScreenPreview() {
-    SemestersContent(
-        uiState = SemestersUiState.Success(emptyList()),
-        onNavigateToCourseGrades = {},
-        onAddCourseClicked = {},
-        onEditSemesterClicked = {},
-        onEditCourseClicked = {},
-        onDeleteCourseClicked = {},
-        onDeleteSemesterClicked = {},
-        onExportPdf = {}
-    )
+private fun SemestersContentPreview() {
+    BotsoTheme {
+        Surface(color = MaterialTheme.colorScheme.surface) {
+            SemestersContent(
+                uiState = SemestersUiState.Success(
+                    allSemester = previewSemesters().map { it.semester },
+                    semesterWithCourses = previewSemesters()
+                ),
+                onNavigateToCourseGrades = {},
+                onAddCourseClicked = {},
+                onEditSemesterClicked = {},
+                onEditCourseClicked = {},
+                onDeleteCourseClicked = {},
+                onDeleteSemesterClicked = {},
+                onExportPdf = {}
+            )
+        }
+    }
 }
+
+@Preview(name = "Semesters Empty Light", showBackground = true)
+@Preview(
+    name = "Semesters Empty Dark",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES
+)
+@Composable
+private fun SemestersContentEmptyPreview() {
+    BotsoTheme {
+        Surface(color = MaterialTheme.colorScheme.surface) {
+            SemestersContent(
+                uiState = SemestersUiState.Success(),
+                onNavigateToCourseGrades = {},
+                onAddCourseClicked = {},
+                onEditSemesterClicked = {},
+                onEditCourseClicked = {},
+                onDeleteCourseClicked = {},
+                onDeleteSemesterClicked = {},
+                onExportPdf = {}
+            )
+        }
+    }
+}
+
+private fun previewSemesters(): List<SemesterWithCourse> = listOf(
+    SemesterWithCourse(
+        semester = Semester(
+            id = "semester-2026-1",
+            name = "Semestre 2026-1",
+            startDate = LocalDate.of(2026, 2, 2),
+            endDate = LocalDate.of(2026, 6, 6),
+            isActive = true
+        ),
+        courses = listOf(
+            previewCourse(
+                id = "databases",
+                name = "Bases de Datos",
+                professor = "Ing. Laura Restrepo",
+                room = "Bloque B · 302"
+            ),
+            previewCourse(
+                id = "software-quality",
+                name = "Calidad de Software",
+                professor = "Mg. Andrés Molina",
+                isRemote = true
+            ),
+            previewCourse(
+                id = "networks",
+                name = "Redes de Computadores",
+                professor = "PhD. Camila Duarte",
+                room = "Laboratorio 4"
+            )
+        )
+    ),
+    SemesterWithCourse(
+        semester = Semester(
+            id = "semester-2026-2",
+            name = "Semestre 2026-2",
+            startDate = LocalDate.of(2026, 8, 3),
+            endDate = LocalDate.of(2026, 12, 5),
+            isActive = false
+        ),
+        courses = emptyList()
+    )
+)
