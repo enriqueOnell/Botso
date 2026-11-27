@@ -80,7 +80,7 @@ Estas son las parejas reales que producen la armonía actual. Úsalas como punto
 4. **Un solo acento saturado por tarjeta.** Una tarjeta neutra puede tener un badge de acento; una tarjeta héroe puede tener una forma decorativa. No apiles primary + secondary + tertiary en la misma tarjeta.
 5. **El texto principal nunca lleva alpha.** El alpha se usa solo para metadatos sobre un color de contenido ya establecido, como `onPrimaryContainer.copy(alpha = 0.8f)` en la descripción de `PriorityTaskItem`. Los números y títulos van a opacidad completa.
 6. **Verde/rojo solo con semántica.** Aprobado = `LocalBotsoColors.passContainer` / `onPassContainer`. Reprobado/error = `error` / `errorContainer`. No escribas `Color(0xFF34D399)` ni `Color.Green` en una pantalla.
-7. **Superficies nuevas al estilo Dashboard.** Usa `surfaceContainerLow` para secciones y `surfaceContainer` / `surfaceContainerHigh` para capas elevadas. `surfaceVariant` aparece en pantallas antiguas (`TasksScreen`, `SemestersScreen`); no lo introduzcas en código nuevo y migra a `surfaceContainer*` cuando toques ese componente.
+7. **Superficies nuevas al estilo Dashboard.** Usa `surfaceContainerLow` para secciones y `surfaceContainer` / `surfaceContainerHigh` para capas elevadas. `surfaceVariant` aparece en pantallas antiguas (`SemestersScreen`); no lo introduzcas en código nuevo y migra a `surfaceContainer*` cuando toques ese componente.
 8. **Modo oscuro automático.** No hagas `if (isSystemInDarkTheme())` en componentes. El tema ya cambia los tokens y `LocalBotsoColors`. Solo verifica el resultado con previews en ambos modos.
 9. **Contraste mínimo.** Texto de cuerpo ≥ 4.5:1; texto grande (≥ 24 sp o ≥ 19 sp bold) ≥ 3:1. Si combinas tokens distintos a los de la tabla, verifica el contraste antes de dar la tarea por terminada.
 
@@ -245,8 +245,8 @@ Reglas:
 |---|---|---|
 | `XScreen` | Entrada con ViewModel / navegación | `DashboardScreen` |
 | `XContent` | UI pura testeable y previsualizable | `DashboardContent` |
-| `XSectionCard` | Contenedor de una sección completa | `TodayClassSectionCard` |
-| `XItem` | Elemento dentro de una lista o carrusel | `ClassItem`, `CourseGradeItem` |
+| `XSectionCard` | Contenedor de una sección completa | `TodayClassSectionCard`, `TaskFilterSectionCard` |
+| `XItem` | Elemento dentro de una lista o carrusel | `ClassItem`, `CourseGradeItem`, `TaskItem` |
 | `XCard` | Tarjeta independiente | `PendingTasksCard` |
 | `SectionEmptyState` | Estado vacío reutilizable | `SectionEmptyState` |
 
@@ -300,7 +300,7 @@ fun XSectionCard(
 ### 4.4 Estados vacíos
 
 - Reutiliza `SectionEmptyState(title, subtitle, icon)` para listas vacías dentro de tarjetas.
-- No inventes un `Card` vacío nuevo. `TasksScreen` y `SemestersScreen` todavía tienen estados vacíos propios; al tocarlos, migra a `SectionEmptyState` o a un componente equivalente en su feature.
+- No inventes un `Card` vacío nuevo. `SemestersScreen` todavía tiene un estado vacío propio; al tocarlo, migra a `SectionEmptyState` o a un componente equivalente en su feature.
 - El icono debe comunicar el estado (`EventAvailable` para día libre, `TaskAlt` para todo al día, `School` para sin materias).
 - El subtítulo debe decir qué hacer, no solo repetir el título.
 
@@ -383,7 +383,7 @@ NavHost(
 
 La toolbar flota sobre el contenido y se oculta al hacer scroll (`exitAlwaysScrollBehavior`). Por eso:
 
-- Todo `LazyColumn` / `LazyRow` de pantalla debe reservar **al menos la altura de la toolbar + margen** en su `contentPadding` inferior. Usa `112.dp` como valor de referencia del proyecto (toolbar + navigation bar + 16 dp).
+- Todo `LazyColumn` / `LazyRow` de pantalla debe reservar **al menos la altura de la toolbar + margen** en su `contentPadding` inferior. Usa `96.dp`–`112.dp` como referencia; en Tareas y Ajustes el proyecto usa `96.dp`.
 - Si la pantalla usa `Column` con `verticalScroll`, agrega un `Spacer(Modifier.height(112.dp))` al final o un `padding(bottom = 112.dp)` en el contenedor desplazable.
 - No confíes en el `paddingValues` del `Scaffold` para el borde inferior: no se está aplicando al `NavHost`.
 - Verifica visualmente que el último item se pueda desplazar por encima de la toolbar y no quede tapado.
@@ -442,7 +442,7 @@ private fun XPreview() {
 - [ ] El estado viene de `XUiState` (`Loading` / `Success` / `Error`).
 - [ ] La pantalla no crea `Scaffold`, top bar ni FAB propios.
 - [ ] La raíz es transparente y no pinta un fondo opaco.
-- [ ] El `contentPadding` inferior es ≥ `112.dp` (o hay spacer equivalente) para no chocar con la `HorizontalFloatingToolbar`.
+- [ ] El `contentPadding` inferior es ≥ `96.dp` (idealmente `112.dp` si el espacio lo permite) para no chocar con la `HorizontalFloatingToolbar`.
 - [ ] Las listas vacías reutilizan `SectionEmptyState` o el estado vacío de su feature.
 - [ ] Los carruseles usan `HorizontalUncontainedCarousel` + `rememberCarouselState`.
 - [ ] No se duplica lógica de negocio (notas, validaciones, cálculos) en la UI.
@@ -465,7 +465,7 @@ private fun XPreview() {
 | Texto `primary` sobre `secondary` | Contraste y jerarquía impredecibles | Usa `onSecondary` o invierte el rol completo |
 | `Color.Green` para aprobado | No respeta la paleta ni el modo oscuro | `LocalBotsoColors.passContainer` / `onPassContainer` |
 | Fondo `surface` en la raíz | Tapa el fondo base y la top bar transparente | Deja la raíz sin `background` |
-| `contentPadding = PaddingValues(16.dp)` en una pantalla con toolbar | El último item queda debajo de la toolbar | Añade `bottom = 112.dp` |
+| `contentPadding = PaddingValues(16.dp)` en una pantalla con toolbar | El último item queda debajo de la toolbar | Añade `bottom = 96.dp`–`112.dp` |
 | `displayLarge` en cada item | Comprime la jerarquía y rompe la lectura | Reserva `display*` para la métrica principal |
 | Estado vacío con `Card` propio | Duplica estilos y pierde el patrón | Reutiliza `SectionEmptyState` |
 | `fontWeight = FontWeight.Black` extra | El estilo ya define el peso | Usa el estilo tal cual |
