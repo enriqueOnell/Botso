@@ -26,7 +26,8 @@ import androidx.compose.ui.unit.dp
 import com.onell.botso.ui.theme.BotsoTheme
 
 /**
- * Componente reutilizable para los estados vacíos dentro de las secciones del Dashboard.
+ * Componente reutilizable para los estados vacíos en secciones de toda la app
+ * (Dashboard, Tareas, Semestres y Notas).
  * Sigue los lineamientos de Material 3 Expressive y el sistema de diseño de Botso.
  */
 @Composable

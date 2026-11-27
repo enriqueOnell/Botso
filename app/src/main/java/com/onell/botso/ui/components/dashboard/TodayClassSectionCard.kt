@@ -25,6 +25,12 @@ import com.onell.botso.domain.model.CourseWithSession
 import com.onell.botso.ui.theme.BotsoTheme
 import java.time.LocalTime
 
+/**
+ * Sección del Dashboard con el carrusel horizontal de clases programadas para hoy.
+ *
+ * Muestra cada sesión mediante `ClassItem` o `SectionEmptyState` cuando el día
+ * no tiene clases registradas.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TodayClassSectionCard(

@@ -1,11 +1,8 @@
 # Botso
 
-Aplicación Android para la gestión académica personal. Botso reúne en un solo lugar los
-semestres, las materias, los horarios de clase, las tareas y las calificaciones, y ofrece
-un panel diario con lo que el estudiante necesita atender: clases de hoy, tareas
-pendientes, tareas prioritarias y el promedio de cada materia.
+Aplicación Android para la gestión académica personal. Botso reúne en un solo lugar los semestres, las materias, los horarios de clase, las tareas y las calificaciones, ofreciendo un panel diario con todo lo que el estudiante necesita atender: clases del día, tareas pendientes, entregas prioritarias, accesos rápidos a plataformas y el promedio de cada materia.
 
-> Interfaz y textos en español. Paquete base: `com.onell.botso`.
+> Interfaz y textos en español. Paquete base: `com.onell.botso`. Versión actual: **1.6.0** (`versionCode = 25`).
 
 ---
 
@@ -13,33 +10,30 @@ pendientes, tareas prioritarias y el promedio de cada materia.
 
 | Necesidad | Solución en Botso |
 | --- | --- |
-| Organizar el semestre | Semestres con fecha de inicio/fin, cursos y horarios por día |
-| No olvidar una clase | Recordatorio 30 minutos antes del inicio (alarma exacta cuando el sistema lo permite) |
-| No olvidar una tarea | Estados (Por Hacer / En Progreso / Hecho), prioridad automática si vence en ≤ 3 días y recordatorio periódico |
-| Conocer el rendimiento | Promedio ponderado por curso y por corte (Formativa + Cognitiva) |
-| Acceder rápido a la universidad | Accesos directos a las plataformas EVA y SINU mediante Custom Tabs |
+| **Organizar el semestre** | Semestres con fecha de inicio/fin, cursos, profesor, aula/modalidad y horario por día |
+| **No olvidar una clase** | Recordatorio 30 minutos antes del inicio (alarma exacta con `AlarmManager`, reprogramada tras reinicio) |
+| **No olvidar una tarea** | Estados (`TODO`, `IN_PROGRESS`, `DONE`), filtro por estado, prioridad automática/manual y recordatorio periódico con `WorkManager` |
+| **Conocer el rendimiento** | Promedio ponderado por curso y por corte (Cortes 1 y 2: 15% c/u, Corte 3: 20%) con notas Formativa/Cognitiva y teclado numérico integrado |
+| **Acceso a la universidad** | Accesos directos a las plataformas EVA y SINU mediante AndroidX Browser (Custom Tabs) |
+| **Personalización visual** | Selector de modo de tema (`Sistema`, `Claro`, `Oscuro`) y compatibilidad con color dinámico en Android 12+ |
 
 ### Pantallas
 
-- **Dashboard**: plataformas académicas, clases del día, contador de tareas pendientes,
-  tareas prioritarias y materias con su promedio.
-- **Tareas**: listado filtrado por estado, cambio rápido de estado, edición y borrado.
-- **Semestres**: semestres con sus materias y horarios; alta, edición y borrado.
-- **Notas del curso**: resumen del curso, listado por corte y teclado numérico propio
-  para las notas Formativa y Cognitiva.
-- **Ajustes**: color dinámico, notificaciones de tareas y de clases, y versión de la app.
+- **Dashboard** (`DashboardScreen`): Panel diario con carrusel de clases del día (`TodayClassSectionCard`), tarjeta héroe de tareas pendientes (`PendingTasksCard`), accesos a plataformas EVA y SINU (`PlatformSectionCard`), tareas con prioridad (`PriorityTasksSectionCard`) y carrusel de materias con promedios acumulados (`CourseGradeSectionCard`).
+- **Tareas** (`TasksScreen`): Filtro por estado (`Por Hacer`, `En Progreso`, `Hecha`) mediante `TaskFilterSectionCard`, tarjetas `TaskItem` con cambio rápido de estado al tocar, menú contextual para editar o eliminar, banderas de prioridad y adjuntos.
+- **Semestres** (`SemestersScreen`): Listado de semestres con sus materias y horarios (`SemesterSectionCard`, `SemesterCourseItem`); creación, edición y eliminación de semestres y cursos mediante hojas modales inferiores (`ModalBottomSheet`) y navegación directa a las notas de cada curso.
+- **Notas del curso** (`CourseGradesScreen`): Resumen del curso con promedio general, porcentaje evaluado y barra de progreso (`CourseSummarySectionCard`), selector de cortes 1–3 con desglose Formativa/Cognitiva (`GradesSectionCard`) y editor con teclado numérico propio (`GradeEditorSectionCard` + `NumericPad`).
+- **Ajustes** (`SettingsScreen`): Selector de modo de tema (`ThemeMode`: Sistema, Claro, Oscuro), interruptor de color dinámico (Android 12+), controles de notificaciones de tareas y clases con gestión del permiso `POST_NOTIFICATIONS` en tiempo real, aviso de permiso faltante y tarjeta "Acerca de" con el logo y la versión instalada.
 
 ---
 
 ## Arquitectura
 
-El proyecto sigue una arquitectura por capas inspirada en **Clean Architecture** y el patrón
-**MVVM** con flujo de datos unidireccional (UDF). La UI nunca accede directamente a Room ni a
-las APIs de Android: siempre pasa por un ViewModel, un caso de uso y una interfaz de repositorio.
+El proyecto sigue una arquitectura **Clean Architecture** estructurada en capas y el patrón **MVVM** con flujo de datos unidireccional (UDF). La UI nunca accede directamente a Room ni a las APIs de Android: siempre se comunica a través de un ViewModel, casos de uso y contratos de repositorio.
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│  UI (Compose)                                                   │
+│  UI (Compose + Material 3 Expressive)                           │
 │  screens · components · theme · uistate                         │
 │  Observa StateFlow y emite eventos al ViewModel                 │
 └──────────────────────────────┬──────────────────────────────────┘
@@ -52,39 +46,23 @@ las APIs de Android: siempre pasa por un ViewModel, un caso de uso y una interfa
 ┌──────────────────────────────▼──────────────────────────────────┐
 │  Domain                                                         │
 │  models · repository interfaces · use cases                     │
-│  Reglas de negocio puras (sin Android/Room)                     │
+│  Reglas de negocio puras (sin dependencias Android/Room)        │
 └──────────────────────────────┬──────────────────────────────────┘
                                │
 ┌──────────────────────────────▼──────────────────────────────────┐
 │  Data                                                           │
 │  Room (entities + DAOs) · repositories · mappers · DataStore    │
-│  WorkManager · AlarmManager · NotificationService               │
+│  WorkManager · AlarmManager · BootReceiver · NotificationService│
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-### Decisiones clave
+### Sistema de Diseño ("Expressive Academic Canvas")
 
-- **Estado unidireccional**: cada pantalla consume un `sealed interface *UiState`
-  (`Loading`, `Success`, `Error`) expuesto como `StateFlow` y recogido con
-  `collectAsStateWithLifecycle()`.
-- **Reactividad**: los repositorios devuelven `Flow`; cualquier cambio en Room se propaga
-  automáticamente hasta la UI sin recargas manuales.
-- **Separación de modelos**: las entidades de Room (`*Entity`) se traducen a modelos de
-  dominio mediante `data/mapper/Mappers.kt`. El dominio usa `LocalDate`, `LocalTime` y enums.
-- **Inyección de dependencias**: Hilt (`@HiltAndroidApp`, `@AndroidEntryPoint`,
-  `@HiltViewModel`) con módulos en `di/`.
-- **Navegación type-safe**: Navigation Compose con rutas `@Serializable` en `navigation/Routes.kt`.
-- **Persistencia de ajustes**: Preferences DataStore (`settings_prefs`), separado de Room.
-- **Trabajo en segundo plano**: WorkManager para el recordatorio de tareas y AlarmManager
-  para los avisos de clase; `BootReceiver` reprograma las alarmas tras un reinicio.
-
-### Reglas de negocio relevantes
-
-- Escala de notas **0.0 – 5.0**; promedio aprobatorio desde **3.0**.
-- Peso por corte: **corte 3 = 20%**, cortes 1 y 2 = **15%** cada uno.
-- Las notas se identifican por nombre dentro del corte: `Nota Formativa` y `Nota Cognitiva`.
-- Una tarea que vence en **0 a 3 días** se marca automáticamente como prioritaria.
-- El aviso de clase se programa **30 minutos antes** de la hora de inicio.
+- **`MaterialExpressiveTheme`**: Implementación de las especificaciones de Material 3 Expressive (`material3:1.5.0`) con `MotionScheme.expressive()` en `ui/theme/Theme.kt`.
+- **Paleta Institucional (`Color.kt`)**: Esquemas claro (`BotsoLightColors`) y oscuro (`BotsoDarkColors`) inspirados en el logo de Botso (Azul `#0060A9` / `#A2C9FF`, Verde Menta `#006C4B` / `#45DFA4`, Azul Grisáceo `#4E5F79` / `#B6C8E5`), además de `LocalBotsoColors` (`BotsoSemanticColors`) para estados semánticos de aprobación (`passContainer` / `onPassContainer`).
+- **Tipografía y Formas (`Type.kt`, `Shape.kt`)**: Escala tipográfica `BotsoTypography` (`displayLarge` de `112.sp` hasta `labelLarge`) y tokens `BotsoShapes` (`12.dp` a `40.dp`), junto con `HeroShape` (`48.dp`), `FabShape` (`30.dp`) y formas orgánicas `MaterialShapes` (`Pill`, `Circle`).
+- **Contenedor Global (`BotsoMainApp.kt`)**: `Scaffold` con `CenterAlignedTopAppBar` transparente (`enterAlwaysScrollBehavior`), `HorizontalFloatingToolbar` inferior (`exitAlwaysScrollBehavior`) con FAB contextual y `NavHost` type-safe.
+- **Estados Vacíos y Carruseles**: `SectionEmptyState` reutilizable en todas las pantallas con listas vacías y `HorizontalUncontainedCarousel` para clases del día y materias.
 
 ---
 
@@ -92,20 +70,18 @@ las APIs de Android: siempre pasa por un ViewModel, un caso de uso y una interfa
 
 | Categoría | Tecnología / versión |
 | --- | --- |
-| Lenguaje | Kotlin 2.4.10 |
-| UI | Jetpack Compose + Material 3 Expressive (BOM 2026.09.00) |
-| Arquitectura | MVVM + Clean Architecture por capas |
-| DI | Hilt 2.60.1 + Hilt Navigation Compose |
-| Persistencia | Room 2.8.5 (KSP) |
-| Preferencias | Preferences DataStore 1.2.1 |
-| Navegación | Navigation Compose con rutas `@Serializable` |
-| Asincronía | Kotlin Coroutines + Flow |
-| Trabajo en segundo plano | WorkManager 2.12.0 + AlarmManager |
-| Navegador | AndroidX Browser (Custom Tabs) |
-| Build | AGP 9.5.1, Gradle Kotlin DSL, Version Catalog (`libs.versions.toml`) |
-| SDK | `minSdk 29`, `targetSdk 37`, `compileSdk 37` |
-
-Dependencias declaradas en `gradle/libs.versions.toml` y `app/build.gradle.kts`.
+| **Lenguaje** | Kotlin `2.4.21` |
+| **UI** | Jetpack Compose (BOM `2026.11.01`) + Material 3 Expressive (`material3:1.5.0`) |
+| **Arquitectura** | MVVM + Clean Architecture por capas |
+| **DI** | Hilt `2.60.1` + Hilt Navigation Compose `1.4.0` + Hilt Work `1.4.0` |
+| **Persistencia** | Room `2.8.5` (KSP `2.3.10`), base de datos v8 |
+| **Preferencias** | Preferences DataStore `1.3.0` |
+| **Navegación** | Navigation Compose con rutas `@Serializable` (`navigation/Routes.kt`, Kotlinx Serialization `1.13.0`) |
+| **Asincronía** | Kotlin Coroutines `1.11.0` + `Flow` / `StateFlow` |
+| **Segundo plano** | WorkManager `2.12.0` (`DailyTaskWorker` cada 3 h) + `AlarmManager` (`ClassAlarmSchedulerImpl`) |
+| **Navegador** | AndroidX Browser `1.10.0` (Custom Tabs) |
+| **Build** | AGP `9.5.3`, Gradle Kotlin DSL, Version Catalog (`libs.versions.toml`), Java `11` |
+| **SDK** | `minSdk 29`, `targetSdk 37`, `compileSdk 37` (`minorApiLevel = 1`) |
 
 ---
 
@@ -118,59 +94,41 @@ botso/
 │   └── src/
 │       ├── main/
 │       │   ├── AndroidManifest.xml
+│       │   ├── keepRules/rules.keep
 │       │   ├── java/com/onell/botso/
-│       │   │   ├── MainActivity.kt              # Entrada + tema
-│       │   │   ├── BotsoApplication.kt          # @HiltAndroidApp + WorkManager
+│       │   │   ├── MainActivity.kt              # Entrada edge-to-edge + observa ThemeMode y color dinámico
+│       │   │   ├── BotsoApplication.kt          # @HiltAndroidApp + Configuration.Provider (WorkManager)
 │       │   │   ├── navigation/
-│       │   │   │   ├── BotsoMainApp.kt          # Scaffold, barra inferior, NavHost
-│       │   │   │   └── Routes.kt                # Rutas type-safe
+│       │   │   │   ├── BotsoMainApp.kt          # Scaffold, TopAppBar, HorizontalFloatingToolbar, NavHost y diálogos
+│       │   │   │   └── Routes.kt                # Rutas type-safe @Serializable (Dashboard, Tasks, Semesters, CourseGrades, Settings)
 │       │   │   ├── data/
-│       │   │   │   ├── local/                   # Room: BD, DAOs y entidades
-│       │   │   │   ├── mapper/                  # Entity <-> Domain
-│       │   │   │   ├── repository/              # Implementaciones de repositorios
-│       │   │   │   ├── receiver/                # Alarmas y arranque del dispositivo
-│       │   │   │   ├── service/                 # Notificaciones
-│       │   │   │   └── worker/                  # WorkManager
+│       │   │   │   ├── local/                   # Room: BotsoDataBase (v8), DAOs y entidades
+│       │   │   │   ├── mapper/                  # Mappers Entity <-> Domain
+│       │   │   │   ├── repository/              # Implementaciones de repositorios (Room y DataStore)
+│       │   │   │   ├── receiver/                # ClassAlarmSchedulerImpl, ClassAlarmReceiver, BootReceiver
+│       │   │   │   ├── service/                 # NotificationServiceImpl
+│       │   │   │   └── worker/                  # DailyTaskWorker y TaskNotificationSchedulerImpl
 │       │   │   ├── domain/
-│       │   │   │   ├── model/                   # Modelos puros
-│       │   │   │   ├── repository/              # Contratos
-│       │   │   │   └── usecase/                 # Casos de uso por entidad
-│       │   │   ├── di/                          # Módulos Hilt
+│       │   │   │   ├── model/                   # Modelos puros de dominio (incluye TaskStatus y ThemeMode)
+│       │   │   │   ├── repository/              # Contratos de repositorio, alarmas y notificaciones
+│       │   │   │   └── usecase/                 # Casos de uso por entidad (course, grade, notification, semester, session, settigns, task)
+│       │   │   ├── di/                          # Módulos Hilt (Database, DataStore, Notification, Repository)
 │       │   │   └── ui/
-│       │   │       ├── screens/                 # 5 pantallas
-│       │   │       ├── components/              # Componentes reutilizables
-│       │   │       ├── viewmodel/               # ViewModels
-│       │   │       ├── uistate/                 # Estados de UI
-│       │   │       └── theme/                   # Color, tipografía, formas, tema
-│       │   └── res/                             # Recursos Android
+│       │   │       ├── screens/                 # Dashboard, Tasks, Semesters, CourseGrades, Settings
+│       │   │       ├── components/              # Componentes por feature (dashboard, dialogs, grades, semesters, settings, tasks)
+│       │   │       ├── viewmodel/               # ViewModels @HiltViewModel
+│       │   │       ├── uistate/                 # Estados de UI (sealed interfaces y SettingsUiState)
+│       │   │       └── theme/                   # Color, Shape, Type, Theme (MaterialExpressiveTheme + LocalBotsoColors)
+│       │   └── res/                             # Recursos (botso_logo, drawables, mipmaps, strings, XML)
 │       ├── test/                                # Pruebas unitarias
 │       └── androidTest/                         # Pruebas instrumentadas
 ├── gradle/libs.versions.toml                    # Catálogo de versiones
 ├── build.gradle.kts
 ├── settings.gradle.kts
+├── AGENTS.md                                    # Guía rápida de arquitectura y convenciones para agentes
+├── LICENSE                                      # Licencia Apache 2.0
 └── README.md
 ```
-
-### Flujo de datos (ejemplo: guardar una nota)
-
-```
-CourseGradesScreen
-   └─ CourseGradesViewModel.saveGrades()
-        └─ InsertGradeUseCase / UpdateGradeUseCase
-             └─ GradeRepository (interfaz)
-                  └─ GradeRepositoryImpl
-                       └─ GradeDao (Room)
-                            └─ Flow<List<...>> → ViewModel → UiState → Compose
-```
-
----
-
-## Requisitos
-
-- **Android Studio** reciente con soporte para AGP 9.x.
-- **JDK 17 o superior** (AGP 9 lo requiere; el proyecto compila con `sourceCompatibility 11`).
-- **Android SDK 37** instalado.
-- Dispositivo o emulador con **Android 10 (API 29)** o superior.
 
 ---
 
@@ -183,36 +141,26 @@ git clone <URL-del-repositorio>
 cd botso
 ```
 
-### 2. Compilar en Android Studio
-
-1. Abrir la carpeta raíz del proyecto con **File → Open**.
-2. Esperar la sincronización de Gradle (el proyecto usa Version Catalog).
-3. Seleccionar el módulo `app` y un dispositivo/emulador.
-4. Ejecutar con **Run ▶** o `Shift + F10`.
-
-### 3. Compilar por línea de comandos
+### 2. Compilar por línea de comandos
 
 ```bash
 # Build de depuración
 ./gradlew :app:assembleDebug
 
-# Instalar en el dispositivo conectado
+# Instalar en dispositivo conectado (paquete com.onell.botso.dev, sufijo -DEV)
 ./gradlew :app:installDebug
 
 # Pruebas unitarias
 ./gradlew :app:testDebugUnitTest
 
-# Una prueba concreta
+# Una prueba específica
 ./gradlew :app:testDebugUnitTest --tests "com.onell.botso.CourseGradesViewModelTest"
 
-# Pruebas instrumentadas (requiere emulador/dispositivo)
+# Pruebas instrumentadas (requiere emulador o dispositivo)
 ./gradlew :app:connectedDebugAndroidTest
 ```
 
 El APK de depuración se genera en `app/build/outputs/apk/debug/`.
-
-> La variante `debug` usa el `applicationId` **`com.onell.botso.dev`** y el sufijo de versión
-> `-DEV`, por lo que puede convivir instalada junto a la versión de producción.
 
 ---
 
@@ -220,41 +168,17 @@ El APK de depuración se genera en `app/build/outputs/apk/debug/`.
 
 | Permiso | Uso |
 | --- | --- |
-| `INTERNET` | Abrir EVA/SINU en Custom Tabs |
-| `POST_NOTIFICATIONS` | Recordatorios de tareas y clases (Android 13+) |
-| `SCHEDULE_EXACT_ALARM` | Avisos de clase a la hora exacta (Android 12+) |
-| `RECEIVE_BOOT_COMPLETED` | Reprogramar alarmas tras reiniciar el dispositivo |
-
-La app solicita `POST_NOTIFICATIONS` en tiempo de ejecución desde Ajustes y explica el
-caso en el que el permiso queda bloqueado.
+| `INTERNET` | Abrir las plataformas académicas EVA y SINU en Custom Tabs |
+| `POST_NOTIFICATIONS` | Mostrar recordatorios periódicos de tareas y avisos de clase (runtime en Android 13+) |
+| `SCHEDULE_EXACT_ALARM` | Programar avisos exactos 30 minutos antes de cada clase (Android 12+) |
+| `RECEIVE_BOOT_COMPLETED` | Reprogramar las alarmas de clase tras reiniciar el dispositivo (`BootReceiver`) |
 
 ---
 
-## Notas técnicas y mantenimiento
+## Mantenimiento y Licencia
 
-- **Migraciones de Room**: la base de datos está en la versión **8** con
-  `exportSchema = false` y **sin** `fallbackToDestructiveMigration()`. Antes de subir la
-  versión hay que añadir una `Migration`; de lo contrario la app fallará al abrir una BD
-  existente.
-- **Nombres de casos de uso**: algunos archivos usan minúscula inicial (`getX.kt`,
-  `insertX.kt`) y otros mayúscula (`UpdateX.kt`, `GenerateX.kt`). Es intencional en el
-  estado actual del proyecto; al añadir imports conviene respetar el nombre existente.
-- **Textos en español**: los strings visibles están escritos directamente en los
-  composables (Tareas, Semestres, Notas). Si se planea internacionalizar, conviene
-  moverlos a `res/values/strings.xml`.
-- **Material 3 Expressive**: se usan APIs experimentales (`HorizontalFloatingToolbar`,
-  `LoadingIndicator`, `MaterialShapes`, `MotionScheme.expressive()`); pueden cambiar entre
-  versiones de la librería.
-- **Pruebas**: actualmente solo existe una prueba unitaria de ejemplo; se recomienda
-  ampliar la cobertura de `CourseGradesViewModel` y de los casos de uso.
-- **Documentación del código**: los archivos principales incluyen KDoc con la
-  responsabilidad de cada componente y las reglas de negocio relevantes.
-
----
-
-## Estado del proyecto
-
-- Versión: **1.6.0** (`versionCode 25`).
-- Módulo único `:app`.
-- Sin CI configurado.
-- Interfaz completamente en Jetpack Compose.
+- **Migraciones de Room**: La base de datos está en la versión **8** con `exportSchema = false` y sin `fallbackToDestructiveMigration()`. Al modificar entidades o incrementar la versión de BD, se debe añadir una `Migration` explícita.
+- **Reglas de negocio de notas**: Centralizadas en `CourseGradesViewModel` (escala `0.0`–`5.0`, corte 3 con peso `0.20` y cortes 1–2 con `0.15`, umbral de aprobación `3.0` y cálculo ponderado en `CourseWithGrades.averageGrade`).
+- **Localización en español**: Toda la interfaz y los mensajes están en español.
+- **KDoc y Previews**: Los componentes principales incluyen documentación KDoc y vistas previas `@Preview` en modo claro y oscuro envolviendo el componente puro (`*Content` / item) en `BotsoTheme`.
+- **Licencia**: Distribuido bajo la licencia [Apache 2.0](LICENSE).

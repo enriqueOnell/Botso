@@ -69,7 +69,7 @@ Estas son las parejas reales que producen la armonía actual. Úsalas como punto
 | Tarea prioritaria | `tertiaryContainer` | Fecha y badge `tertiary`; badge con contenido `tertiaryContainer`; título `onPrimaryContainer` | `PriorityTaskItem` |
 | Materia / promedio | `tertiaryContainer` | Nombre `tertiary`; promedio `onPassContainer` si aprueba, `error` si no | `CourseGradeItem` |
 | Estado vacío | `primaryContainer` | Título `onSurface`; subtítulo `onSurfaceVariant`; tile del icono `secondary` | `SectionEmptyState` |
-| Aprobado | `passContainer` (`LocalBotsoColors`) | `onPassContainer` | `CourseGradeItem`, `CircularGradeProgress` |
+| Aprobado | `passContainer` (`LocalBotsoColors`) | `onPassContainer` | `CourseGradeItem`, `CourseSummarySectionCard`, `GradeItem` |
 | Reprobado / destructivo | `errorContainer` / `error` | `onErrorContainer` / `onError` | `CourseGradeItem`, `ConfirmDeleteDialog` |
 
 ### 1.3 Reglas de combinación
@@ -121,7 +121,7 @@ Mapeo observado en el Dashboard:
 - Tarjeta de materia y de tarea prioritaria: `shapes.large` / `shapes.extraLarge`.
 - Estado vacío: `shapes.extraLarge`; tile del icono: `shapes.medium`.
 - Badge de materia en tarea: `shapes.extraSmall`.
-- Diálogo: `shapes.medium` (hoy `ConfirmDeleteDialog` usa `RoundedCornerShape(24.dp)`; al tocarlo, migra al token).
+- Diálogo: `shapes.medium` (como en `ConfirmDeleteDialog`).
 
 Solo se permite un valor en `.dp` cuando:
 

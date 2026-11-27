@@ -14,6 +14,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.onell.botso.ui.theme.BotsoTheme
 
+/**
+ * Sección del Dashboard con accesos rápidos a las plataformas académicas EVA y SINU.
+ *
+ * Cada botón delega en `PlatformItem` para abrir la URL correspondiente
+ * mediante AndroidX Browser (Custom Tabs).
+ */
 @Composable
 fun PlatformSectionCard(
     modifier: Modifier = Modifier

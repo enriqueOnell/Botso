@@ -6,13 +6,13 @@ import androidx.compose.ui.unit.dp
 
 /**
  * Escala de formas (Shapes) para Botso siguiendo el sistema Expressive Academic Canvas.
- * Determina el radio de curvatura (RoundedCornerShape) de los componentes de la interfaz:
+ * Determina el radio de curvatura (`RoundedCornerShape`) de los componentes de la interfaz:
  *
- * - `extraSmall` (12.dp): Chips compactos, etiquetas secundarias y pequeñas insignias.
- * - `small` (16.dp): Campos de formulario (`FilledFormField`, `PickerFormField`), tarjetas de materias (`CourseGradeItem`) y filas interactivas.
- * - `medium` (24.dp): Diálogos de confirmación (`ConfirmDeleteDialog`), selectores de hora (`BotsoTimePickerDialog`) y envolturas de sección.
- * - `large` (32.dp): Tarjetas destacadas del Dashboard (`ClassCard`, `PendingTasksCard`, `PriorityItem`) y contenedores principales de pantallas.
- * - `extraLarge` (40.dp): Paneles flotantes expandidos y banners de contexto a ancho completo.
+ * - `extraSmall` (12.dp): Badges de materia/estado (`PriorityTaskItem`, `TaskStatusBadge`, `GradeItem`) y etiquetas compactas.
+ * - `small` (16.dp): Campos del editor de notas (`GradeInputField`), tarjetas internas (`SemesterCourseItem`, `TaskItem`) y píldoras informativas.
+ * - `medium` (24.dp): Diálogos (`ConfirmDeleteDialog`), elementos internos de Ajustes (`SettingsThemeModeItem`, `SettingsToggleItem`, `SettingsAboutItem`) y botones del FAB en `BotsoMainApp`.
+ * - `large` (32.dp): Tarjetas de sección (`TodayClassSectionCard`, `PendingTasksCard`, `TaskFilterSectionCard`, `SemesterSectionCard`, `CourseSummarySectionCard`) y tarjetas destacadas.
+ * - `extraLarge` (40.dp): Tarjetas destacadas y estados vacíos (`PriorityTaskItem`, `SectionEmptyState`).
  */
 val BotsoShapes = Shapes(
     extraSmall = RoundedCornerShape(12.dp),

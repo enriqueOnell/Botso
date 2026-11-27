@@ -23,6 +23,13 @@ import com.onell.botso.domain.model.CourseWithGrades
 import com.onell.botso.domain.model.Grade
 import com.onell.botso.ui.theme.BotsoTheme
 
+/**
+ * Sección del Dashboard que muestra las materias del estudiante con su promedio
+ * acumulado en un carrusel horizontal (`HorizontalUncontainedCarousel`).
+ *
+ * Si no hay materias registradas, muestra `SectionEmptyState` indicando
+ * cómo inscribirlas desde Semestres.
+ */
 @Composable
 fun CourseGradeSectionCard(
     courses: List<CourseWithGrades>,

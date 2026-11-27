@@ -7,22 +7,20 @@ import androidx.compose.ui.unit.sp
 
 /**
  * Sistema tipográfico de Botso (Expressive Academic Canvas).
- * Define los estilos de texto (Typography) utilizados en toda la aplicación,
- * priorizando la jerarquía visual, la legibilidad y el peso tipográfico fuerte (ExtraBold/Bold)
- * característico de los diseños académicos modernos.
+ * Define los estilos de texto (`Typography`) utilizados en toda la aplicación,
+ * priorizando la jerarquía visual, la legibilidad y el peso tipográfico fuerte (`ExtraBold`/`Bold`).
  *
  * Casos de uso de cada estilo tipográfico en la app:
- * - `displayLarge`: Métricas gigantes del Dashboard (`PendingTasksCard`) y contadores principales.
- * - `displayMedium` / `displaySmall`: Encabezados numéricos y métricas principales de impacto visual (`CourseSummarySectionCard`).
- * - `headlineLarge`: Títulos principales en tarjetas destacadas de clase (`ClassCard`).
- * - `headlineMedium`: Títulos de la barra superior de navegación (`CenterAlignedTopAppBar`).
- * - `headlineSmall`: Cabeceras de hojas inferiores (`SheetHeader`), títulos de diálogos y tarjetas de resumen (`PendingTasksCard`).
- * - `titleLarge`: Títulos de secciones importantes y nombres principales.
- * - `titleMedium`: Nombres de materias (`CourseGradeItem`) y subtítulos destacados.
- * - `bodyLarge`: Texto principal de párrafos y descripciones extensas.
- * - `bodyMedium`: Texto introducido en campos de formulario (`FilledFormField`), notas y listas.
- * - `labelLarge`: Texto en botones de acción y botoneras inferiores (`SheetFormButtons`, `DialogActionButton`).
- * - `labelSmall`: Insignias de porcentaje (`GradeItem`), chips de estado y metadatos secundarios.
+ * - `displayLarge`: Métricas gigantes del Dashboard (`PendingTasksCard`).
+ * - `displayMedium` / `displaySmall`: Horario de clase (`ClassItem`) y métricas numéricas principales (`CourseSummarySectionCard`, `CourseGradeItem`).
+ * - `headlineLarge`: Título de la barra superior (`CenterAlignedTopAppBar` en `BotsoMainApp`) y fechas destacadas (`PriorityTaskItem`).
+ * - `headlineMedium`: Título de la tarjeta héroe (`PendingTasksCard`).
+ * - `headlineSmall`: Títulos de tarjetas de sección (`TodayClassSectionCard`, `TaskFilterSectionCard`, `SemesterSectionCard`, `GradesSectionCard`, `SectionEmptyState`).
+ * - `titleLarge`: Títulos de ítems principales (materias, tareas, plataformas y filas de Ajustes).
+ * - `titleMedium`: Subtítulos y títulos secundarios en barras y formularios.
+ * - `bodyLarge`: Texto principal de párrafos, mensajes de estado y campos de formulario.
+ * - `bodyMedium`: Descripciones, metadatos, profesor/aula y listas secundarias.
+ * - `labelLarge`: Texto en botones de acción y teclado numérico (`NumericPad`).
  */
 val BotsoTypography = Typography(
     displayLarge = TextStyle(

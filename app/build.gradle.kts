@@ -18,8 +18,8 @@ android {
         applicationId = "com.onell.botso"
         minSdk = 29
         targetSdk = 37
-        versionCode = 25
-        versionName = "1.6.0"
+        versionCode = 26
+        versionName = "2.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

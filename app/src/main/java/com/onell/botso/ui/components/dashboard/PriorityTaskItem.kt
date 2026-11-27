@@ -33,6 +33,13 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
+/**
+ * Tarjeta de una tarea prioritaria dentro del Dashboard.
+ *
+ * Presenta la insignia de la materia, el indicador de adjunto si aplica,
+ * el título y descripción breve a la izquierda, y la fecha de entrega
+ * (día de la semana, número y mes en español) destacada a la derecha.
+ */
 @Composable
 fun PriorityTaskItem(
     task: Task,

@@ -21,6 +21,13 @@ import com.onell.botso.domain.model.TaskStatus
 import com.onell.botso.ui.theme.BotsoTheme
 import java.time.LocalDate
 
+/**
+ * Sección del Dashboard que agrupa las tareas marcadas como prioritarias.
+ *
+ * Resuelve el nombre de la materia a partir de `coursesMap` para cada
+ * `PriorityTaskItem` y muestra `SectionEmptyState` cuando no hay pendientes
+ * prioritarios.
+ */
 @Composable
 fun PriorityTasksSectionCard(
     priorityTasks: List<Task>,

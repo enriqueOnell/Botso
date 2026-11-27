@@ -36,7 +36,9 @@ import java.time.LocalDate
 /**
  * Pantalla de Semestres.
  *
- * Lista los semestres con sus materias y horarios.
+ * Lista los semestres registrados con sus materias y horarios, permitiendo
+ * navegar a las notas de cada curso y delegar a `BotsoMainApp` los diálogos
+ * de creación, edición y eliminación de semestres y cursos.
  */
 @Composable
 fun SemestersScreen(
