@@ -17,10 +17,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.onell.botso.ui.theme.BotsoTheme
 import com.onell.botso.domain.model.Course
 import com.onell.botso.domain.model.CourseWithGrades
 import com.onell.botso.domain.model.Grade
+import com.onell.botso.ui.theme.BotsoSemanticColors
+import com.onell.botso.ui.theme.BotsoTheme
+import com.onell.botso.ui.theme.LocalBotsoColors
 import java.lang.String.format
 import java.util.Locale
 
@@ -32,13 +34,15 @@ import java.util.Locale
 @Composable
 fun CourseGradeItem(
     courseWithGrades: CourseWithGrades,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    botsoColors: BotsoSemanticColors = LocalBotsoColors.current,
 ) {
+
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
+            containerColor = MaterialTheme.colorScheme.tertiaryContainer
         )
     ) {
         Column(
@@ -52,7 +56,7 @@ fun CourseGradeItem(
             ) {
                 Text(
                     text = courseWithGrades.course.name,
-                    color = MaterialTheme.colorScheme.primary,
+                    color = MaterialTheme.colorScheme.tertiary,
                     style = MaterialTheme.typography.titleLarge,
                 )
                 if (courseWithGrades.course.professor.isNotBlank()) {
@@ -67,10 +71,11 @@ fun CourseGradeItem(
 
             Box(
                 modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.BottomEnd){
+                contentAlignment = Alignment.BottomEnd
+            ) {
                 Text(
                     text = format(Locale.US, "%.2f", courseWithGrades.averageGrade),
-                    color = if (courseWithGrades.averageGrade >= 3.0) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error,
+                    color = if (courseWithGrades.averageGrade >= 3.0) botsoColors.onPassContainer else MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.displayMedium,
                 )
             }

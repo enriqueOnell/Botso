@@ -39,7 +39,7 @@ fun TodayClassSectionCard(
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 text = "Clases del Día",
-                color = MaterialTheme.colorScheme.onSurface,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
                 style = MaterialTheme.typography.headlineSmall,
             )
 

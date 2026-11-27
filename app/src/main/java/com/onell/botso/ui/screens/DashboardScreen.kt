@@ -103,7 +103,7 @@ fun DashboardContent(
                 item(contentType = "Today Classes Section") {
                     TodayClassSectionCard(uiState.todayClasses)
                 }
-                
+
                 item(contentType = "Pending Tasks Section") {
                     PendingTasksCard(count = uiState.pendingTasksCount)
                 }
@@ -218,7 +218,7 @@ private fun DashboardScreenPreview() {
         )
     )
 
-    BotsoTheme{
+    BotsoTheme {
         DashboardContent(
             uiState = DashboardUiState.Success(
                 priorityTasks = tasks,

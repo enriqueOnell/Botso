@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.MenuBook
 import androidx.compose.material.icons.rounded.AttachFile
@@ -65,7 +63,7 @@ fun PriorityTaskItem(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(horizontal = 20.dp, vertical = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
@@ -81,7 +79,7 @@ fun PriorityTaskItem(
                         color = MaterialTheme.colorScheme.tertiary
                     ) {
                         Row(
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
@@ -134,34 +132,28 @@ fun PriorityTaskItem(
                 }
             }
 
-            Surface(
-                modifier = Modifier.widthIn(min = 64.dp),
-                shape = RoundedCornerShape(16.dp),
-                color = MaterialTheme.colorScheme.tertiary,
-                contentColor = MaterialTheme.colorScheme.onTertiary
+
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
-                Column(
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        text = dayOfWeek,
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onTertiary
-                    )
-                    Text(
-                        text = dayNumber,
-                        style = MaterialTheme.typography.headlineSmall,
-                        color = MaterialTheme.colorScheme.onTertiary
-                    )
-                    Text(
-                        text = month,
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onTertiary
-                    )
-                }
+                Text(
+                    text = dayOfWeek,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.tertiary
+                )
+                Text(
+                    text = dayNumber,
+                    style = MaterialTheme.typography.headlineLarge,
+                    color = MaterialTheme.colorScheme.tertiary
+                )
+                Text(
+                    text = month,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.tertiary
+                )
             }
+
         }
     }
 }
