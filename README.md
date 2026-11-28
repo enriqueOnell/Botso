@@ -2,7 +2,7 @@
 
 Aplicación Android para la gestión académica personal. Botso reúne en un solo lugar los semestres, las materias, los horarios de clase, las tareas y las calificaciones, ofreciendo un panel diario con todo lo que el estudiante necesita atender: clases del día, tareas pendientes, entregas prioritarias, accesos rápidos a plataformas y el promedio de cada materia.
 
-> Interfaz y textos en español. Paquete base: `com.onell.botso`. Versión actual: **1.6.0** (`versionCode = 25`).
+> Interfaz y textos en español. Paquete base: `com.onell.botso`. Versión actual: **2.0** (`versionCode = 26`).
 
 ---
 
